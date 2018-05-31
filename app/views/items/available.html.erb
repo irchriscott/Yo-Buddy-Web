@@ -1,0 +1,29 @@
+<div class="yb-modal-container">
+	<div class="yb-add-item">
+		<h2>AVAILABE DATES</h2>
+		<table style="margin-top: 15px;">
+			<thead>
+				<tr>
+					<th>FROM DATE</th>
+					<th>TO DATE</th>
+					<th>AVAILABLE ITEMS</th>
+				</tr>
+				<tbody>
+					<% @dates.each do |date| %>
+						<tr>
+							<td style="text-align: left;"><%= date["from"].strftime("%A, %d %B %Y at %H:%M") %></td>
+							<td style="text-align: left;"><% if date["to"] == "-" %>-<% else %><%= date["to"].strftime("%A, %d %B %Y at %H:%M") %><% end %></td>
+							<td style="text-align: center"><%= date["count"] %></td>
+						</tr>
+					<% end %>
+				</tbody>
+			</thead>
+		</table>
+		<div style="display: block; position: relative;">
+			<button type="button" id="yb-close-available-dates" class="yb-btn-cancel">Cancel</button>
+		</div>
+		<script type="text/javascript">
+			$("#yb-close-available-dates").closePopup();
+		</script>
+	</div>
+</div>

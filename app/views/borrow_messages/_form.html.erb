@@ -1,0 +1,21 @@
+<%= form_for :message, url: item_item_borrow_user_borrow_messages_path(@item, @borrow), html: {'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_item_borrow_user_path(@item, @borrow), id: 'yb-borrow-message-form' } do |form| %>
+	<div class="yb-image">
+		<% if session_user.image? %>
+			<%= image_tag session_user.image.url, alt: session_user.username %>
+		<% else %>
+			<%= image_tag '/assets/default.jpg', alt: session_user.username %>
+		<% end %>
+	</div>
+	<%= form.hidden_field :receiver_id, value: @borrow_receiver %>
+	<%= form.hidden_field :status, value: "unread" %>
+	<%= form.hidden_field :is_deleted, value: false %>
+	<%= form.text_area :message, required: true, placeholder: "Enter Text Message" %>
+	<div class="yb-status" id="yb-open-message-menu" data-id="message-menu"><i class="icon ion-plus-round"></i></div>
+	<button type="submit" id="yb-message-submit" disabled="disabled"><i class="icon ion-android-send" style="color: var(--lightGray);"></i></button>
+	<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-message-menu">
+		<ul>		
+			<li><a href="#yb-send-borrow-item-message-images" id="yb-open-send-message-images"><span class="item-icon"><i class="icon ion-images"></i></span><span class="item-text">Images</span></a></li>
+		</ul>
+	</div>
+<% end -%>
+<section class="zoom-anim-dialog mfp-hide" id="yb-send-borrow-item-message-images"><%= render "borrow_messages/imageform" %></section>

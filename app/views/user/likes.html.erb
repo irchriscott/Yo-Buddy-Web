@@ -1,0 +1,66 @@
+<section class="yb-header-else">
+	<div class="yb-header-else-container">
+		<div class="yb-header-user">
+			<div class="yb-header-image">
+				<% if @user.image? %>
+					<%= image_tag @user.image.url %>
+				<% else %>
+					<img src="/assets/default.jpg"/>
+				<% end %>
+			</div>
+			<h4><%= @user.username %></h4>
+		</div>
+		<div class="yb-session-menu">
+			<ul>
+				<li><a href="<%= user_items_path %>">Items</a></li>
+				<li class="active"><a href="<%= user_likes_path %>">Likes</a></li>
+				<li><a href="<%= user_followers_path %>">Followers</a></li>
+				<li><a href="<%= user_following_path %>">Following</a></li>
+				<li><a href="<%= user_borrows_path %>">Item Data</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-session-main">
+	<div class="yb-session-info-about">
+		<%= render "user/user" %>
+	</div>
+	<div class="yb-session-container">
+		<div class="yb-session-menu">
+			<ul>
+				<li><a href="<%= user_items_path %>">Items</a></li>
+				<li class="active"><a href="<%= user_likes_path %>">Likes</a></li>
+				<li><a href="<%= user_followers_path %>">Followers</a></li>
+				<li><a href="<%= user_following_path %>">Following</a></li>
+				<li><a href="<%= user_borrows_path %>">Item Data</a></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-borrow-items">
+				<% if @likes.count > 0 %>
+					<% @likes.each do |item| %>
+						<div class="yb-borrow-item-single">
+							<div class="yb-image">
+								<%= image_tag item.item.item_image[0].image.url, alt: item.item.name %>
+							</div>
+							<div class="yb-about">
+								<h3><%= link_to item.item.name, item_path(item.item) %></h3>
+								<p class="yb-category">
+									<a href="<%= category_path(item.item.category) %>"><%= item.item.category.name %></a> - 
+									<a href="<%= subcategory_path(item.item.subcategory) %>"><%= item.item.subcategory.name %></a>
+								</p>
+								<p class="yb-item-data" style="margin-top: -8px;">
+									<span>by <%= link_to item.item.user.name, user_path(item.item.user) %></span> - 
+									<span id="like-item-date-<%= item.id %>" data-date="<%= item.item.created_at.strftime("%Y-%m-%d %H:%M:%S") %>"></span>
+								</p>
+							</div>
+							<script type="text/javascript">$("#like-item-date-<%= item.id %>").setDate();</script>
+						</div>
+					<% end %>
+				<% else %>
+					<p class="yb-error">NO LIKED ITEMS</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</section>

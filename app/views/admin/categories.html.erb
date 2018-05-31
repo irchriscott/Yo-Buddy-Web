@@ -1,0 +1,44 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<h3>Categories <span><%= @categories.count %></span></h3>
+		<div class="yb-borrow-items admin-categories" style="margin-top: -15px;">
+			<% @categories.each do |category| %>
+				<div class="yb-borrow-item-single yb-admin-single-row">
+					<div class="yb-image yb-text">
+						<p><%= category.name[0] %> </p>
+					</div>
+					<div class="yb-about">
+						<h3><%= link_to category.name, admin_category_path(category) %></h3>
+						<p class="yb-category">Subcategories - <span style="text-transform: capitalize;"><%= category.subcategory.count %></span></p>
+						<p class="yb-item-data">
+							<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="admin-follower-sum-<%= category.id %>" data-number="<%= category.usercategory.count %>"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="admin-items-sum-<%= category.id %>" data-number="<%= category.item.count %>"></span></span>
+						</p>
+					</div>
+				</div>
+				<script type="text/javascript">$("#admin-follower-sum-<%= category.id %>").setNumber();$("#admin-items-sum-<%= category.id %>").setNumber();</script>
+			<% end %>
+		</div>
+	</div>
+	<div class="yb-admin-right-side">
+		<h4>Filter Categories</h4>
+		<%= form_for :search_category, method: "GET", html: {"data-url": admin_categories_path} do |form| %>
+			<%= form.text_field :search_text, placeholder: "Search Term" %>
+			<div class="yb-order-by">
+				<label>Order By : </label>
+				<%= form.select :order_by do -%>
+					<% @order_by.each do |order| %>
+						<%= content_tag(:option, order["text"], value: order["id"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select :order do -%>
+					<% @order.each do |ord| %>
+						<%= content_tag(:option, ord["text"], value: ord["id"]) %>
+					<% end %>
+				<% end %>
+				<button type="submit">Filter</button>
+				<button type="button" id="admin-add-category" href="<%= admin_new_category_path %>">Add Category</button>
+			</div>
+		<% end %>
+	</div>
+</section>

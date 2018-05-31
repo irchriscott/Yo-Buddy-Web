@@ -1,0 +1,61 @@
+<div class="yb-modal-container" style="width:45%;">
+	<div class="yb-add-item">
+		<h2>BORROW ITEM LIST</h2>
+		<table style="margin-top: 20px;">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>QR Code</th>
+					<th>Is Authenticated</th>
+				</tr>
+				<tbody>
+					<% if @borrow_items.count > 0 %>
+						<% @borrow_items.each do |item| %>
+							<tr>
+								<td><%= item.id %></td>
+								<td><%= item.name %></td>
+								<td><%= item.description %></td>
+								<td><button type="submit" id="yb-admin-print-qr-item-<%= item.id %>">Print</button></td>
+								<td>
+									<span id="yb-item-is-authenticated-<%= item.id %>">
+										<% if item.is_returned? %>
+											<i class="icon ion-checkmark-round" style="color:green;"></i>
+										<% else %>
+											<i class="icon ion-close-round" style="color: red;"></i>
+										<% end %>
+									</span>
+								</td>
+							</tr>
+							<div style="text-align: center; width: 100px; display: none !important;" id="yb-item-qr-code-container-<%= item.id %>">
+								<div data-id="<%= item.item_code %>" data-user="<%= item.borrow_item_user.item.user.username %>" id="yb-admin-item-qr-container-<%= item.id %>"></div>
+								<h5 style="text-align: center; width: 200px; margin-top: 5px;">YO BUDDY</h5>
+								<!-- <div style="position: absolute; left: 0; top: 0; margin-top: 35px; text-align: center; white-space: normal; width: 110px; margin-left: 67px; transform: rotate(-90deg);">
+									<p><%= item.name %></p>
+								</div> -->
+							</div>
+							<script type="text/javascript">
+								$("#yb-admin-print-qr-item-<%= item.id %>").click(function(e){
+									e.preventDefault();
+									printDocument("yb-item-qr-code-container-<%= item.id %>");
+								});
+								makeQRCode("yb-admin-item-qr-container-<%= item.id %>", 200, 200)
+							</script>
+						<% end %>
+					<% end %>
+				</tbody>
+			</thead>
+		</table>
+		<div class="yb-qr-preview-container" style="margin-top: 15px; display: none;">
+			<video style="width:150px;" id="preview-qr-code"></video>
+		</div>
+		<%= form_for :item_scan, url: admin_borrow_check_item_path(@item, @borrow), html:{id: "yb-admin-item-scan-check"} do |form| %>
+			<%= form.hidden_field :code %>
+			<button type="submit" id="yb-admin-submit-item-check" style="display: none !important;">SUBMIT</button>
+		<% end %>
+		<div style="display: block; position: relative;">
+			<button type="button" id="yb-close-item-borrow-qr-code" class="yb-btn-cancel">Cancel</button>
+		</div>
+	</div>
+</div>

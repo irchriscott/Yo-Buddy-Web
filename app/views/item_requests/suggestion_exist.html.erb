@@ -1,0 +1,77 @@
+<div class="yb-modal-container" style="width: 50%;">
+	<div class="yb-add-item">
+		<h2>Add Request Suggestion Item</h2>
+		<div class="yb-item-suggestions">
+			<% if @items.count > 0 %>
+				<ul>
+				<% @items.each do |item| %>
+					<li id="yb-suggestion-<%= item.id %>" data-id="<%= item.id %>">
+						<span><i class="icon ion-android-checkbox-outline-blank"></i></span>
+						<div class="yb-image"><%= image_tag item.item_image[0].image.url, alt: item.name %></div>
+						<div class="yb-about">
+							<h3><%= item.name %></h3>
+							<p><%= item.category.name %> - <%= item.subcategory.name %></p>
+							<p><%= item.available %> Items</p>
+						</div>
+						<script type="text/javascript">$("#yb-suggestion-<%= item.id %>").selectItem();</script>
+					</li>
+				<% end %>
+				</ul>
+			<% else %>
+				<p class="yb-error">NO ITEM TO SUGGEST</p>
+			<% end %>
+		</div>
+		<div class="yb-hidden-modal" id="yb-add-suggestion-preferences">
+			<div class="yb-modal-container" style="width: 30%; margin-top: calc((100vh - 274px) / 2)">
+				<div class="yb-add-item">
+					<h2>Request Suggestion Preferences</h2>
+					<%= form_for :suggestion, url: item_request_create_exist_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request)} do |form| %>
+						<%= form.hidden_field :item_id, value: "0" %>
+						<label>Price :</label>
+						<%= form.number_field :price, required:true, placeholder: "Enter Price", min: "1" %>
+						<label>Currency :</label>
+						<%= form.select(:currency, required: true) do -%>
+							<% @currencies.each do |currency| %>
+								<% if @request.currency == currency["currency"] %>
+								<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+								<% end %>
+							<% end %>
+						<% end %>
+						<label>Per : </label>
+						<%= form.select(:per, required: true) do %>
+							<% @per.each do |t| %>
+								<% if @request.per == t %>
+								<%= content_tag(:option, "Per #{t}", value: t) %>
+								<% end %>
+							<% end %>
+						<% end %>
+						<div style="display: block; position: relative; margin-top: 10px;">
+							<button type="submit">Submit</button>
+							<button type="button" id="yb-close-add-suggestion-about" class="yb-btn-cancel">Cancel</button>
+						</div>
+					<% end %>
+				</div>
+			</div>
+		</div>
+		<div style="display: block; position: relative;">
+			<button type="button" id="yb-open-add-suggestion-about" style="background: var(--primaryColor)">Suggest</button>
+			<button type="button" id="yb-close-add-suggestion" class="yb-btn-cancel">Cancel</button>
+		</div>
+	</div>
+	<style type="text/css">input{width: calc(100% - 22px);} select{width: 100%;}</style>
+	<script type="text/javascript">
+		$("#yb-create-request-suggestion-item").suggestItemRequest();
+		$("#yb-open-add-suggestion-about").click(function(){
+			if($("#suggestion_item_id").val() == 0){
+				showErrorMessage("error", "Please, Select an Item !!!");
+			} else {
+				$("#yb-add-suggestion-preferences").fadeIn();
+			}
+		});
+		$("#yb-close-add-suggestion-about").click(function(e){
+			e.preventDefault();
+			$("#yb-add-suggestion-preferences").fadeOut();
+		});
+		$("#yb-close-add-suggestion").closePopup();
+	</script>
+</div>

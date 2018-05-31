@@ -1,0 +1,108 @@
+<section class="yb-header-else">
+	<div class="yb-header-else-container">
+		<div class="yb-header-user">
+			<div class="yb-header-image">
+				<% if session_user.image? %>
+					<%= image_tag session_user.image.url %>
+				<% else %>
+					<%= image_tag "/assets/default.jpg" %>
+				<% end %>
+			</div>
+			<h4><%= session_user.username %></h4>
+		</div>
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", session_items_path %></li>
+				<li><%= link_to "Likes", session_likes_path %></li>
+				<li><%= link_to "Followers", session_followers_path %></li>
+				<li><%= link_to "Following", session_following_path %></li>
+				<li class="active"><%= link_to "Item Data", session_borrowed_path %></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-session-main">
+	<div class="yb-session-info-about">
+		<%= render "partials/session" %>
+	</div>
+	<div class="yb-session-container">
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", session_items_path %></li>
+				<li><%= link_to "Likes", session_likes_path %></li>
+				<li><%= link_to "Followers", session_followers_path %></li>
+				<li><%= link_to "Following", session_following_path %></li>
+				<li class="active"><%= link_to "Item Data", session_borrowed_path %></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-borrow-items">
+				<% if @borrowers.count > 0 %>
+					<% @borrowers.each do |borrower| %>
+						<div class="yb-borrow-item-single">
+							<div class="yb-borrow-status">
+								<div class="yb-status" id="yb-show-menu-<%= borrower.id %>" data-id="<%= borrower.id %>" style="background: <%= borrower.check_expiration %>"></div>
+								<div class="yb-borrow-menu yb-menu-list" id="yb-menu-items-<%= borrower.id %>">
+									<ul>
+										<% if borrower.check_expiration == "orange" %>
+											<% if session_user.id == borrower.user.id %>
+												<li><a id="yb-edit-borrow-item-<%= borrower.id %>" href="<%= edit_item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+											<% elsif session_user.id == borrower.item.user.id %>
+												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=2"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+											<% end %>
+										<% elsif borrower.check_expiration == "lightgreen" %>
+											<% if session_user.id == borrower.last_update_user_id %>
+												<li><a id="yb-edit-borrow-item-<%= borrower.id %>" href="<%= edit_item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+											<% else %>
+												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=1"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Accept</span></a></li>
+												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=2"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+												<li><a id="yb-edit-borrow-item-<%= borrower.id %>" href="<%= edit_item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+											<% end %>
+										<% elsif borrower.check_expiration == "green" %>
+											<% if session_user.id == borrower.user.id %>
+												<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+												<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+											<% elsif session_user.id == borrower.item.user.id %>
+												<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+											<% end %>
+										<% elsif borrower.check_expiration == "red" %>
+											<% if session_user.id == borrower.user.id %>
+												<li><a href="<%= destroy_item_borrow_item_user_path(borrower.item, borrower) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+												<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+											<% elsif session_user.id == borrower.item.user.id %>
+												<li><a href="<%= destroy_item_borrow_item_user_path(borrower.item, borrower) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+											<% end %>
+										<% end %>
+									</ul>
+								</div>
+							</div>
+							<div class="yb-image">
+								<% if borrower.user.image? %>
+									<%= image_tag borrower.user.image.url, alt: borrower.user.username %>
+								<% else %>
+									<%= image_tag '/assets/default.jpg', alt: borrower.user.username %>
+								<% end %>
+							</div>
+							<div class="yb-about">
+								<h3 style="margin-top: 10px;"><%= link_to borrower.user.name, item_item_borrow_user_path(borrower.item, borrower) %></h3>
+								<p class="yb-category">Status - <span style="text-transform: capitalize;"><%= borrower.status %></span></p>
+								<p class="yb-item-data">
+									<span class="yb-data">From - <%= borrower.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
+									<span class="yb-data">To - <%= borrower.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
+								</p>
+							</div>
+							<script type="text/javascript">$("#yb-show-menu-<%= borrower.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrower.id %>, #yb-get-report-<%= borrower.id %>").magnificPopup({type: 'ajax'});</script>
+						</div>
+					<% end %>
+				<% else %>
+					<p class="yb-error">NO BORROWING ITEM</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</section>
+

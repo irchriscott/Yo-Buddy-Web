@@ -1,0 +1,45 @@
+<% if @comments.count > 0 %>
+	<ul>
+		<% @comments.each do |comment| %>
+			<li>
+				<div class="yb-comment-img">
+					<% if comment.user.image? %>
+						<%= image_tag comment.user.image.url, title: comment.user.username %>
+					<% else %>
+						<img src="/assets/default.jpg" alt="Profile Image" title="<%= comment.user.username %>" />
+					<% end %>
+				</div>
+				<div class="yb-comment-content">
+					<p class="yb-comment"><span class="comment-user"><a href=""><%= link_to comment.user.name, user_path(comment.user) %></span> - <span class="comment-text"><%= raw comment.comment %></span></p>
+					<p class="yb-date"><span id="comment_date_<%= comment.id %>" data-date="<%= comment.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+				</div>
+				<div class="yb-comment-menu-container">
+					<span class="yb-comment-menu" id="open-comment-menu-<%= comment.id %>" data-id="<%= comment.id %>"><i class="icon ion-chevron-down"></i></span>
+					<div class="yb-comment-menu-list yb-menu-list" id="yb-menu-items-<%= comment.id %>">
+						<ul>
+							<% if is_logged_in? %>
+							<% if session_user.id == comment.user.id %>
+							<li><a href="<%= edit_item_comment_path(comment.item, comment) %>" id="open-edit-comment-<%= comment.id %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+							<li><a href="<%= comment_path(comment, method: :delete)  %>" id="delete-comment-<%= comment.id %>" data-comment="<%= comment.id %>" ><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+							<%= form_for :comment, url: delete_comment_path(comment), html:{id: "delete-comment-form-#{comment.id}", 'data-url': item_comments_path(comment.item), 'data-item': comment.item.id} do |form| %>
+								<%= form.hidden_field :comment_id, value: comment.id %>
+							<% end -%>
+							<% end -%>
+							<% end -%>
+							<li><a href="<%= report_new_path(comment.id) %>?ressource=comment" id="yb-get-report-<%= comment.id %>"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
+						</ul>
+					</div>
+				</div>
+				<script type="text/javascript">
+					$("#comment_date_<%= comment.id %>").setDate(); 
+					$("#open-comment-menu-<%= comment.id %>").showMenu(); 
+					$("#delete-comment-<%= comment.id %>").deleteComment();
+					$("#delete-comment-form-<%= comment.id %>").deleteCommentEvent();
+					$("#open-edit-comment-<%= comment.id %>, #yb-get-report-<%= comment.id %>").magnificPopup({type:'ajax'});
+				</script>
+			</li>
+		<% end -%>
+	</ul>
+<% else -%>
+	<p class="yb-error">NO COMMENT</p>
+<% end -%>

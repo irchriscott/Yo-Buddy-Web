@@ -1,0 +1,65 @@
+<div class="yb-modal-container">
+	<div class="yb-add-item">
+		<h2>Add New Request Suggestion Item</h2>
+		<%= form_for @suggestion, url: item_request_create_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request)} do |form| %>
+			<label>Item Name :</label>
+			<%= form.text_field :name, placeholder: 'Enter Item Name', required: true %>
+			<div class="yb-add-item-category">
+				<label>Item Category & Subcategory :</label>
+				<%= form.select(:category_id, required: true, disabled: true) do -%>
+					<% @categories.each do |category| %>
+						<% if @request.category.id == category.id %>
+						<%= content_tag(:option, category.name, value: category.id, selected: "selected") %>
+						<% end %>
+					<% end %>
+				<% end %>
+
+				<%= form.select(:subcategory_id, required:true, disabled: true) do -%>
+					<% @subcategories.each do |subcategory| %>
+						<% if @request.subcategory.id == subcategory.id %>
+						<%= content_tag(:option, subcategory.name, value: subcategory.id, category: subcategory.category_id, selected: "selected") %>
+						<% end %>
+					<% end %>
+				<% end %>
+			</div>
+			<div class="yb-add-price">
+				<label>Price :</label>
+				<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true %>
+				<%= form.select(:currency, required: true, disabled: true) do -%>
+					<% @currencies.each do |currency| %>
+						<% if @request.currency == currency["currency"] %>
+						<%= content_tag(:option, currency["name"], value: currency["currency"], selected: "selected") %>
+						<% end %>
+					<% end %>
+				<% end %>
+				<%= form.select(:per, required: true, disabled: true) do %>
+					<% @per.each do |t| %>
+						<% if @request.per == t %>
+						<%= content_tag(:option, "Per #{t}", value: t, selected: "selected") %>
+						<% end %>
+					<% end %>
+				<% end %>
+			</div>
+			<label>Quantity :</label>
+			<%= form.number_field :count, required:true, value:"1", min:"1", style:"width:calc(100% - 22px)", placeholder: "Enter Quantity" %>
+			<label>Description :</label>
+			<%= form.text_area :description, id: "yb-item-description", required: true %>
+			<p class="#"><%= form.check_box :is_temp %><span>Make Item Temporary</span></p>
+			<%= form.file_field :image, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
+			<span class="yb-upload-img">Add Item Images</span>
+			<div class="yb-item-images-preview" id="yb-images-preview"></div>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<script type="text/javascript">
+		CKEDITOR.replace( 'yb-item-description' );
+		$("#yb-close-add-item").closePopup();
+		$("#item_image").change(function(e){
+	        multipleImagesPreview(this, "#yb-images-preview");
+	    });
+	    $("#yb-create-request-suggestion-item").suggestItemRequest();
+	</script>
+</div>

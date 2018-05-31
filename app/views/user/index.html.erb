@@ -1,0 +1,40 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container" style="width: 100%;">
+		<h3 style="margin-bottom: 0px;">USERS - ALL</h3>
+		<div class="yb-borrow-items admin-categories">
+			<% @users.each do |user| %>
+				<div class="yb-borrow-item-single yb-user-single-row">
+					<div class="yb-image">
+						<% if user.image? %>
+						<%= image_tag user.image.url, alt: user.username %>
+						<% else %>
+						<%= image_tag "/assets/default.jpg", alt: user.username %>
+						<% end %>
+					</div>
+					<div class="yb-about">
+						<h3><%= link_to user.name, user_path(user) %></h3>
+						<p class="yb-category"><%= user.town %>, <%= user.country_name %></p>
+						<p class="yb-item-data" style="margin-top: -8px;">
+							<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="like-sum-<%= user.id %>" data-number="<%= user.item_like.count %>"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-chatbubble"></i></span><span class="number" id="comment-sum-<%= user.id %>" data-number="<%= user.comment.count %>"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="borrow-sum-<%= user.id %>" data-number="<%= user.borrow_item_user.count %>"></span></span>
+						</p>
+					</div>
+					<% if is_logged_in? %>
+						<div class="yb-single-follow" id="yb-user-follow-container-<%= user.id %>" data-id="<%= user.id %>">
+							<% if user.followers.include?(session_user.id) %>
+								<span><i class="icon ion-person followed"></i></span>
+							<% else %>
+								<span><i class="icon ion-person-add"></i></span>
+							<% end %>
+						</div>
+						<%= form_for :follow, url: user_follow_path(user), html:{id: "yb-user-follow-form-#{user.id}", "data-user": session_user.username, "data-id": user.id} do |form| %>
+							<%= form.hidden_field :following_id, value: user.id %>
+						<% end %>
+						<script type="text/javascript">$("#yb-user-follow-container-<%= user.id %>").followUser(); $("#yb-user-follow-form-<%= user.id %>").followUserEvent(); $("#like-sum-<%= user.id %>").setNumber();$("#comment-sum-<%= user.id %>").setNumber();$("#borrow-sum-<%= user.id %>").setNumber();</script>
+					<% end %>
+				</div>
+			<% end %>
+		</div>
+	</div>
+</section>

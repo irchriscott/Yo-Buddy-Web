@@ -1,0 +1,73 @@
+<section class="yb-header-else">
+	<div class="yb-header-else-container">
+		<div class="yb-header-user">
+			<div class="yb-header-image">
+				<% if session_user.image? %>
+					<%= image_tag session_user.image.url %>
+				<% else %>
+					<img src="/assets/default.jpg"/>
+				<% end %>
+			</div>
+			<h4><%= session_user.username %></h4>
+		</div>
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", session_items_path %></li>
+				<li><%= link_to "Likes", session_likes_path %></li>
+				<li><%= link_to "Followers", session_followers_path %></li>
+				<li><%= link_to "Following", session_following_path %></li>
+				<li class="active"><%= link_to "Item Data", session_borrowed_path %></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-session-main">
+	<div class="yb-session-info-about">
+		<%= render "partials/session" %>
+	</div>
+	<div class="yb-session-container">
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", session_items_path %></li>
+				<li><%= link_to "Likes", session_likes_path %></li>
+				<li><%= link_to "Followers", session_followers_path %></li>
+				<li><%= link_to "Following", session_following_path %></li>
+				<li class="active"><%= link_to "Item Data", session_borrowed_path %></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-borrow-items">
+				<% if @items.length > 0 %>
+					<% @items.each do |item| %>
+						<% if item["count"] > 0 %>
+							<div class="yb-borrow-item-single">
+								<div class="yb-image">
+									<%= image_tag item["item"].item_image[0].image.url, alt: item["item"].name %>
+								</div>
+								<div class="yb-about">
+									<h3><%= link_to item["item"].name, item_item_borrow_user_index_path(item["item"]) %></h3>
+									<p class="yb-category">
+										<a href="<%= category_path(item["item"].category) %>"><%= item["item"].category.name %></a> - 
+										<a href="<%= subcategory_path(item["item"].category, item["item"].subcategory) %>"><%= item["item"].subcategory.name %></a>
+									</p>
+									<p class="yb-item-data">
+										<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="like-sum-<%= item["item"].id %>" data-number="<%= item["item"].item_like.count %>"></span></span>
+										<span class="yb-data"><span><i class="icon ion-ios-chatbubble"></i></span><span class="number" id="comment-sum-<%= item["item"].id %>" data-number="<%= item["item"].comment.count %>"></span></span>
+										<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="borrow-sum-<%= item["item"].id %>" data-number="<%= item["item"].borrow_item_user.count %>"></span></span>
+									</p>
+								</div>
+								<script type="text/javascript">
+									$("#like-sum-<%= item["item"].id %>").setNumber();
+									$("#comment-sum-<%= item["item"].id %>").setNumber();
+									$("#borrow-sum-<%= item["item"].id %>").setNumber();
+								</script>
+							</div>
+						<% end %>
+					<% end %>
+				<% else %>
+					<p class="yb-error">NO BORROWED ITEM</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</section>

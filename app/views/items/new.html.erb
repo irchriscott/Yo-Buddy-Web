@@ -1,0 +1,61 @@
+<div class="yb-modal-container">
+	<div class="yb-add-item">
+		<h2>Add New Item</h2>
+		<%= form_for @item, url: {action: "create"}, html: {id: "yb-create-item"} do |form| %>
+			<label>Item Name :</label>
+			<%= form.text_field :name, placeholder: 'Enter Item Name', required: true %>
+			<div class="yb-add-item-category">
+				<label>Item Category & Subcategory :</label>
+				<%= form.select(:category_id, required: true) do -%>
+					<% @categories.each do |category| %>
+						<%= content_tag(:option, category.name, value: category.id) %>
+					<% end %>
+				<% end %>
+
+				<%= form.select(:subcategory_id, required:true) do -%>
+					<% @subcategories.each do |subcategory| %>
+						<%= content_tag(:option, subcategory.name, value: subcategory.id, category: subcategory.category_id) %>
+					<% end %>
+				<% end %>
+			</div>
+			<div class="yb-add-price">
+				<label>Price :</label>
+				<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true %>
+				<%= form.select(:currency, required: true) do -%>
+					<% @currencies.each do |currency| %>
+						<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select(:per, required: true) do %>
+					<% @per.each do |t| %>
+						<%= content_tag(:option, "Per #{t}", value: t) %>
+					<% end %>
+				<% end %>
+			</div>
+			<label>Quantity :</label>
+			<%= form.number_field :count, required:true, value:"1", min:"1", style:"width:calc(100% - 22px)", placeholder: "Enter Quantity" %>
+			<label>Description :</label>
+			<%= form.text_area :description, id: "yb-item-description", required: true %>
+			<%= form.file_field :image, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
+			<span class="yb-upload-img">Add Item Images</span>
+			<div class="yb-item-images-preview" id="yb-images-preview"></div>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<script type="text/javascript">
+		CKEDITOR.replace( 'yb-item-description' );
+		$("#yb-close-add-item").closePopup();
+		$("#item_image").change(function(e){
+	        multipleImagesPreview(this, "#yb-images-preview");
+	    });
+
+	    filterSubcategories($("#item_category_id"), $("#item_subcategory_id"));
+
+	    $("#item_category_id").change(function(){
+	    	filterSubcategories($(this), $("#item_subcategory_id"));
+	    });
+	</script>
+</div>

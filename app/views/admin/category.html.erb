@@ -1,0 +1,46 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<h2><%= @category.name %></h2>
+		<p><%= @category.description %></p>
+		<div class="yb-borrow-items admin-categories" style="margin-top: -15px;">
+			<% @subcategories.each do |subcategory| %>
+				<div class="yb-borrow-item-single yb-admin-single-row">
+					<div class="yb-image yb-text">
+						<p><%= subcategory.name[0] %> </p>
+					</div>
+					<div class="yb-about">
+						<h3><%= link_to subcategory.name, admin_subcategory_path(subcategory.category, subcategory) %></h3>
+						<p class="yb-category">Category - <span style="text-transform: capitalize;"><%= subcategory.category.name %></span></p>
+						<p class="yb-item-data">
+							<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="admin-follower-sum-<%= subcategory.id %>" data-number="12"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="admin-items-sum-<%= subcategory.id %>" data-number="<%= subcategory.item.count %>"></span></span>
+						</p>
+					</div>
+				</div>
+				<script type="text/javascript">$("#admin-follower-sum-<%= subcategory.id %>").setNumber();$("#admin-items-sum-<%= subcategory.id %>").setNumber();</script>
+			<% end %>
+		</div>
+	</div>
+	<div class="yb-admin-right-side">
+		<h4>Filter Subcategories</h4>
+		<%= form_for :search_subcategory, method: "GET", html: {"data-url": admin_category_path(@category)} do |form| %>
+			<%= form.text_field :search_text, placeholder: "Search Term" %>
+			<div class="yb-order-by">
+				<label>Order By : </label>
+				<%= form.select :order_by do -%>
+					<% @order_by.each do |order| %>
+						<%= content_tag(:option, order["text"], value: order["id"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select :order do -%>
+					<% @order.each do |ord| %>
+						<%= content_tag(:option, ord["text"], value: ord["id"]) %>
+					<% end %>
+				<% end %>
+				<button type="submit">Filter</button>
+				<button type="button" id="admin-add-subcategory" href="<%= admin_new_subcategory_path(@category) %>">Add Subcategory</button>
+			</div>
+			<button style="width: 100%;" id="admin-edit-category" href="<%= admin_edit_category_path(@category) %>">Edit Category</button>
+		<% end %>
+	</div>
+</section>

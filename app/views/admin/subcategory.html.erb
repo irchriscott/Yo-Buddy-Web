@@ -1,0 +1,61 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<h3><%= @category.name %> - <%= @subcategory.name %> : ITEMS</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Category</th>
+					<th>Subcategory</th>
+					<th>Owner</th>
+					<th>Price</th>
+					<th>Posted Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if @items.count > 0 %>
+					<% @items.each do |item| %>
+						<tr>
+							<td><%= item.id %></td>
+							<td><%= image_tag item.item_image[0].image.url, alt: item.name %></td>
+							<td><%= link_to item.name, admin_item_path(item) %></td>
+							<td><%= link_to item.category.name, admin_category_path(item.category) %></td>
+							<td><%= link_to item.subcategory.name, admin_subcategory_path(item.category, item.subcategory) %></td>
+							<td><%= link_to item.user.name, user_path(item.user), target: "_blank" %></td>
+							<td><span id="admin-item-price-<%= item.id %>" data-number="<%= item.price %>"></span> <%= item.currency %> / <%= item.per %></td>
+							<td><span id="admin-item-date-<%= item.id %>" data-date="<%= item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></td>
+						</tr>
+						<script type="text/javascript">$("#admin-item-price-<%= item.id %>").setNumber(); $("#admin-item-date-<%= item.id %>").setDate();</script>
+					<% end %>
+				<% else %>
+					<tr>
+						<td style="padding:20px 0;" colspan="8"><p class="yb-error">NO ITEM POSTED</p></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+	<div class="yb-admin-right-side" style="margin-top: 5px;">
+		<h4>Filter Items</h4>
+		<%= form_for :search_item, method: "GET", html: {"data-url": admin_subcategory_path(@category, @subcategory)} do |form| %>
+			<%= form.text_field :search_text, placeholder: "Search Term" %>
+			<div class="yb-order-by">
+				<label>Order By : </label>
+				<%= form.select :order_by do -%>
+					<% @order_by.each do |order| %>
+						<%= content_tag(:option, order["text"], value: order["id"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select :order do -%>
+					<% @order.each do |ord| %>
+						<%= content_tag(:option, ord["text"], value: ord["id"]) %>
+					<% end %>
+				<% end %>
+				<button type="submit">Filter</button>
+				<button type="button" id="admin-add-item" href="#">Add Item</button>
+			</div>
+		<% end %>
+	</div>
+</section>

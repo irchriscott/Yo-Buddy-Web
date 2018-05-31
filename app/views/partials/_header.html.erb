@@ -1,0 +1,49 @@
+<script type="text/javascript">
+	<% flash.each do |key, value| %>
+		if("<%= key %>" == "notice" || "<%= key %>" == "success"){
+			showSuccessMessage("<%= key %>","<%= value %>");
+		} else if("<%= key %>" == "info"){
+			showInfoMessage("<%= key %>", "<%= value %>");
+		} else {
+			showErrorMessage("<%= key %>","<%= value %>");
+		}
+	<% end -%>
+</script>
+<% if is_logged_in? %><%= hidden_field_tag(:session_user_id, session_user.id) %><% end -%>
+<section class="yb-header">
+	<div class="yb-header-container">
+		<h2><a href="/">Yo Buddy !</a></h2>
+		<div class="yb-header-right">
+			<div class="yb-header-sign-in">
+				<p><%= link_to "USERS", users_path %></p>
+			</div>
+			<div class="yb-header-sign-in">
+				<p><%= link_to "CATEGORIES", category_index_path %></p>
+			</div>
+			<div class="yb-header-sign-in">
+				<p><%= link_to "ITEMS", items_path %></p>
+			</div>
+			<div class="yb-header-sign-in">
+				<p><%= link_to "REQUESTS", item_requests_path %></p>
+			</div>
+			<% if is_logged_in? %>
+				<div class="yb-header-signed-in">
+					<a href="/session/items">
+						<% if session_user.image? %>
+							<%= image_tag session_user.image.url, title: session_user.username %>
+						<% else %>
+							<img src="/assets/default.jpg" alt="Profile Image" title="<%= session_user.username %>" />
+						<% end %>
+					</a>
+				</div>
+			<% else %>
+				<div class="yb-header-sign-in">
+					<p><a href="/user/new">SIGN IN</a></p>
+				</div>
+			<% end %>
+			<div class="yb-header-menu">
+				<span><i class="icon ion-android-menu"></i></span>
+			</div>
+		</div>
+	</div>
+</section>

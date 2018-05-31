@@ -1,0 +1,38 @@
+<script type="text/javascript">
+	<% flash.each do |key, value| %>
+		if("<%= key %>" == "notice" || "<%= key %>" == "success"){
+			showSuccessMessage("<%= key %>","<%= value %>");
+		} else {
+			showErrorMessage("<%= key %>","<%= value %>");
+		}
+	<% end -%>
+</script>
+<section class="yb-header">
+	<div class="yb-header-container">
+		<h2><a href="<%= admin_home_path %>">Admin - Yo Buddy !</a></h2>
+		<div class="yb-header-right">
+			<% if is_admin_logged_in? %>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "ADMINS", admin_admins_path %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "CATEGORIES", admin_categories_path %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "ITEMS", admin_items_path %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "BORROWS", admin_borrows_all_path %></p>
+				</div>
+				<div class="yb-header-signed-in">
+					<a href="#">
+						<%= image_tag session_admin.image.url, alt: session_admin.username %>
+					</a>
+				</div>
+			<% end %>
+			<div class="yb-header-menu">
+				<span><i class="icon ion-android-menu"></i></span>
+			</div>
+		</div>
+	</div>
+</section>

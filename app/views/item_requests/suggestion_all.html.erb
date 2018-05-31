@@ -1,0 +1,52 @@
+<div class="yb-item-request-suggestions">
+	<% if @suggestions.count > 0 %>
+		<% @suggestions.each do |suggestion| %>
+			<div class="yb-request-suggestion">
+				<div class="yb-container">
+					<% if is_logged_in? %>
+						<div class="yb-suggestion-menu">
+							<span id="yb-open-suggestion-menu-<%= suggestion.id %>" data-id="<%= suggestion.id %>"><i class="icon ion-android-more-horizontal"></i></span>
+							<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-<%= suggestion.id %>">
+								<ul id="yb-suggestion-status-menu-<%= suggestion.id %>" data-id="<%= suggestion.id %>" data-url="<%= item_request_suggestions_path(@request) %>" data-owner="<%= suggestion.item.user.id %>" data-user="<%= suggestion.item_request.user.username %>">
+									<% if session_user.id == @request.user.id -%>
+									<% if suggestion.status == @sug_status[0] -%>
+									<li><a href="<%= item_request_suggestion_update_status_path(suggestion.item_request, suggestion) %>?status=1" class="yb-suggestion-status" data-status="1"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Accept</span></a></li>
+									<li><a href="<%= item_request_suggestion_update_status_path(suggestion.item_request, suggestion) %>?status=2" class="yb-suggestion-status" data-status="2"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+									<li><a href="<%= item_request_suggestion_update_status_path(suggestion.item_request, suggestion) %>?status=3" class="yb-suggestion-status" data-status="3"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Remove</span></a></li>
+									<% elsif suggestion.status == @sug_status[2] -%>
+									<li><a href="<%= item_request_suggestion_update_status_path(suggestion.item_request, suggestion) %>?status=3" class="yb-suggestion-status" data-status="3"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Remove</span></a></li>
+									<% end -%>
+									<% elsif session_user.id == suggestion.item.user.id -%>
+									<% if suggestion.status != @sug_status[1] -%>
+									<li><a href="<%= item_request_suggestion_edit_path(suggestion.item_request, suggestion) %>" id="yb-request-suggestion-update-<%= suggestion.id %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+									<li><a href="#" id="#"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+									<% end -%>
+									<% end -%>
+									<li><a href="<%= report_new_path(suggestion.id) %>?ressource=suggestion" id="yb-get-report-<%= suggestion.id %>"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
+								</ul>
+							</div>
+						</div>
+					<% end -%>
+					<div class="yb-image">
+						<%= image_tag suggestion.item.item_image[0].image.url, alt: suggestion.item.name, id:"yb-suggestion-image-#{suggestion.id}" %>
+					</div>
+					<div class="yb-request-about">
+						<h3><%= link_to suggestion.item.name, item_path(suggestion.item) %></h3>
+						<p><%= link_to suggestion.item.category.name, category_path(suggestion.item.category), target: "_blank" %> - <%= link_to suggestion.item.subcategory.name, subcategory_path(suggestion.item.category, suggestion.item.subcategory), target: "_blank" %></p>
+						<p class="yb-price"><span id="yb-suggestion-price-<%= suggestion.id %>" data-number="<%= suggestion.price %>"></span> <%= suggestion.currency %> / <%= suggestion.per %></p>
+						<ul class="yb-suggestion-images" id="yb-suggestion-images-<%= suggestion.id %>" data-id="<%= suggestion.id %>">
+							<% suggestion.item.item_image.each do |image| %>
+								<li <% if suggestion.item.item_image[0] == image %> class="active" <% end %> data-image="<%= image.image.url %>"><%= image_tag image.image.url, alt: suggestion.item.name %></li>
+							<% end %>
+						</ul>
+						<p class="yb-user">by <%= link_to suggestion.item.user.name, user_path(suggestion.item.user), target: "_blank" %> - <span id="suggestion-date-<%= suggestion.id %>" data-date="<%= suggestion.item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+						<span class="yb-suggestion-status" title="Status : <%= suggestion.status.upcase %>"><i class="icon ion-record" style="color: <%= suggestion.check_status %>"></i></span>
+					</div>
+				</div>
+				<script type="text/javascript">$("#yb-suggestion-price-<%= suggestion.id %>").setNumber(); $("#yb-suggestion-images-<%= suggestion.id %>").activeImageSuggestion();$("#yb-open-suggestion-menu-<%= suggestion.id %>").showMenu(); $("#suggestion-date-<%= suggestion.id %>").setDate();$("#yb-request-suggestion-update-<%= suggestion.id %>, #yb-get-report-<%= suggestion.id %>").magnificPopup({type: 'ajax'}); $("#yb-suggestion-status-menu-<%= suggestion.id %>").updateRequestSuggestionStatus();</script>
+			</div>
+		<% end %>
+	<% else %>
+		<p class="yb-error">NO SUGGESTIONS FOR THIS REQUEST</p>
+	<% end %>
+</div>

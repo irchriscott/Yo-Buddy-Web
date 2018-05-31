@@ -1,0 +1,25 @@
+<div class="yb-modal-container" style="width:30%;">
+	<div class="yb-add-item">
+		<h2>Add Subcategory</h2>
+		<%= form_for :subcategory, url: admin_create_subcategory_path(@category) do |form| %>
+			<label>Subcategory Name : </label>
+			<%= form.text_field :name, required: true, placeholder: "Enter Category Name" %>
+			<label>Category : </label>
+			<%= form.select(:category_id, value: @category.id) do %>
+				<% @categories.each do |category| %>
+					<% if category.id == @category.id %>
+						<%= content_tag(:option, category.name, value: category.id, selected: "selected") %>
+					<% else %>
+						<%= content_tag(:option, category.name, value: category.id) %>
+					<% end %>
+				<% end %>
+			<% end %>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-category" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<style type="text/css">.yb-add-item form select{width: 100% !important}</style>
+	<script type="text/javascript">$("#yb-close-add-category").closePopup();</script>
+</div>

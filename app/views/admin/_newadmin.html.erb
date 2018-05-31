@@ -1,0 +1,30 @@
+<div class="yb-modal-container" style="width:30%;">
+	<div class="yb-add-item">
+		<h2>Add New Admin</h2>
+		<%= form_for @new_admin, url: admin_create_admin_path do |form| %>
+			<label>Name : </label>
+			<%= form.text_field :name, placeholder: "Enter Name", required: true %>
+			<label>Username : </label>
+			<%= form.text_field :username, placeholder: "Enter Username", required: true %>
+			<label>Email : </label>
+			<%= form.email_field :email, placeholder: "Enter Email", required: true %>
+			<label>Password : </label>
+			<%= form.text_field :password, placeholder: "Enter Password", required: true %>
+			<label>Privileges : </label>
+			<%= form.select :privileges do %>
+				<% @privileges.each do |privilege| %>
+					<%= content_tag :option, privilege, value: privilege %>
+				<% end %>
+			<% end %>
+			<%= form.file_field :image, required: true, accept: "image/jpeg, image/png, image/jpg" %>
+			<span class="yb-upload-img">Admin Image</span>
+			<div class="yb-item-images-preview" id="yb-images-preview"></div>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-admin" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<script type="text/javascript">$("#admin_password").val(randomString(8))</script>
+	<style type="text/css">.yb-add-item form select{width: 100% !important; text-transform: capitalize;}.yb-add-item form select option{text-transform: capitalize;}.yb-add-item form input[type=email]{width: calc(100% - 22px); } .yb-add-item form input[type=file]{position: absolute; display: block;}</style>
+</div>

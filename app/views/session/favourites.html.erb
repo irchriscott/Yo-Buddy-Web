@@ -1,0 +1,69 @@
+<section class="yb-header-else">
+	<div class="yb-header-else-container">
+		<div class="yb-header-user">
+			<div class="yb-header-image">
+				<% if session_user.image? %>
+					<%= image_tag session_user.image.url %>
+				<% else %>
+					<img src="/assets/default.jpg"/>
+				<% end %>
+			</div>
+			<h4><%= session_user.username %></h4>
+		</div>
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", session_items_path %></li>
+				<li><%= link_to "Likes", session_likes_path %></li>
+				<li><%= link_to "Followers", session_followers_path %></li>
+				<li><%= link_to "Following", session_following_path %></li>
+				<li class="active"><%= link_to "Item Data", session_borrowed_path %></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-session-main">
+	<div class="yb-session-info-about">
+		<%= render "partials/session" %>
+	</div>
+	<div class="yb-session-container">
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", session_items_path %></li>
+				<li><%= link_to "Likes", session_likes_path %></li>
+				<li><%= link_to "Followers", session_followers_path %></li>
+				<li><%= link_to "Following", session_following_path %></li>
+				<li class="active"><%= link_to "Item Data", session_borrowed_path %></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-borrow-items">
+				<% if @favourites.count > 0 %>
+					<% @favourites.each do |item| %>
+						<div class="yb-borrow-item-single" id="item-favourite-<%= item.id %>">
+							<div class="yb-borrow-status">
+								<div class="yb-status" data-url="<%= favourite_destroy_path(item.item, item) %>" data-id="<%= item.id %>" id="yb-favourite-remove-<%= item.id %>" style="background: red"></div>
+							</div>
+							<div class="yb-image">
+								<%= image_tag item.item.item_image[0].image.url, alt: item.item.name %>
+							</div>
+							<div class="yb-about">
+								<h3><%= link_to item.item.name, item_path(item.item) %></h3>
+								<p class="yb-category">
+									<a href="<%= category_path(item.item.category) %>"><%= item.item.category.name %></a> - 
+									<a href="<%= subcategory_path(item.item.category, item.item.subcategory) %>"><%= item.item.subcategory.name %></a>
+								</p>
+								<p class="yb-item-data" style="margin-top: -8px;">
+									<span>by <%= link_to item.item.user.name, user_path(item.item.user) %></span> - 
+									<span id="fav-item-date-<%= item.id %>" data-date="<%= item.item.created_at.strftime("%Y-%m-%d %H:%M:%S") %>"></span>
+								</p>
+							</div>
+							<script type="text/javascript">$("#fav-item-date-<%= item.id %>").setDate();$("#yb-favourite-remove-<%= item.id %>").removeFavourite();</script>
+						</div>
+					<% end %>
+				<% else %>
+					<p class="yb-error">NO FAVOURITE ITEMS</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</section>

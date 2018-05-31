@@ -1,0 +1,33 @@
+<section class="yb-sign-in-up-container" id="yb-user-sign">
+	<div class="yb-sign-in-up">
+		<div class="yb-sign-menu">
+			<ul>
+				<li class="active"><a href="#yb-sign-in">Sign In</a></li>
+				<li><a href="#yb-sign-up">Sign Up</a></li>
+			</ul>
+		</div>
+		<div class="yb-sign-content">
+			<div class="yb-sign-form active" id="yb-sign-in">
+				<%= form_for(:user, url: user_signup_path) do |f| %>
+					<%= f.email_field :email, placeholder: 'Enter Email', id: 'user_login_email', required: true, autocomplete: 'off' %>
+					<%= f.password_field :password, placeholder: 'Enter Password', id: 'user_login_password', required: true, autocomplete: 'off' %>
+					<p><%= f.check_box :remember, checked: true %> Remember Me</p>
+					<button type="submit">Sign In</button>
+				<% end -%>
+			</div>
+			<div class="yb-sign-form" id="yb-sign-up">
+				<%= form_for :user, url: {action: "create"}, html: {id: "yb-user-registration"} do |form| %>
+					<%= form.text_field :name, placeholder: "Enter Full Name", required: true, autocomplete: "off" %>
+					<%= form.text_field :username, placeholder: "Enter Username", required:true, autocomplete: "off" %>
+					<%= form.email_field :email, placeholder: "Enter Email", required: true, autocomplete: "off" %>
+					<%= form.country_select :country %>
+					<%= form.text_field :town, placeholder: "Enter Town", required: true, autocomplete: 'off' %>
+					<%= form.password_field :password, placeholder: "Enter Password", required: true %>
+					<p><%= form.check_box :is_private %> Private Account</p>
+					<button type="submit" id="yb-user-registration-submit">SUBMIT</button>
+				<% end -%>
+			</div>
+		</div>
+	</div>
+</section>
+<script type="text/javascript">getUserCurrentLocation("user_town", "user_country", "", "s")</script>

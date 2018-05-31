@@ -1,0 +1,17 @@
+<div class="yb-modal-container" style="width:45%;">
+	<div class="yb-add-item">
+		<div class="yb-act-content yb-description" id="yb-borrow-act-content">
+			<%= raw @act %>
+		</div>
+		<div style="display: block; position: relative;">
+			<button type="submit" id="yb-print-borrow-act">Print</button>
+			<button type="button" id="yb-close-see-act" class="yb-btn-cancel">Close</button>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$("#yb-close-see-act").closePopup();
+		$("#yb-print-borrow-act").click(function(){
+			printDocument("yb-borrow-act-content");
+		});
+	</script>
+</div>

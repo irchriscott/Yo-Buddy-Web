@@ -1,0 +1,52 @@
+<div class="yb-session-info">
+	<div class="yb-session-image">
+		<% if @user.image? %>
+			<%= image_tag @user.image.url %>
+		<% else %>
+			<img src="/assets/default.jpg"/>
+		<% end %>
+	</div>
+	<div class="yb-session-about">
+		<h2><%= @user.name %></h2>
+		<h3 class="yb-username"><%= @user.username %></h3>
+		<div class="yb-session-address">
+			<p><i class="icon ion-ios-email-outline"></i><%= @user.email %></p>
+			<p><i class="icon ion-ios-telephone-outline"></i>
+				<% if @user.number? %>
+					<%= session_user.number %>
+				<% else %>
+					No Number
+				<% end %>
+			</p>
+			<p><i class="icon ion-ios-location-outline"></i><%= @user.town %>, <%= @user.country_name %></p>
+		</div>
+		<% if is_logged_in? %>
+			<div class="yb-single-follow" id="yb-user-follow-container-user" data-id="user">
+				<% if @user.followers.include?(session_user.id) %>
+					<a class="yb-edit-user-link" style="background: lightgreen;"><span><i class="icon ion-checkmark" style="color: #FFF;"></i></span> Follow</a>
+				<% else %>
+					<a class="yb-edit-user-link" style="background: var(--gray);"><span><i class="icon ion-person-add" style="color: #FFF;"></i></span> Follow</a>
+				<% end %>
+			</div>
+			<%= form_for :follow, url: user_follow_path(@user), html:{id: "yb-user-follow-form-user", "data-user": session_user.username, "data-id": @user.id} do |form| %>
+				<%= form.hidden_field :following_id, value: @user.id %>
+			<% end %>
+		<% end %>
+		<div class="yb-item-data-menu">
+			<ul id="yb-user-else-menu" data-id="<%= @activate %>">
+				<li data-id="borrowed">
+					<a href="<%= user_borrows_path(@user) %>">Borrowed</a>
+					<span><%= @borrowed_count %></span>
+				</li>
+				<li data-id="borrowing">
+					<a href="<%= user_borrowing_path(@user) %>">Borrowing</a>
+					<span><%= @borrowing_count %></span>
+				</li>
+				<li data-id="requests">
+					<a href="<%= user_requests_path(@user) %>">Requests</a>
+					<span><%= @requests_count %></span>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

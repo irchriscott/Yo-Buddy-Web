@@ -1,0 +1,61 @@
+<div class="yb-session-info">
+	<div class="yb-session-image">
+		<% if session_user.image? %>
+			<%= image_tag session_user.image.url %>
+		<% else %>
+			<img src="/assets/default.jpg"/>
+		<% end %>
+	</div>
+	<div class="yb-session-about">
+		<h2><%= session_user.name %></h2>
+		<h3 class="yb-username"><%= session_user.username %></h3>
+
+		<div class="yb-session-address">
+			<p><i class="icon ion-ios-email-outline"></i><%= session_user.email %></p>
+			<p><i class="icon ion-ios-telephone-outline"></i>
+				<% if session_user.number? %>
+					<%= session_user.number %>
+				<% else %>
+					<a href="<%= session_edit_path %>">Add Phone Number</a>
+				<% end %>
+			</p>
+			<p><i class="icon ion-ios-location-outline"></i><%= session_user.town %>, <%= session_user.country_name %></p>
+		</div>
+		<a class="yb-edit-user-link" href="<%= session_edit_path %>">Edit Profile</a>
+		<div class="yb-item-data-menu">
+			<ul id="yb-user-else-menu" data-id="<%= @activate %>">
+				<li data-id="borrowed">
+					<a href="<%=  session_borrowed_path %>">Borrowed</a>
+					<span><%= @borrowed_count %></span>
+				</li>
+				<li data-id="borrowing">
+					<a href="<%= session_borrowing_path %>">Borrowing</a>
+					<span><%= @borrowing_count %></span>
+				</li>
+				<li data-id="favourites">
+					<a href="<%= session_favourites_path %>">Favourites</a>
+					<span><%= @favourites_count %></span>
+				</li>
+				<li data-id="requests">
+					<a href="<%= session_requests_path %>">Requests</a>
+					<span><%= @requests_count %></span>
+				</li>
+			</ul>
+		</div>
+		<div class="yb-session-about-edit">
+			<a href="<%= session_logout_path %>" id="yb-session-logout">Log Out</a>
+			<a href="#" id="yb-session-delete">Delete Account</a>
+		</div>
+	</div>
+</div>
+<div class="yb-session-add-item">
+	<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-add-menu">
+		<ul>
+			<li><a href="<%= new_item_path %>" id="yb-add-item-new"><span class="item-icon"><i class="icon ion-ios-cart"></i></span><span class="item-text">Item</span></a></li>
+			<li><a href="<%= new_item_request_path %>" id="yb-add-item-request-new"><span class="item-icon"><i class="icon ion-forward"></i></span><span class="item-text">Request</span></a></li>
+		</ul>
+	</div>
+	<button id="yb-open-session-add-menu" data-id="add-menu">
+		<i class="icon ion-android-add"></i>
+	</button>
+</div>

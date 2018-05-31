@@ -1,0 +1,26 @@
+<div class="yb-modal-container" style="width:30%;">
+	<div class="yb-add-item">
+		<h2>Add Message</h2>
+		<%= form_for @message, url: admin_create_message_path(@item, @borrow) do |form| %>
+			<label>Status : </label>
+			<%= form.select(:status) do %>
+				<% @borrow_admin_status.each do |status| %>
+					<%= content_tag(:option, status, value: status) %>
+				<% end %>
+			<% end %>
+			<label>Item State : </label>
+			<%= form.select(:state) do %>
+				<% @item_states.each do |state| %>
+					<%= content_tag :option, state, value: state %>
+				<% end %>
+			<% end %>
+			<label>Comment : </label>
+			<%= form.text_area :comment, required:true, placeholder: "Enter Comment" %>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-message" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<style type="text/css">.yb-add-item form select{width: 100% !important; text-transform: capitalize;}.yb-add-item form select option{text-transform: capitalize;}.yb-add-item form textarea{height: 120px;}</style>
+</div>

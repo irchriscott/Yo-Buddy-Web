@@ -1,0 +1,35 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container" style="width: 100%;">
+		<h3 style="margin-bottom: 0px;">CATEGORIES - ALL</h3>
+		<div class="yb-borrow-items admin-categories">
+			<% @categories.each do |category| %>
+				<div class="yb-borrow-item-single yb-user-single-row">
+					<div class="yb-image yb-text">
+						<p><%= category.name[0] %> </p>
+					</div>
+					<div class="yb-about">
+						<h3><%= link_to category.name, "#{category_path(category)}?activate=#{category.id}" %></h3>
+						<p class="yb-category">Subcategories - <span style="text-transform: capitalize;"><%= category.subcategory.count %></span></p>
+						<p class="yb-item-data">
+							<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="admin-follower-sum-<%= category.id %>" data-number="<%= category.usercategory.count %>"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="admin-items-sum-<%= category.id %>" data-number="<%= category.item.count %>"></span></span>
+						</p>
+					</div>
+					<% if is_logged_in? %>
+						<div class="yb-single-follow" id="yb-user-follow-category-container-<%= category.id %>" data-id="<%= category.id %>">
+							<% if category.followers.include?(session_user.id) %>
+								<span><i class="icon ion-ios-heart followed"></i></span>
+							<% else %>
+								<span><i class="icon ion-ios-heart-outline"></i></span>
+							<% end %>
+						</div>
+						<%= form_for :follow, url: category_follow_path(category), html:{id: "yb-user-follow-category-form-#{category.id}", "data-id": category.id} do |form| %>
+							<%= form.hidden_field :category_id, value: category.id %>
+						<% end %>
+					<% end %>
+				</div>
+				<script type="text/javascript">$("#admin-follower-sum-<%= category.id %>").setNumber();$("#admin-items-sum-<%= category.id %>").setNumber();$("#yb-user-follow-category-container-<%= category.id %>").followCategory(); $("#yb-user-follow-category-form-<%= category.id %>").followCategoryEvent();</script>
+			<% end %>
+		</div>
+	</div>
+</section>

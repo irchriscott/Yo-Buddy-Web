@@ -1,0 +1,16 @@
+<div class="yb-modal-container">
+	<div class="yb-add-item">
+		<h2>Edit Comment</h2>
+		<%= form_for :comment, url: comment_path(@comment), method: :patch, html: {id: "yb-edit-comment", 'data-item': @comment.item.id, 'data-url': item_comments_path(@comment.item), 'data-from': "edit"} do |form| %>
+			<%= form.text_area :comment, required: true %>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-edit-comment" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end-%>
+	</div>
+	<script type="text/javascript">
+		$("#yb-edit-comment").postItemComment();
+		$("#yb-close-edit-comment").closePopup();
+	</script>
+</div>

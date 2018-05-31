@@ -1,0 +1,19 @@
+<section class="yb-sign-in-up-container" id="yb-user-sign">
+	<div class="yb-sign-in-up" style="margin-top: 240px;">
+		<div class="yb-sign-menu">
+			<ul>
+				<li class="active"><a href="#yb-sign-in">Sign In</a></li>
+			</ul>
+		</div>
+		<div class="yb-sign-content">
+			<div class="yb-sign-form active" id="yb-sign-in">
+				<%= form_for :admin, url: admin_signup_path do |f| %>
+					<%= f.text_field :admin, placeholder: 'Enter Email or Username', required: true, autocomplete: 'off' %>
+					<%= f.password_field :password, placeholder: 'Enter Password', required: true, autocomplete: 'off' %>
+					<p><%= f.check_box :remember, checked: true %> Remember Me</p>
+					<button type="submit">Sign In</button>
+				<% end -%>
+			</div>
+		</div>
+	</div>
+</section>

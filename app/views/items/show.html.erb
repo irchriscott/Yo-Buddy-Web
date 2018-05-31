@@ -1,0 +1,127 @@
+<section class="yb-single-item">
+	<div class="yb-single-item-main">
+		<div class="yb-single-image">
+			<%= image_tag @item.item_image[0].image.url, alt: @item.name, id: "item_image_main"%>
+		</div>
+		<div class="yb-single-images">
+			<ul>
+				<% @item.item_image.each do |image| %>
+					<li <% if @item.item_image[0] == image %>class="activated"<% end %>>
+						<a href="<%= image.image.url %>">
+							<%= image_tag image.image.url, alt: @item.name %>
+						</a>
+					</li>
+				<% end -%>
+			</ul>
+		</div>
+		<div class="yb-single-info">
+			<div class="yb-single-user-img">
+				<% if @item.user.image? %>
+		            <%= image_tag @item.user.image.url, alt: @item.user.username %>
+		        <% else %>
+		            <%= image_tag "/assets/default.jpg", alt: @item.user.username %>
+		        <% end %>
+			</div>
+			<div class="yb-single-info-item">
+				<h3><%= @item.name %></h3>
+				<p class="yb-single-category"><%= link_to @item.category.name, category_path(@item.category) %> - <%= link_to @item.subcategory.name, subcategory_path(@item.category, @item.subcategory) %></p>
+				<p class="yb-single-user-date">by <%= link_to @item.user.name, user_path(@item.user) %> - <span id="item_date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+				<% if is_logged_in? %>
+					<div class="yb-single-follow" id="yb-user-follow-container-<%= @item.user.id %>" data-id="<%= @item.user.id %>">
+						<% if @item.user.followers.include?(session_user.id) %>
+							<span><i class="icon ion-person followed"></i></span>
+						<% else %>
+							<span><i class="icon ion-person-add"></i></span>
+						<% end %>
+					</div>
+					<%= form_for :follow, url: user_follow_path(@item.user), html:{id: "yb-user-follow-form-#{@item.user.id}", "data-user": session_user.username, "data-id": @item.user.id} do |form| %>
+						<%= form.hidden_field :following_id, value: @item.user.id %>
+					<% end %>
+					<script type="text/javascript">$("#yb-user-follow-container-<%= @item.user.id %>").followUser(); $("#yb-user-follow-form-<%= @item.user.id %>").followUserEvent();</script>
+				<% end %>
+			</div>
+		</div>
+		<div class="yb-single-price">
+			<span><i class="icon ion-ios-pricetags"></i></span>
+			<span id="item_price" data-number="<%= @item.price %>"></span>
+			<span><%= @item.currency %></span> / <span><%= @item.per %></span>
+		</div>
+		<div class="yb-single-quantity">
+			<p><span><strong>Quantity : </strong><%= @item.count %> Items</span> - <span><strong>Available Now : </strong><%= @item.available %> Items</span></p>
+		</div>
+		<div class="yb-single-description">
+			<%= raw @item.description %>
+		</div>
+		<div class="yb-single-item-data">
+			<ul class="yb-item-data-list">
+				<li>
+					<% if is_logged_in? %>
+						<%= form_for(:like, url: like_path(@item), html:{id: "like_form_#{@item.id}", class: "like-form", item: @item.id, "data-liker": session_user.username, "data-owner": @item.user.id}) do |form| %>
+		                    <%= form.hidden_field(:item_id, value: @item.id, id:"item_item_id_#{@item.id}") %>
+							<p class="like-item" data-item="<%= @item.id %>">
+								<% if @item.likes.include?(session_user.id) %>
+									<span class="like-<%= @item.id %>"><i class="icon ion-ios-heart liked"></i></span>
+								<% else %>
+									<span class="like-<%= @item.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+								<% end %>
+								<span class="number like-sum-<%= @item.id %>" id="number_likes" data-number="<%= @item.item_like.count %>"></span>
+							</p>
+						<% end -%>
+						<%= form_for(:favourite, url: favourite_path(@item), html:{id: "yb-favourite-item-form"}) do |form| %>
+							<%= form.hidden_field :item_id, value: @item.id %>
+						<% end %>
+					<% else %>
+						<p>
+							<span class="like-<%= @item.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+							<span class="number like-sum-<%= @item.id %>" id="number_likes" data-number="<%= @item.item_like.count %>"></span>
+						</p>
+					<% end -%>
+				</li>
+				<li>
+					<p><span><i class="icon ion-ios-chatbubble"></i></span><span class="number comment-sum-<%= @item.id %>" id="number_comments" data-number="<%= @item.comment.count %>"></span></p>
+				</li>
+				<li>
+					<p><span><i class="icon ion-ios-cart"></i></span><span class="number" data-number="<%= @item.borrow_item_user.count %>" id="number_borrow"></span></p>
+				</li>
+				<span id="yb-favourite-item-container">
+				<% @item.item_favourite.each do |favourite| %>
+					<% if favourite.user.id == session_user.id %>
+						<li>
+							<p id="yb-favourite-item-else"><span><i class="icon ion-ios-star" style="color: var(--primaryColor);"></i></span></p>
+						</li>
+					<% end %>
+				<% end %>
+				</span>
+			</ul>
+			<div class="yb-item-menu-container">
+				<span class="yb-item-menu" id="yb-item-menu-item" data-id="menu-item"><i class="icon ion-chevron-down"></i></span>
+				<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-menu-item">
+					<ul>
+						<% if is_logged_in? %>
+						<% if session_user.id == @item.user.id %>
+						<li><a href="<%= edit_item_path(@item) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+						<li><a href="#"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+						<% end -%>
+						<% end -%>
+						<li><a href="<%= item_available_path(@item) %>" id="yb-item-check-available"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Available</span></a></li>
+						<li><a href="<%= new_item_item_borrow_user_path(@item) %>" id="yb-new-item-borrow-user-path"><span class="item-icon"><i class="icon ion-plus"></i></span><span class="item-text">Borrow</span></a></li>
+						<li><a id="yb-favourite-item"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourite</span></a></li>
+						<li><a href="<%= report_new_path(@item.id) %>?ressource=item" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="yb-item-comments">
+			<% if is_logged_in? %>
+				<%= render "comments/form" %>
+			<% end -%>
+			<div class="yb-item-comments-list" data-item="<%= @item.id %>" data-url="<%= item_comments_path(@item) %>" id="yb-item-comments">
+				<span class="yb-loading-spinner"><img src="/assets/loading.gif" /></span>
+			</div>
+			<script type="text/javascript">$(document).ready(function(){setLoadData("yb-item-comments", "<%= item_comments_path(@item) %>")})</script>
+		</div>
+	</div>
+	<div class="yb-items-similar">
+		
+	</div>
+</section>

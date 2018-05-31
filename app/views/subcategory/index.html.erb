@@ -1,0 +1,23 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container" style="width: 100%;">
+		<h3 style="margin-bottom: 0px;">SUBCATEGORIES - ALL</h3>
+		<div class="yb-borrow-items admin-categories">
+			<% @subcategories.each do |subcategory| %>
+				<div class="yb-borrow-item-single yb-user-single-row">
+					<div class="yb-image yb-text">
+						<p><%= subcategory.name[0] %> </p>
+					</div>
+					<div class="yb-about">
+						<h3><%= link_to subcategory.name, subcategory_path(subcategory.category, subcategory) %></h3>
+						<p class="yb-category"><%= link_to subcategory.category.name, "#{category_path(subcategory.category)}?activate=#{subcategory.category.id}" %></p>
+						<p class="yb-item-data">
+							<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="admin-follower-sum-<%= subcategory.id %>" data-number="0"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="admin-items-sum-<%= subcategory.id %>" data-number="<%= subcategory.item.count %>"></span></span>
+						</p>
+					</div>
+				</div>
+				<script type="text/javascript">$("#admin-follower-sum-<%= subcategory.id %>").setNumber();$("#admin-items-sum-<%= subcategory.id %>").setNumber();</script>
+			<% end %>
+		</div>
+	</div>
+</section>

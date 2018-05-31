@@ -1,0 +1,89 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container" style="width: 100%;">
+		<div class="yb-admin-item">
+			<div class="yb-admin-images">
+				<div class="yb-image">
+					<%= image_tag @item.item_image[0].image.url, alt: @item.name %>
+				</div>
+				<div class="yb-images-others">
+					<ul>
+						<% @item.item_image.each do |image| %>
+							<li>
+								<a href="<%= image.image.url %>">
+									<%= image_tag image.image.url, alt: @item.name %>
+								</a>
+							</li>
+						<% end -%>
+					</ul>
+				</div>
+			</div>
+			<div class="yb-admin-item-about">
+				<div class="yb-image">
+					<% if @item.user.image? %>
+						<%= image_tag @item.user.image.url, alt: @item.user.username %>
+					<% else %>
+						<%= image_tag '/assets/default.jpg', alt: @item.user.username %>
+					<% end %>
+				</div>
+				<div class="yb-admin-item-about-info">
+					<h3><%= link_to @item.name, item_path(@item), target: "_blank" %></h3>
+					<p class="yb-item-name"><%= link_to @item.category.name, admin_category_path() %> - <%= link_to @item.subcategory.name, admin_subcategory_path(@item.category, @item.subcategory) %></p>
+					<p class="yb-item-date">by <%= link_to @item.user.name, user_path(@item.user), target: "_blank" %> - <span id="admin-item-date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+				</div>
+			</div>
+			<div class="yb-admin-item-price">
+				<span id="admin-item-price" data-number="<%= @item.price %>"></span>
+				<%= @item.currency %> / <%= @item.per %>
+			</div>
+			<div class="yb-admin-item-description yb-description">
+				<%= raw @item.description %>
+			</div>
+			<div class="yb-admin-item-data">
+				<ul>
+					<li><%= link_to "LIKES", "#" %> - <%= @item.item_like.count %></li>
+					<li><%= link_to "COMMENTS", "#" %> - <%= @item.comment.count %></li>
+					<li><%= link_to "BORROWS", "#" %> - <%= @item.borrow_item_user.count %></li>
+				</ul>
+			</div>
+		</div>
+		<div class="yb-admin-item-borrows">
+			<h3>BORROWS FOR ITEM</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Borrower</th>
+						<th>Price</th>
+						<th>Quantity</th>
+						<th>Total</th>
+						<th>From</th>
+						<th>To</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% if @borrows.count > 0 %>
+						<% @borrows.each do |borrow| %>
+							<tr>
+								<td><%= link_to borrow.id, admin_borrow_path(borrow.item, borrow) %></td>
+								<td><%= link_to borrow.user.name, user_path(borrow.user), target: "_blank" %></td>
+								<td><span id="admin-item-price-single-<%= borrow.id %>" data-number="<%= borrow.price %>"></span> <%= borrow.currency %> / <%= borrow.per %> (<%= borrow.updated_numbers %>)</td>
+								<td><%= borrow.count %></td>
+								<td><span id="admin-item-price-total-<%= borrow.id %>" data-number="<%= borrow.borrow_total %>"></span> <%= borrow.currency %></td>
+								<td><%= borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+								<td><%= borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+								<td style="text-transform: capitalize;"><%= link_to borrow.status, admin_borrow_path(borrow.item, borrow) %></td>
+							</tr>
+							<script type="text/javascript">$("#admin-item-price-single-<%= borrow.id %>").setNumber(); $("#admin-item-price-total-<%= borrow.id %>").setNumber();</script>
+						<% end %>
+					<% else %>
+						<tr>
+							<td style="padding:20px 0;" colspan="8"><p class="yb-error">NO BORROW POSTED</p></td>
+						</tr>
+					<% end %>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!-- <div class="yb-admin-right-side"></div> -->
+</section>

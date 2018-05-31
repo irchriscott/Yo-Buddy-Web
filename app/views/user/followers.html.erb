@@ -1,0 +1,80 @@
+<section class="yb-header-else">
+	<div class="yb-header-else-container">
+		<div class="yb-header-user">
+			<div class="yb-header-image">
+				<% if @user.image? %>
+					<%= image_tag @user.image.url %>
+				<% else %>
+					<img src="/assets/default.jpg"/>
+				<% end %>
+			</div>
+			<h4><%= @user.username %></h4>
+		</div>
+		<div class="yb-session-menu">
+			<ul>
+				<li><a href="<%= user_items_path %>">Items</a></li>
+				<li><a href="<%= user_likes_path %>">Likes</a></li>
+				<li class="active"><a href="<%= user_followers_path %>">Followers</a></li>
+				<li><a href="<%= user_following_path %>">Following</a></li>
+				<li><a href="<%= user_borrows_path %>">Item Data</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-session-main">
+	<div class="yb-session-info-about">
+		<%= render "user/user" %>
+	</div>
+	<div class="yb-session-container">
+		<div class="yb-session-menu">
+			<ul>
+				<li><a href="<%= user_items_path %>">Items</a></li>
+				<li><a href="<%= user_likes_path %>">Likes</a></li>
+				<li class="active"><a href="<%= user_followers_path %>">Followers</a></li>
+				<li><a href="<%= user_following_path %>">Following</a></li>
+				<li><a href="<%= user_borrows_path %>">Item Data</a></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-borrow-items">
+				<% if @followers.count > 0 %>
+					<% @followers.each do |user| %>
+						<div class="yb-borrow-item-single">
+							<div class="yb-image">
+								<% if user.user.image? %>
+								<%= image_tag user.user.image.url, alt: user.user.username %>
+								<% else %>
+								<%= image_tag "/assets/default.jpg", alt: user.user.username %>
+								<% end %>
+							</div>
+							<div class="yb-about">
+								<h3><%= link_to user.user.name, user_path(user.user) %></h3>
+								<p class="yb-category"><%= user.user.town %>, <%= user.user.country_name %></p>
+								<p class="yb-item-data" style="margin-top: -8px;">
+									<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="like-sum-<%= user.id %>" data-number="<%= user.user.item_like.count %>"></span></span>
+									<span class="yb-data"><span><i class="icon ion-ios-chatbubble"></i></span><span class="number" id="comment-sum-<%= user.id %>" data-number="<%= user.user.comment.count %>"></span></span>
+									<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="borrow-sum-<%= user.id %>" data-number="<%= user.user.borrow_item_user.count %>"></span></span>
+								</p>
+							</div>
+							<% if is_logged_in? %>
+								<div class="yb-single-follow" id="yb-user-follow-container-<%= user.user.id %>" data-id="<%= user.user.id %>">
+									<% if user.user.followers.include?(session_user.id) %>
+										<span><i class="icon ion-person followed"></i></span>
+									<% else %>
+										<span><i class="icon ion-person-add"></i></span>
+									<% end %>
+								</div>
+								<%= form_for :follow, url: user_follow_path(user.user), html:{id: "yb-user-follow-form-#{user.user.id}", "data-user": session_user.username, "data-id": user.user.id} do |form| %>
+									<%= form.hidden_field :following_id, value: user.user.id %>
+								<% end %>
+								<script type="text/javascript">$("#yb-user-follow-container-<%= user.user.id %>").followUser(); $("#yb-user-follow-form-<%= user.user.id %>").followUserEvent(); $("#like-sum-<%= user.id %>").setNumber();$("#comment-sum-<%= user.id %>").setNumber();$("#borrow-sum-<%= user.id %>").setNumber();</script>
+							<% end %>
+						</div>
+					<% end %>
+				<% else %>
+					<p class="yb-error">NO FOLLOWERS</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</section>

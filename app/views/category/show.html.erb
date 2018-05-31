@@ -1,0 +1,54 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<h2><%= @category.name %></h2>
+		<p><%= @category.description %></p>
+		<% if is_logged_in? %>
+			<div class="yb-user-follow-category-single" id="yb-user-follow-category-container" data-id="user">
+				<% if @category.followers.include?(session_user.id) %>
+					<p class="bg-followed"><i class="icon ion-ios-heart"></i> Follow</p>
+				<% else %>
+					<p><i class="icon ion-ios-heart-outline"></i> Follow</p>
+				<% end %>
+			</div>
+			<%= form_for :follow, url: category_follow_path(@category), html:{id: "yb-user-follow-category-form-user", "data-id": @category.id} do |form| %>
+				<%= form.hidden_field :category_id, value: @category.id %>
+			<% end %>
+		<% end %>
+		<div class="yb-borrow-items admin-categories" style="margin-top: -15px;">
+			<% @subcategories.each do |subcategory| %>
+				<div class="yb-borrow-item-single yb-admin-single-row">
+					<div class="yb-image yb-text">
+						<p><%= subcategory.name[0] %> </p>
+					</div>
+					<div class="yb-about">
+						<h3><%= link_to subcategory.name, subcategory_path(subcategory.category, subcategory) %></h3>
+						<p class="yb-category">Category - <span style="text-transform: capitalize;"><%= subcategory.category.name %></span></p>
+						<p class="yb-item-data">
+							<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="admin-follower-sum-<%= subcategory.id %>" data-number="0"></span></span>
+							<span class="yb-data"><span><i class="icon ion-ios-cart"></i></span><span class="number" id="admin-items-sum-<%= subcategory.id %>" data-number="<%= subcategory.item.count %>"></span></span>
+						</p>
+					</div>
+				</div>
+				<script type="text/javascript">$("#admin-follower-sum-<%= subcategory.id %>").setNumber();$("#admin-items-sum-<%= subcategory.id %>").setNumber();</script>
+			<% end %>
+		</div>
+	</div>
+	<div class="yb-admin-right-side" style="margin-top: -12px;">
+		<div class="yb-categories-list">
+			<h3>Categories</h3>
+			<% if @categories.count > 0 %>
+				<ul data-id="<%= @active %>" id="yb-categories-list">
+					<% @categories.each do |category| %>
+						<li data-id="<%= category.id %>">
+							<a href="<%= category_path(category.id) %>?activate=<%= category.id %>">
+								<div class="yb-image"><p><%= category.name[0] %></p></div>
+								<p class="yb-category-name"><%= category.name %></p>
+								<p class="yb-category-sub"><span class="subcategories-num"><%= category.subcategory.count %></span><span><i class="icon ion-chevron-right"></i></span></p>
+							</a>
+						</li>
+					<% end %>
+				</ul>
+			<% end %>
+		</div>
+	</div>
+</section>

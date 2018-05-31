@@ -1,0 +1,17 @@
+<div class="yb-modal-container">
+	<div class="yb-add-item yb-borrow-description">
+		<h2>Borrow Item Description</h2>
+		<div class="yb-item-image">
+			<div class="yb-image-container">
+				<%= image_tag @borrow.item.item_image[0].image.url, alt: @borrow.item.name %>
+			</div>
+		</div>
+		<div class="yb-borrow-about" style="margin-top: -10px;">
+			<%= render "item_borrow_user/descript" %>
+		</div>
+		<% if Array[@status[0], @status[2]].include?(@borrow.status) %>
+		<button type="submit">Update</button>
+		<% end %>
+		<button type="button" id="yb-close-borrow-item-description" class="yb-btn-cancel">Cancel</button>
+	</div>
+</div>

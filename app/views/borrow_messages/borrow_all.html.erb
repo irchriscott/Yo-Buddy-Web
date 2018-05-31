@@ -1,0 +1,80 @@
+<div class="yb-borrow-all">
+	<% if @borrows.count > 0 %>
+		<ul data-id="<%= @active %>" id="yb-borrow-list-messages">
+			<% @borrows.each do |borrow| %>
+				<li data-id="<%= borrow["borrow"].id %>">
+					<div class="yb-borrow-status">
+						<div class="yb-status" id="yb-show-menu-<%= borrow["borrow"].id %>" data-id="<%= borrow["borrow"].id %>" style="background: <%= borrow["borrow"].check_expiration %>"></div>
+						<div class="yb-borrow-menu yb-menu-list" id="yb-menu-items-<%= borrow["borrow"].id %>">
+							<ul>
+								<% if borrow["borrow"].check_expiration == "orange" %>
+									<% if session_user.id == borrow["borrow"].user.id %>
+										<li><a id="yb-edit-borrow-item-<%= borrow["borrow"].id %>" href="<%= edit_item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+									<% elsif session_user.id == borrow["borrow"].item.user.id %>
+										<li><a href="<%= update_status_path(borrow["borrow"].item, borrow["borrow"]) %>?status=2"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+									<% end %>
+								<% elsif borrow["borrow"].check_expiration == "lightgreen" %>
+									<% if session_user.id == borrow["borrow"].last_update_user_id %>
+										<li><a id="yb-edit-borrow-item-<%= borrow["borrow"].id %>" href="<%= edit_item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+									<% else %>
+										<li><a href="<%= update_status_path(borrow["borrow"].item, borrow["borrow"]) %>?status=1"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Accept</span></a></li>
+										<li><a href="<%= update_status_path(borrow["borrow"].item, borrow["borrow"]) %>?status=2"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+										<li><a id="yb-edit-borrow-item-<%= borrow["borrow"].id %>" href="<%= edit_item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+									<% end %>
+								<% elsif borrow["borrow"].check_expiration == "green" %>
+									<% if session_user.id == borrow["borrow"].user.id %>
+										<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+									<% elsif session_user.id == borrow["borrow"].item.user.id %>
+										<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+									<% end %>
+								<% elsif borrow["borrow"].check_expiration == "red" %>
+									<% if session_user.id == borrow["borrow"].user.id %>
+										<li><a href="<%= destroy_item_borrow_item_user_path(borrow["borrow"].item, borrow["borrow"]) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+										<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+									<% elsif session_user.id == borrow["borrow"].item.user.id %>
+										<li><a href="<%= destroy_item_borrow_item_user_path(borrow["borrow"].item, borrow["borrow"]) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
+									<% end %>
+								<% end %>
+							</ul>
+						</div>
+					</div>
+					<div class="yb-image">
+						<% if session_user.id == borrow["borrow"].user.id %>
+							<% if borrow["borrow"].item.user.image? %>
+								<%= image_tag borrow["borrow"].item.user.image.url, alt: borrow["borrow"].item.user.username %>
+							<% else %>
+								<%= image_tag "/assets/default.jpg", alt: borrow["borrow"].item.user.username %>
+							<% end %>
+						<% else %>
+							<% if borrow["borrow"].user.image? %>
+								<%= image_tag borrow["borrow"].user.image.url, alt: borrow["borrow"].user.username %>
+							<% else %>
+								<%= image_tag "/assets/default.jpg", alt: borrow["borrow"].user.username %>
+							<% end %>
+						<% end %>
+					</div>
+					<div class="yb-about">
+						<% if session_user.id == borrow["borrow"].user.id %>
+						<h4><%= link_to borrow["borrow"].item.user.name, item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %></h4>
+						<% else %>
+						<h4><%= link_to borrow["borrow"].user.name, item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %></h4>
+						<% end %>
+						<p class="yb-name"><%= borrow["borrow"].item.name %></p>
+						<p class="yb-date">
+							<span>From - <%= borrow["borrow"].from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
+							<span>To - <%= borrow["borrow"].to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
+						</p>
+					</div>
+					<script type="text/javascript">$("#yb-show-menu-<%= borrow["borrow"].id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow["borrow"].id %>, #yb-get-report-<%= borrow["borrow"].id %>").magnificPopup({type: 'ajax'});</script>
+				</li>
+			<% end -%>
+		</ul>
+	<% else %>
+		<p class="yb-error">NO MESSAGE</p>
+	<% end %>
+</div>
+<script type="text/javascript">$(document).ready(function(){$("#yb-borrow-list-messages").activateList()})</script>

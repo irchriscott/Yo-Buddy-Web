@@ -1,0 +1,14 @@
+<div class="yb-item-comment-form">
+	<%= form_for([@item, @item.comment.build], html:{'data-item': @item.id, 'data-url': item_comments_path(@item), 'data-from': "add"}) do |form| %>
+		<%= form.hidden_field :user_id, value: session_user.id %>
+		<%= form.hidden_field :is_deleted, value: false %>
+		<% if session_user.image? %>
+			<%= image_tag session_user.image.url, alt: session_user.username %>
+		<% else %>
+			<%= image_tag "/assets/default.jpg", alt: session_user.username %>
+		<% end %>
+		<%= form.text_area :comment, required: true, placeholder: "Enter Comment", style: "height:32px !important;" %>
+		<button type="submit"><i class="icon ion-chevron-right"></i></button>
+	<% end -%>
+</div>
+<!-- radio_button -->

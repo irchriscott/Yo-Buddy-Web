@@ -1,0 +1,125 @@
+<section class="yb-single-item">
+	<div class="yb-single-item-main">
+		<div class="yb-single-image">
+			<%= image_tag @request.item_request_image[0].image.url, alt: @request.title, id: "item_image_main"%>
+		</div>
+		<div class="yb-single-images">
+			<ul>
+				<% @request.item_request_image.each do |image| %>
+					<li <% if @request.item_request_image[0] == image %>class="activated"<% end %>>
+						<a href="<%= image.image.url %>">
+							<%= image_tag image.image.url, alt: @request.title %>
+						</a>
+					</li>
+				<% end -%>
+			</ul>
+		</div>
+		<div class="yb-single-info">
+			<div class="yb-single-user-img">
+				<% if @request.user.image? %>
+		            <%= image_tag @request.user.image.url, alt: @request.user.username %>
+		        <% else %>
+		            <%= image_tag "/assets/default.jpg", alt: @request.user.username %>
+		        <% end %>
+			</div>
+			<div class="yb-single-info-item">
+				<h3><%= @request.title %></h3>
+				<p class="yb-single-category"><%= link_to @request.category.name, category_path(@request.category) %> - <%= link_to @request.subcategory.name, subcategory_path(@request.category, @request.subcategory) %></p>
+				<p class="yb-single-user-date">by <%= link_to @request.user.name, user_path(@request.user) %> - <span id="item_date" data-date="<%= @request.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+				<% if is_logged_in? %>
+					<div class="yb-single-follow" id="yb-user-follow-container-<%= @request.user.id %>" data-id="<%= @request.user.id %>">
+						<% if @request.user.followers.include?(session_user.id) %>
+							<span><i class="icon ion-person followed"></i></span>
+						<% else %>
+							<span><i class="icon ion-person-add"></i></span>
+						<% end %>
+					</div>
+					<%= form_for :follow, url: user_follow_path(@request.user), html:{id: "yb-user-follow-form-#{@request.user.id}", "data-user": session_user.username, "data-id": @request.user.id} do |form| %>
+						<%= form.hidden_field :following_id, value: @request.user.id %>
+					<% end %>
+					<script type="text/javascript">$("#yb-user-follow-container-<%= @request.user.id %>").followUser(); $("#yb-user-follow-form-<%= @request.user.id %>").followUserEvent();</script>
+				<% end %>
+			</div>
+		</div>
+		<div class="yb-single-price">
+			<span><i class="icon ion-ios-pricetags"></i></span>
+			<span id="item_price_min" data-number="<%= @request.min_price %>"></span> 
+			- 
+			<span id="item_price_max" data-number="<%= @request.max_price %>"></span>
+			<span><%= @request.currency %></span> / <span><%= @request.per %></span>
+		</div>
+		<div class="yb-single-description">
+			<%= raw @request.description %>
+		</div>
+		<div>
+			<p>
+				<span><strong>From : </strong><%= @request.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
+				-
+				<span><strong>To : </strong><%= @request.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
+				-
+				<span><strong>Quantity : </strong><%= @request.count %> Items</span>
+			</p>
+		</div>
+		<div class="yb-single-item-data">
+			<ul class="yb-item-data-list">
+				<li>
+					<% if is_logged_in? %>
+						<%= form_for(:like, url: item_request_like_path(@request), html:{id: "like_request_form_#{@request.id}", class: "like-request-form", item: @request.id, "data-liker": session_user.username, "data-owner": @request.user.id}) do |form| %>
+		                    <%= form.hidden_field(:item_request_id, value: @request.id, id:"item_item_id_#{@request.id}") %>
+							<p class="like-item-request" data-item="<%= @request.id %>">
+								<% if @request.likes.include?(session_user.id) %>
+									<span class="request-like-<%= @request.id %>"><i class="icon ion-ios-heart liked"></i></span>
+								<% else %>
+									<span class="request-like-<%= @request.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+								<% end %>
+								<span class="number like-request-sum-<%= @request.id %>" id="number_likes" data-number="<%= @request.item_request_like.count %>"></span>
+							</p>
+						<% end -%>
+					<% else %>
+						<p>
+							<span class="like-<%= @request.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+							<span class="number like-request-sum-<%= @request.id %>" id="number_likes" data-number="<%= @request.item_request_like.count %>"></span>
+						</p>
+					<% end -%>
+				</li>
+				<li>
+					<p><span><i class="icon ion-ios-chatbubble"></i></span><span class="number suggestions-sum-<%= @request.id %>" id="number_comments" data-number="<%= @request.item_request_suggestion.count %>"></span></p>
+				</li>
+			</ul>
+			<div class="yb-item-menu-container">
+				<span class="yb-request-status" title="Status : <%= @request.status.upcase %>"><i class="icon ion-record" style="color: <%= @request.check_expiration %>"></i></span>
+				<span class="yb-item-menu" id="yb-item-menu-item" data-id="menu-item"><i class="icon ion-chevron-down"></i></span>
+				<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-menu-item">
+					<ul>
+						<% if is_logged_in? %>
+						<% if session_user.id == @request.user.id %>
+						<li><a href="<%= edit_item_request_path(@request) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+						<li><a><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
+						<% if @suggestions > 0 and @request.status != @status[1] %>
+						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=1" data-status="Succeeded"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Succeed</span></a></li>
+						<% elsif @suggestions < 0 and @request.status != @status[2] %>
+						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=2" data-status="Failed"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Fail</span></a></li>
+						<% end -%>
+						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=3" data-status="Reset"><span class="item-icon"><i class="icon ion-arrow-return-left"></i></span><span class="item-text">Reset</span></a></li>
+						<% end -%>
+						<% if @request.status == @status[0] %>
+						<li><a href="<%= item_request_new_suggestion_path(@request) %>" id="yb-add-suggestion-new"><span class="item-icon"><i class="icon ion-plus-round"></i></span><span class="item-text">Suggest - N</span></a></li>
+						<li><a href="<%= item_request_exist_suggestion_path(@request) %>" id="yb-add-suggestion-exist"><span class="item-icon"><i class="icon ion-plus-circled"></i></span><span class="item-text">Suggest - E</span></a></li>
+						<% end %>
+						<% end %>
+						<li><a href="<%= report_new_path(@request.id) %>?ressource=request" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="yb-item-comments">
+			<div class="yb-item-comments-list" data-request="<%= @request.id %>" data-url="<%= item_request_suggestions_path(@request) %>" id="yb-item-request-sugestions">
+				<span class="yb-loading-spinner"><img src="/assets/loading.gif" /></span>
+			</div>
+		</div>
+		<script type="text/javascript">$(document).ready(function(){setLoadData("yb-item-request-sugestions", "<%= item_request_suggestions_path(@request) %>")})</script>
+	</div>
+	<div class="yb-items-similar">
+		
+	</div>
+</section>

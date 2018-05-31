@@ -1,0 +1,70 @@
+<section class="yb-items-list-main">
+	<% if @items.count > 0 %>
+	<div class="yb-items-container">
+		<div class="yb-user-items">
+			<div>
+				<% @items.each do |item| %>
+					<div class="yb-item-main">
+		                <div class="yb-item-price">
+		                    <span><i class="icon ion-ios-pricetags"></i></span>
+		                    <span><span id="yb-item-price-<%= item.id %>" data-number="<%= item.price %>"></span> <%= item.currency %> / <%= item.per %></span>
+		                </div>
+		                <div class="yb-item-image">
+		                    <%= image_tag item.item_image[0].image.url, alt: item.name %>
+		                    <% if item.item_image.count > 1 %>
+		                    <div class="yb-item-images-count" id="yb-show-item-gallery-<%= item.id %>" data-id="<%= item.id %>">
+		                       	<p>+<%= item.item_image.count.to_i - 1 %></p>
+		                    </div>
+		                    <div id="yb-image-gallery-<%= item.id %>" style="display: none !important;">
+		                        <% item.item_image.each do |image| %>
+		                        	<a href="<%= image.image.url %>" title="<%= item.name %>"></a>
+		                        <% end %>
+		                    </div>
+		                    <% end %>
+		                </div>
+		                <div class="yb-item-description">
+		                    <div class="yb-item-user-image">
+		                       	<% if item.user.image? %>
+		                            <%= image_tag item.user.image.url, alt: item.user.username %>
+		                        <% else %>
+		                            <%= image_tag "/assets/default.jpg", alt: item.user.username %>
+		                        <% end %>
+		                    </div>
+		                    <div class="yb-item-about">
+		                        <h3><a href="<%= item_path(item) %>"><%= item.name %></a></h3>
+		                        <p class="yb-item-category"><a href="<%= category_path(item.category) %>"><%= item.category.name %></a> - <a href="<%= subcategory_path(item.category, item.subcategory) %>"><%= item.subcategory.name %></a></p>
+		                        <p class="yb-item-date">
+		                            <span>by <a href="<%= user_path(item.user) %>"><%= item.user.name %></a></span>
+		                            -
+		                            <span id="yb-item-datetime-<%= item.id %>" data-date="<%= item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
+		                        </p>
+		                    </div>
+		                    <% if is_logged_in? %>
+			                    <%= form_for(:like, url: like_path(item), html:{id: "like_form_#{item.id}", class: "like-form", item: item.id, "data-liker": session_user.username, "data-owner": item.user.id}) do |form| %>
+			                       	<%= form.hidden_field(:item_id, value: item.id, id:"item_item_id_#{item.id}") %>
+				                    <% if item.likes.include?(session_user.id) %>
+							            <div class="yb-item-like like-item liked" data-item="<%= item.id %>">
+							                <span class="like-<%= item.id %>"><i class="icon ion-ios-heart liked"></i></span>
+							            </div>
+						            <% else %>
+						                <div class="yb-item-like like-item" data-item="<%= item.id %>">
+						                   	<span class="like-<%= item.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+						                </div>
+						            <% end %>
+						        <% end %>
+			                <% else %>
+			                   	<div class="yb-item-like" data-item="<%= item.id %>">
+						           	<span class="like-<%= item.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+						        </div>
+			                <% end -%>
+		                </div>
+		            </div>
+		            <script type="text/javascript">$("#yb-item-datetime-<%= item.id %>").setDate();$("#yb-item-price-<%= item.id %>").setNumber(); $("#yb-show-item-gallery-<%= item.id %>").openImageGallery(); $("#yb-image-gallery-<%= item.id %>").imagesGallery();</script>
+	            <% end -%>
+			</div>
+        </div>
+        <% else %>
+            <p class="yb-error">NO POSTED ITEM</p>
+        <% end %>
+	</div>
+</section>

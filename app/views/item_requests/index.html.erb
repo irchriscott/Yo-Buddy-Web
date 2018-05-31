@@ -1,0 +1,68 @@
+<section class="yb-items-list-main">
+	<% if @requests.count > 0 %>
+		<div class="yb-items-container">
+			<div class="yb-user-items">
+				<% @requests.each do |request| %>
+					<div class="yb-item-main">
+		                <div class="yb-item-price">
+		                    <span><i class="icon ion-ios-pricetags"></i></span>
+		                    <span><span id="yb-item-price-min-<%= request.id %>" data-number="<%= request.min_price %>"></span> - <span id="yb-item-price-max-<%= request.id %>" data-number="<%= request.max_price %>"></span> <%= request.currency %> / <%= request.per %></span>
+		                </div>
+		                <div class="yb-item-image">
+		                    <%= image_tag request.item_request_image[0].image.url, alt: request.title %>
+		                   	<% if request.item_request_image.count > 1 %>
+		                    <div class="yb-item-images-count" id="yb-show-request-gallery-<%= request.id %>" data-id="<%= request.id %>">
+		                    	<p>+<%= request.item_request_image.count.to_i - 1 %></p>
+		                    </div>
+		                    <div id="yb-image-gallery-<%= request.id %>" style="display: none !important;">
+		                       	<% request.item_request_image.each do |image| %>
+		                        	<a href="<%= image.image.url %>" title="<%= request.title %>"></a>
+		                        <% end %>
+		                    </div>
+		                    <% end %>
+		                </div>
+		                <div class="yb-item-description">
+		                    <div class="yb-item-user-image">
+		                        <% if request.user.image? %>
+		                        <%= image_tag request.user.image.url, alt: request.user.username %>
+		                        <% else %>
+		                        <%= image_tag "/assets/default.jpg", alt: request.user.username %>
+		                        <% end %>
+		                    </div>
+		                    <div class="yb-item-about">
+		                        <h3><a href="<%= item_request_path(request) %>"><%= request.title %></a></h3>
+		                        <p class="yb-item-category"><a href="<%= category_path(request.category) %>"><%= request.category.name %></a> - <a href="<%= subcategory_path(request.category, request.subcategory) %>"><%= request.subcategory.name %></a></p>
+		                        <p class="yb-item-date">
+		                            <span>by <a href="<%= user_path(request.user) %>"><%= request.user.name %></a></span>
+		                            -
+		                            <span id="yb-item-datetime-<%= request.id %>" data-date="<%= request.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
+		                        </p>
+		                    </div>
+		                    <% if is_logged_in? %>
+			                    <%= form_for(:like, url: item_request_like_path(request), html:{id: "like_request_form_#{request.id}", class: "like-request-form", item_request: request.id, "data-liker": session_user.username, "data-owner": request.user.id}) do |form| %>
+			                        <%= form.hidden_field(:item_request_id, value: request.id, id:"item_item_id_#{request.id}") %>
+				                    <% if request.likes.include?(session_user.id) %>
+							            <div class="yb-item-like like-item-request liked" data-item="<%= request.id %>">
+							                <span class="like-<%= request.id %>"><i class="icon ion-ios-heart liked"></i></span>
+							            </div>
+						            <% else %>
+						                <div class="yb-item-like like-item-request" data-item="<%= request.id %>">
+						                   	<span class="like-<%= request.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+						                </div>
+						            <% end %>
+						        <% end %>
+			                <% else %>
+			                   	<div class="yb-item-like" data-item="<%= request.id %>">
+						            <span class="like-<%= request.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+						        </div>
+			                <% end -%>
+		                </div>
+		            </div>
+		            <script type="text/javascript">$("#yb-item-datetime-<%= request.id %>").setDate();$("#yb-item-price-min-<%= request.id %>").setNumber();$("#yb-item-price-max-<%= request.id %>").setNumber();$("#yb-show-request-gallery-<%= request.id %>").openImageGallery(); $("#yb-image-gallery-<%= request.id %>").imagesGallery();</script>
+	            <% end -%>
+			</div>
+   	 	</div>
+    <% else %>
+        <p class="yb-error">NO REQUESTED ITEM</p>
+    <% end %>
+</section>

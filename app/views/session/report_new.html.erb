@@ -1,0 +1,18 @@
+<div class="yb-modal-container" style="width:30%;">
+	<div class="yb-add-item">
+		<h2>Report This <%= @ressource.capitalize %></h2>
+		<%= form_for @report, url: report_create_path, html:{id: "yb-report-form"} do |form| %>
+			<%= form.hidden_field :ressource, value: @ressource %>
+			<%= form.hidden_field :ressource_id, value: @ressource_id %>
+			<label>About Report :</label>
+			<%= form.text_field :about, placeholder: 'Enter About Report', required: true %>
+			<label>Report Content :</label>
+			<%= form.text_area :text, required: true, placeholder: 'Enter Report Content', style: 'height:100px;' %>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-report" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<script type="text/javascript">$("#yb-close-add-report").closePopup();$("#yb-report-form").submitReport();</script>
+</div>

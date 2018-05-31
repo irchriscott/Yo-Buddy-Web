@@ -1,0 +1,59 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<h2 style="margin-bottom: 10px;">ADMINISTRATORS</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Username</th>
+					<th>Email</th>
+					<th>Privileges</th>
+					<th>Added Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if @admins.count > 0 %>
+					<% @admins.each do |admin| %>
+						<tr>
+							<td><%= admin.id %></td>
+							<td><%= image_tag admin.image.url, alt: admin.username %></td>
+							<td><%= link_to admin.name, "#" %></td>
+							<td><%= link_to admin.username, "#" %></td>
+							<td><%= admin.email %></td>
+							<td><span style="text-transform: capitalize;"><%= admin.privileges %></span></td>
+							<td><%= admin.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+						</tr>
+					<% end %>
+				<% else %>
+					<tr>
+						<td colspan="7"><p class="yb-error">NO ADMIN YET</p></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+	<div class="yb-admin-right-side">
+		<h4>Filter Administrators</h4>
+		<%= form_for :search_admin, method: "GET", html: {"data-url": "#"} do |form| %>
+			<%= form.text_field :search_text, placeholder: "Search Term" %>
+			<div class="yb-order-by">
+				<label>Order By : </label>
+				<%= form.select :order_by do -%>
+					<% @order_by.each do |order| %>
+						<%= content_tag(:option, order["text"], value: order["id"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select :order do -%>
+					<% @order.each do |ord| %>
+						<%= content_tag(:option, ord["text"], value: ord["id"]) %>
+					<% end %>
+				<% end %>
+				<button type="submit">Filter</button>
+				<button type="button" id="admin-add-admin" href="#yb-open-admin-add-admin">Add Admin</button>
+			</div>
+		<% end %>
+	</div>
+</section>
+<section class="zoom-anim-dialog mfp-hide" id="yb-open-admin-add-admin"><%= render "admin/newadmin" %></section>
