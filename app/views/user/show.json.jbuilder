@@ -4,10 +4,12 @@ json.username @user.username
 json.email @user.email
 json.country @user.country_name
 json.town @user.town
-if @user.image? then
-	json.image @user.image.url
-else
-	json.image "/assets/default.jpg"
+json.image do
+	if @user.image? then
+		json.url @user.image.url
+	else
+		json.url "/assets/default.jpg"
+	end
 end
 json.gender @user.gender
 json.followers @user.followers_count

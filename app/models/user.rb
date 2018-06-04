@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class User < ApplicationRecord
 	
     has_many :item 
@@ -12,7 +14,7 @@ class User < ApplicationRecord
 
     mount_uploader :image, ImageUploader
 
-    before_save { self.email = email.downcase, self.is_private = false if self.is_private == nil }
+    before_save { self.token = SecureRandom.urlsafe_base64(self.name.length + self.username.length + self.email.length), self.email = email.downcase, self.is_private = false if self.is_private == nil }
 
   	validates :name,  presence: true, length: { maximum: 50 }
     validates :username, uniqueness: true, length: {minimum: 5}
@@ -66,6 +68,28 @@ class User < ApplicationRecord
 
     def followers_count
         return self.followers.count
+    end
+
+    def json
+        return {
+            "id" => self.id,
+            "name" => self.name,
+            "username" => self.username,
+            "email" => self.email,
+            "country" => self.country_name,
+            "town" => self.town,
+            "image" => (self.image?) ? self.image.url : "/assets/default.jpg",
+            "gender" => self.gender,
+            "followers" => self.followers_count,
+            "following" => self.following_count,
+            "url" => "/user/#{self.id}.json",
+            "items" => self.item.count,
+            "requests" => self.item_request.count,
+            "borrow" => self.borrow_item_user.count,
+            "followers_list" => self.followers,
+            "following_list" => self.following,
+            "favourites" => self.item_favourite.count
+        }
     end
 
 end

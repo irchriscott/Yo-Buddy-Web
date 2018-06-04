@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180517043853) do
+ActiveRecord::Schema.define(version: 20180604000540) do
 
   create_table "active_admin_comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "namespace"
@@ -302,6 +302,7 @@ ActiveRecord::Schema.define(version: 20180517043853) do
     t.boolean "is_blocked"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "token"
   end
 
   add_foreign_key "addresses", "users"

@@ -1,8 +1,10 @@
+require 'securerandom'
+
 class UserController < ApplicationController
 
     before_action :set_user, only: [:show, :likes, :followers, :following, :get_borrowed, :borrowed, :get_borrowing, :borrowing, :requests]
     skip_before_action :verify_authenticity_token
-    #protect_from_forgery except: :signup
+    # protect_from_forgery except: :signup
 
     def index
         @users = User.all.order(name: :asc)
@@ -24,6 +26,7 @@ class UserController < ApplicationController
         @user = User.new(params[:user].permit(:name, :username, :email, :country, :town, :password, :is_private))
         @user.is_authenticated = false
         @user.is_blocked = false
+        @user.token = SecureRandom.urlsafe_base64(@user.name.length + @user.username.length + @user.email.length)
 
         check_user_email = User.find_by(email: params[:user][:email])
         check_user_username = User.find_by username: params[:user][:username]
@@ -113,7 +116,7 @@ class UserController < ApplicationController
                 if user.authenticate(params[:user][:password]) then
                     login user
                     format.html { redirect_to root_path, success: 'User Logged In Successfully !!!' }
-                    format.json {  render json: {"type" => "success", "text" => "Logged In Successfully !!!", "user" => user} }
+                    format.json {  render json: {"type" => "success", "text" => "Logged In Successfully !!!", "user" => user.json} }
                     flash[:success] = 'User Logged In Successfully !!!'
                 else
                     format.html { redirect_to new_user_path, danger: 'Invalid Password !!!' }

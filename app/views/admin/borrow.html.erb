@@ -38,6 +38,7 @@
 			<div class="yb-admin-item-description yb-description">
 				<%= raw @item.description %>
 			</div>
+			<br/>
 			<% if @admin_messages.count > 0 %>
 				<% if @admin_messages.last.status == "rendered" %>
 					<button style="background: green;" id="yb-admin-open-scan-qr-code" class="yb-add-borrow-item" href="#yb-admin-view-items-borrow">SCAN ITEMS</button>

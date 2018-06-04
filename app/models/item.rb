@@ -13,11 +13,19 @@ class Item < ApplicationRecord
 
   	def likes
     		@likes = Array.new
-    		for like in self.item_like.where(item_id: self.id)
+    		for like in self.item_like
     			@likes.append(like.user.id)
     		end
         return @likes
   	end
+
+    def favourites
+        @favourites = Array.new
+        for favourite in self.item_favourite
+          @favourites.append(favourite.user.id)
+        end
+        return @favourites
+    end
 
     def available
         counts = 0

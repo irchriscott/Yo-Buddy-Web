@@ -10,6 +10,7 @@ class CreateUsers < ActiveRecord::Migration[5.1]
       t.string :number
       t.string :image
       t.string :gender
+      t.string :token
       t.boolean :is_authenticated
       t.boolean :is_private
       t.boolean :is_blocked
