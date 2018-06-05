@@ -2,9 +2,11 @@ class ItemsController < ApplicationController
 
     include ItemsHelper
 
-    before_action :check_session, only: [:new, :edit, :update, :create, :destroy, :like_item]
+    before_action :check_session, only: [:new, :edit]
     before_action :set_item_data_item, only: [:new, :edit, :create, :update, :show]
-    
+    before_action :check_token, only:[:like_item, :like_item_destroy, :create, :destroy, :update, :delete_image_item]
+    skip_before_action :verify_authenticity_token
+
     def index
         @items = Item.all.order(created_at: :desc)
     end
@@ -236,9 +238,10 @@ class ItemsController < ApplicationController
     def like_item
         @like = ItemLike.new
         @like.item_id = params[:like][:item_id]
-        @like.user_id = session[:user_id]
-
-        check_like = ItemLike.where(user_id: session[:user_id], item_id: params[:like][:item_id]).first
+        @like.user_id = (is_logged_in?) ? session[:user_id] : params[:like][:session]
+        user_id = (is_logged_in?) ? session[:user_id] : params[:like][:session]
+        
+        check_like = ItemLike.where(user_id: user_id, item_id: params[:like][:item_id]).first
 
         if check_like == nil then
             if @like.save then

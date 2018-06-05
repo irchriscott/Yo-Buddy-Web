@@ -34,26 +34,3 @@ json.likers @item.item_like do |like|
 end
 
 json.images @item.item_image, :id, :image
-
-json.commenters @item.comment do |comment|
-	json.id comment.id
-	json.user do
-		json.id comment.user.id
-		json.name comment.user.name
-		json.username comment.user.username
-		json.email comment.user.email
-		json.country comment.user.country_name
-		json.town comment.user.town
-		if comment.user.image? then
-			json.image comment.user.image.url
-		else
-			json.image "/assets/default.jpg"
-		end
-		json.gender comment.user.gender
-		json.followers comment.user.followers_count
-		json.following comment.user.following_count
-		json.url user_path(comment.user, format: :json)
-	end
-	json.comment comment.comment
-	json.created_at comment.created_at
-end

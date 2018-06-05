@@ -3,7 +3,7 @@ module ItemsHelper
 	include UserHelper
 
 	def check_session
-        if !is_logged_in?
+        if !is_logged_in? or !params[:token]
             flash[:danger] = "Loggin Required !!!"
             redirect_to new_user_path
         end

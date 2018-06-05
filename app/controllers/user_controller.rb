@@ -4,7 +4,7 @@ class UserController < ApplicationController
 
     before_action :set_user, only: [:show, :likes, :followers, :following, :get_borrowed, :borrowed, :get_borrowing, :borrowing, :requests]
     skip_before_action :verify_authenticity_token
-    # protect_from_forgery except: :signup
+    before_action :check_token, only: [:follow_user]
 
     def index
         @users = User.all.order(name: :asc)
@@ -93,11 +93,12 @@ class UserController < ApplicationController
     end
 
     def follow_user
-        if is_logged_in? then
-            check_follow = UserFollow.where(user_id: session[:user_id], following_id: params[:follow][:following_id]).first
+        if is_logged_in? or params[:token] then
+            user_id = (is_logged_in?) ? session[:user_id] : params[:follow][:session]
+            check_follow = UserFollow.where(user_id: user_id, following_id: params[:follow][:following_id]).first
             if check_follow == nil then
                 follow = UserFollow.new(params[:follow].permit(:following_id))
-                follow.user_id = session[:user_id]
+                follow.user_id = (is_logged_in?) ? session[:user_id] : params[:follow][:session]
                 follow.save
                 render json: {"type" => "follow", "text" => "User Followed !!!"}
             else
@@ -116,7 +117,7 @@ class UserController < ApplicationController
                 if user.authenticate(params[:user][:password]) then
                     login user
                     format.html { redirect_to root_path, success: 'User Logged In Successfully !!!' }
-                    format.json {  render json: {"type" => "success", "text" => "Logged In Successfully !!!", "user" => user.json} }
+                    format.json {  render json: {"type" => "success", "text" => "Logged In Successfully !!!", "user" => user.json, "token" => user.token} }
                     flash[:success] = 'User Logged In Successfully !!!'
                 else
                     format.html { redirect_to new_user_path, danger: 'Invalid Password !!!' }
@@ -157,6 +158,20 @@ class UserController < ApplicationController
             end
         end
         return borrowing
+    end
+
+    def update_from_api
+        token = params[:token]
+        begin
+            user = User.find_by(token: token).first
+            if user then
+                render json: user.json
+            else
+                render json: 404
+            end
+        rescue Exception => e
+            render json: 404
+        end
     end
 
     private def set_user

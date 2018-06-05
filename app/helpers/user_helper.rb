@@ -20,4 +20,18 @@ module UserHelper
 	def user_id
 		session[:user_id]
 	end
+
+	def check_token
+		token = params[:token]
+		if !is_logged_in? then
+			if token == nil or token == "" then
+				render json:{"type" => "error", "text" => "Unauthorized"}
+			else
+				user = User.find_by(token: token)
+				if user == nil then
+					render json:{"type" => "error", "text" => "Wrong token"}
+				end
+			end
+		end
+	end
 end

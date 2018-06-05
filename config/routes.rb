@@ -76,6 +76,7 @@ Rails.application.routes.draw do
     get '/user/:id/borrowing', to: 'user#borrowing', as: 'user_borrowing'
     get '/user/:id/requests', to: 'user#requests', as: 'user_requests'
     post '/user/:id/follow', to: 'user#follow_user', as: 'user_follow'
+    get '/user/get_and_update/user_s_data/from_token/in_the_application', to: 'user#update_from_api'
 
     resources :comments
 
