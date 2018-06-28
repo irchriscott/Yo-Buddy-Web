@@ -84,8 +84,8 @@
 								<%= image_tag borrow.item.item_image[0].image.url, alt: borrow.item.name %>
 							</div>
 							<div class="yb-about">
-								<h3 style="margin-top: 10px;"><%= link_to borrow.item.name, item_item_borrow_user_path(borrow.item, borrow) %></h3>
-									<p class="yb-category">by <%= link_to borrow.item.user.name, user_path(borrow.item.user) %></p>
+								<h3 style="margin-top: 10px;"><%= link_to borrow.item.name, item_borrow_path(borrow.item.uuid, borrow.item, borrow) %></h3>
+									<p class="yb-category">by <%= link_to borrow.item.user.name, user_items_path(borrow.item.user.username, borrow.item.user) %></p>
 								<p class="yb-item-data">
 									<span class="yb-data">From - <%= borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
 									<span class="yb-data">To - <%= borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>

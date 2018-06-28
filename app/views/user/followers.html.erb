@@ -48,7 +48,7 @@
 								<% end %>
 							</div>
 							<div class="yb-about">
-								<h3><%= link_to user.user.name, user_path(user.user) %></h3>
+								<h3><%= link_to user.user.name, user_items_path(user.user.username, user.user) %></h3>
 								<p class="yb-category"><%= user.user.town %>, <%= user.user.country_name %></p>
 								<p class="yb-item-data" style="margin-top: -8px;">
 									<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="like-sum-<%= user.id %>" data-number="<%= user.user.item_like.count %>"></span></span>

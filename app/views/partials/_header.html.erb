@@ -9,14 +9,15 @@
 		}
 	<% end -%>
 </script>
-<% if is_logged_in? %><%= hidden_field_tag(:session_user_id, session_user.id) %><% end -%>
+<% if is_logged_in? %>
+<%= hidden_field_tag(:session_user_id, session_user.id) %>
+<%= hidden_field_tag(:session_username, session_user.username) %>
+<%= hidden_field_tag(:session_name, session_user.name) %>
+<% end -%>
 <section class="yb-header">
 	<div class="yb-header-container">
 		<h2><a href="/">Yo Buddy !</a></h2>
 		<div class="yb-header-right">
-			<div class="yb-header-sign-in">
-				<p><%= link_to "USERS", users_path %></p>
-			</div>
 			<div class="yb-header-sign-in">
 				<p><%= link_to "CATEGORIES", category_index_path %></p>
 			</div>
@@ -28,13 +29,34 @@
 			</div>
 			<% if is_logged_in? %>
 				<div class="yb-header-signed-in">
-					<a href="/session/items">
+					<a href="#" id="yb-show-session-menu" data-id="session">
 						<% if session_user.image? %>
 							<%= image_tag session_user.image.url, title: session_user.username %>
 						<% else %>
 							<img src="/assets/default.jpg" alt="Profile Image" title="<%= session_user.username %>" />
 						<% end %>
 					</a>
+					<div class="yb-menu-list" style="display:none; margin-left: -100px; margin-top: 5px;" id="yb-menu-items-session">
+						<ul>
+							<li><a href="/session/items"><span class="item-icon"><i class="icon ion-ios-cart"></i></span><span class="item-text">Items</span></a></li>
+							<li><a href="/session/requests"><span class="item-icon"><i class="icon ion-forward"></i></span><span class="item-text">Requests</span></a></li>
+							<hr style="width: 100%" />
+							<li><a href="/session/borrowed"><span class="item-icon"><i class="icon ion-ios-arrow-thin-right"></i></span><span class="item-text">Borrowed</span></a></li>
+							<li><a href="/session/borrowing"><span class="item-icon"><i class="icon ion-ios-arrow-thin-left"></i></span><span class="item-text">Borrowing</span></a></li>
+							<hr style="width: 100%"/>
+							<li><a href="/session/likes"><span class="item-icon"><i class="icon ion-ios-heart-outline"></i></span><span class="item-text">Likes</span></a></li>
+							<li><a href="/session/favourites"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourites</span></a></li>
+							<hr style="width: 100%"/>
+							<li><a href="/session/followers"><span class="item-icon"><i class="icon ion-ios-arrow-thin-right"></i></span><span class="item-text">Followers</span></a></li>
+							<li><a href="/session/following"><span class="item-icon"><i class="icon ion-ios-arrow-thin-left"></i></span><span class="item-text">Following</span></a></li>
+							<hr style="width: 100%"/>
+							<li><a href="/session/logout"><span class="item-icon"><i class="icon ion-log-out"></i></span><span class="item-text">Log Out</span></a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="yb-header-menu">
+					<span><i class="icon ion-ios-bell-outline"></i></span>
+					<span id="yb-session-notifications" class="yb-header-tag" <% if session_user.notification_count <= 0 %> style="display: none;" <% end -%> ><%= session_user.notification_count %></span>
 				</div>
 			<% else %>
 				<div class="yb-header-sign-in">
@@ -42,7 +64,7 @@
 				</div>
 			<% end %>
 			<div class="yb-header-menu">
-				<span><i class="icon ion-android-menu"></i></span>
+				<span><i class="icon ion-ios-search"></i></span>
 			</div>
 		</div>
 	</div>

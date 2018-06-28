@@ -30,9 +30,16 @@ Rails.application.routes.draw do
         end
     end
 
+    get '/item/:username/enc-dt-:uuid-:id', to: 'items#show', as: 'item_show'
+    get '/item/:username/enc-dt-:uuid-:id/edit', to: 'items#edit', as: 'item_edit'
+    get '/item/:username/enc-dt-:uuid-:item_id/borrow', to: 'item_borrow_user#new', as: 'borrow_item'
+    get '/item/:username/enc-dt-:uuid-:id/available', to: 'items#available', as: 'item_available'
+
+    get '/item/:username/enc-dt-:uuid-:item_id/borrows', to: 'item_borrow_user#index', as: 'item_borrows'
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow', to: 'item_borrow_user#show', as: 'item_borrow'
+
     post '/items/:item_id/borrow_item_user/:item_borrow_user_id/borrow_messages/images/send', to: 'borrow_messages#send_images', as: 'message_send_images'
 
-    get '/items/:id/available', to: 'items#available', as: 'item_available'
     get '/items/requests/all', to: 'item_requests#index', as: 'item_requests'
     get '/items/request/:id', to: 'item_requests#show', as: 'item_request'
     post '/items/request/:id/like', to: 'item_requests#like', as: 'item_request_like'
@@ -65,26 +72,27 @@ Rails.application.routes.draw do
     post '/item/:id/favourite', to: 'items#favourite_item', as: 'favourite'
     get '/item/:item_id/favourite/:id/destroy', to: 'items#favourite_item_destroy', as: 'favourite_destroy'
 
-    resources :user
     get '/users/all', to: 'user#index', as: 'users'
 
-    get '/user/:id/items', to: 'user#show', as: 'user_items'
-    get '/user/:id/likes', to: 'user#likes', as: 'user_likes'
-    get '/user/:id/followers', to: 'user#followers', as: 'user_followers'
-    get '/user/:id/following', to: 'user#following', as: 'user_following'
-    get '/user/:id/borrowed', to: 'user#borrowed', as: 'user_borrows'
-    get '/user/:id/borrowing', to: 'user#borrowing', as: 'user_borrowing'
-    get '/user/:id/requests', to: 'user#requests', as: 'user_requests'
+    resources :user
+
+    get '/user/:username-:id/items', to: 'user#show', as: 'user_items'
+    get '/user/:username-:id/likes', to: 'user#likes', as: 'user_likes'
+    get '/user/:username-:id/followers', to: 'user#followers', as: 'user_followers'
+    get '/user/:username-:id/following', to: 'user#following', as: 'user_following'
+    get '/user/:username-:id/borrowed', to: 'user#borrowed', as: 'user_borrows'
+    get '/user/:username-:id/borrowing', to: 'user#borrowing', as: 'user_borrowing'
+    get '/user/:username-:id/requests', to: 'user#requests', as: 'user_requests'
     post '/user/:id/follow', to: 'user#follow_user', as: 'user_follow'
     get '/user/get_and_update/user_s_data/from_token/in_the_application', to: 'user#update_from_api'
 
     resources :comments
 
     get '/categories/all', to: 'category#index', as: 'category_index'
-    get '/category/:id/subcategories', to: 'category#show', as: 'category'
+    get '/category/enc-dt-:uuid-:id/subcategories', to: 'category#show', as: 'category'
     post '/category/:id/follow', to: 'category#follow', as: 'category_follow'
     get '/subcategories/all', to: 'subcategory#index', as: 'subcategory_index'
-    get '/category/:category_id/subcategory/:id', to: 'subcategory#show', as: 'subcategory'
+    get '/category/enc-dt-:uuid-:category_id-subcat-:id', to: 'subcategory#show', as: 'subcategory'
 
     post '/user/signup', to: 'user#signup', as: 'user_signup'
 

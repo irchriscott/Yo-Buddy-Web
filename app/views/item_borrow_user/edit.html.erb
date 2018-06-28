@@ -2,13 +2,13 @@
 	<div class="yb-add-item">
 		<% if @item_borrow.status != "failed" %>
 			<h2>Edit Borrow Item</h2>
-			<%= form_for :item_borrow, url: item_item_borrow_user_path(@item, @item_borrow), method: :patch , html: {id: "yb-borrow-item"} do |form| %>
+			<%= form_for :item_borrow, url: item_item_borrow_user_path(@item, @item_borrow), method: :patch , html: {id: "yb-borrow-item" } do |form| %>
 				<div class="yb-add-price">
 					<label>Propose Price :</label>
 					<%= form.hidden_field :item_id, value: @item.id %>
 					<%= form.hidden_field :last_update_user_id, value: session_user.id %>
 					<%= form.hidden_field :status, value: @status[0] %>
-					<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true, value: @item_borrow.price %>
+					<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true, value: @item_borrow.price, autocomplete: 'off' %>
 					<%= form.select(:currency, required: true) do -%>
 						<% @currencies.each do |currency| %>
 							<% if @item_borrow.currency == currency["currency"] %>
@@ -30,8 +30,8 @@
 				</div>
 				<div class="yb-from-date">
 					<label>From & Times number :</label>
-					<%= form.text_field :from_date, required:true, placeholder: "YYYY/MM/DD H:m" %>
-					<%= form.number_field :numbers, required:true, min: '1', placeholder: "Enter Number of Times" %>
+					<%= form.text_field :from_date, required:true, placeholder: "YYYY/MM/DD H:m", autocomplete: 'off' %>
+					<%= form.number_field :numbers, required:true, min: '1', placeholder: "Enter Number of Times", autocomplete: 'off' %>
 				</div>
 				<label>Conditions :</label>
 				<%= form.text_area :conditions, required: true %>

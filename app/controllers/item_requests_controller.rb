@@ -21,9 +21,13 @@ class ItemRequestsController < ApplicationController
         @like = ItemRequestLike.new
         @like.item_request_id = params[:like][:item_request_id]
         @like.user_id = session[:user_id]
+        
         check_like = ItemRequestLike.where(user_id: session[:user_id], item_request_id: params[:like][:item_request_id]).first
+        item_request = ItemRequest.find(params[:like][:item_request_id])
+        
         if check_like == nil then
             if @like.save then
+                Notification.create([{user_from_id: session[:user_id], user_to_id: item_request.user.id, ressource: "item_request_like", ressource_id: item_request.id, is_read: false}])
                 render json: {"type" => "like", "text" => "Item Request Liked !!!"}
             else
                 render json: {"type" => "error", "error" => @like.errors.full_messages}
@@ -236,6 +240,7 @@ class ItemRequestsController < ApplicationController
                     @suggestion.per = @item.per
                     @suggestion.status = @sug_status[0]
                     if @suggestion.save then
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: @request.user.id , ressource: "item_request_suggest", ressource_id: @request.id, is_read: false}])
                         render json: {"type" => "success", "text" => "Item Request Suggestion Added Successfully !!!"}
                     else
                         render json: {"type" => "error", "text" => @suggestion.errors.full_messages}
@@ -277,6 +282,7 @@ class ItemRequestsController < ApplicationController
                             @suggestion.item_request_id = @request.id
                             @suggestion.status = @sug_status[0]
                             if @suggestion.save then
+                                Notification.create([{user_from_id: session[:user_id], user_to_id: @request.user.id , ressource: "item_request_suggest", ressource_id: @request.id, is_read: false}])
                                 render json: {"type" => "success", "text" => "Item Request Suggestion Added Successfully !!!"}
                             else
                                 render json: {"type" => "error", "text" => @suggestion.errors.full_messages}
@@ -314,6 +320,7 @@ class ItemRequestsController < ApplicationController
         @suggestion = @request.item_request_suggestion.find(params[:id])
         if session_user.id == @suggestion.item.user.id then
             if @suggestion.update(params[:item_request_suggestion].permit(:price, :currency, :per, :status)) then
+                Notification.create([{user_from_id: session[:user_id], user_to_id: @request.user.id , ressource: "update_item_request_suggest_content", ressource_id: @request.id, is_read: false}])
                 render json: {"type" => "success", "text" => "Item Request Updated Successfully !!!"}
             else
                 render json: {"type" => "error", "text" => @suggestion.errors.full_messages}
@@ -338,6 +345,7 @@ class ItemRequestsController < ApplicationController
                             @suggestion.status = @sug_status[status]
                             @suggestion.save
                             accept_suggestion(@suggestion, @request.count)
+                            Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
                             render json: {"type" => "success", "text" => "Item Suggestion Status Updated To #{@sug_status[status].capitalize} !!!", "borrow" => "Item Borrow User Request Sent !!!"}
                         else
                             if type == "check" then
@@ -346,6 +354,7 @@ class ItemRequestsController < ApplicationController
                                 @suggestion.status = @sug_status[status]
                                 @suggestion.save
                                 accept_suggestion(@suggestion, rests)
+                                Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
                                 render json: {"type" => "success", "text" => "Item Suggestion Status Updated To #{@sug_status[status].capitalize} !!!"}
                             else
                                 render json: {"type" => "error", "text" => "Unknown Update Type !!!"}

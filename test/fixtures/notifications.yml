@@ -1,15 +1,15 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  user: one
+  user_from_id: one
+  user_to_id: one
   ressource: MyString
   ressource_id: 1
-  about: MyString
-  text: MyString
+  is_read: false
 
 two:
-  user: two
+  user_from_id: two
+  user_to_id: two
   ressource: MyString
   ressource_id: 1
-  about: MyString
-  text: MyString
+  is_read: false

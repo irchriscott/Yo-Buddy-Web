@@ -10,6 +10,7 @@ class Item < ApplicationRecord
 
     before_save { self.is_temp = false if self.is_temp == nil }
     validates :count, length: {minimum: 1}
+    validates :uuid, uniqueness: true
 
   	def likes
     		@likes = Array.new

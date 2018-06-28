@@ -5,8 +5,21 @@
 **/
 
 const socket = io("127.0.0.1:5000");
+let sessionID = null;
+let sessionUsername = null;
+let sessionName = null;
 
 $(function() {
+
+    var contID = $("body").find("#session_user_id");
+    var contName = $("body").find("#session_name");
+    var contUsername = $("body").find("#session_username");
+
+    if(contID.length > 0){
+        sessionID = contID.val();
+        sessionUsername = contUsername.val();
+        sessionName = contName.val();
+    }
 
     $(document).on("keyup", function(e){
         if(e.keyCode === 27) {
@@ -111,6 +124,7 @@ $(function() {
         $("#item_image_main").attr("src", image);
     });
 
+    $("#yb-show-session-menu").showMenu();
     $("#item_date").setDate();
     $("#item_price").setNumber();
     $("#item_price_min").setNumber();
@@ -203,6 +217,14 @@ $(function() {
 
     $("#new_comment").postItemComment();
 
+    socket.on("getNotification", function(owner){
+        if(sessionID == owner){
+            var contNot = $("body").find("#yb-session-notifications");
+            contNot.fadeIn();
+            contNot.text(parseInt(contNot.text()) + 1);
+        }
+    });
+
     socket.on("getComment", function(comment){
         var container = $("body").find("#yb-item-comments");
         var url = container.attr("data-url");
@@ -253,7 +275,7 @@ $(function() {
 
     socket.on("getLike", function(like){
         var container = $("body").find(".like-sum-" + like.item);
-        var sum = parseInt(container.attr("data-number"))
+        var sum = parseInt(container.attr("data-number"));
         if(like.type == "like"){
             container.attr("data-number", sum + 1);
         } else {
@@ -366,7 +388,7 @@ $(function() {
         }
     });
 
-    socket.on("getNotification", function(data){
+    socket.on("getSuggestionUpdate", function(data){
         var session = $("#session_user_id").val();
         setLoadData("yb-item-request-sugestions", data.url);
         if(session == data.owner){
@@ -504,6 +526,7 @@ function previewImage(input, img) {
 }
 
 function multipleImagesPreview(input, placeToInsertImagePreview) {
+    placeToInsertImagePreview.empty();
     if (input.files) {
         var filesAmount = input.files.length;
         var images = new Array();
@@ -695,6 +718,7 @@ jQuery.fn.followUserEvent = function(){
                 if(response.type == "follow"){
                     $("body").find("#yb-user-follow-container-" + id).html('<span><i class="icon ion-person followed"></i></span>');
                     socket.emit("followUser", {"id": id, "user": user, "type": response.type});
+                    socket.emit("setNotification", user);
                     $("#yb-user-follow-container-user").html('<a class="yb-edit-user-link" style="background: lightgreen;"><span><i class="icon ion-checkmark" style="color: #FFF;"></i></span> Follow</a>');
                     showSuccessMessage("success", response.text);
                 } else if(response.type == "unfollow"){
@@ -749,8 +773,9 @@ jQuery.fn.likeItemEvent = function(){
             contentType: false,
             success: function(response){
                 if(response.type == "like"){
-                    socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user})
-                    form.find(".like-" + item).html("<i class='icon ion-ios-heart liked'></i>")
+                    socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user});
+                    socket.emit("setNotification", user);
+                    form.find(".like-" + item).html("<i class='icon ion-ios-heart liked'></i>");
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
                     socket.emit("like", {"item": item, "type": "dislike", "liker": liker, "user": user})
@@ -785,6 +810,7 @@ jQuery.fn.likeItemRequestEvent = function(){
             success: function(response){
                 if(response.type == "like"){
                     socket.emit("rlike", {"item": item, "type": "like", "liker": liker, "user": user})
+                    socket.emit("setNotification", user);
                     form.find(".request-like-" + item).html("<i class='icon ion-ios-heart liked'></i>")
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
@@ -941,6 +967,7 @@ jQuery.fn.postItemComment = function(){
         var item = $(this).attr("data-item");
         var form = $(this);
         var from = $(this).attr("data-from");
+        var user = $(this).attr("data-user");
         $.ajax({
             type:'POST',
             url: url,
@@ -950,6 +977,7 @@ jQuery.fn.postItemComment = function(){
             success: function(response){
                 if(response.type == "success"){
                     socket.emit("comment", {"url": comments, "item": item, "from": from });
+                    socket.emit("setNotification", user);
                     showSuccessMessage("success", response.text);
                     $(".mfp-close").click();
                 } else {
@@ -1073,6 +1101,7 @@ jQuery.fn.borrowItemUser = function(){
         e.preventDefault();
         var form = new FormData($(this)[0]);
         var url = $(this).attr("action");
+        var user = $(this).attr("data-user");
         $.ajax({
             type:"POST",
             url: url,
@@ -1082,6 +1111,7 @@ jQuery.fn.borrowItemUser = function(){
             success: function(response){
                 if(response.type == "success"){
                     showSuccessMessage("success", response.text);
+                    socket.emit("setNotification", user);
                     $(".mfp-close").click();
                 } else if(response.type == "info") {
                     showInfoMessage("info", response.text);
@@ -1199,6 +1229,7 @@ jQuery.fn.suggestItemRequest = function(){
                         "from": from
                     }
                     socket.emit("suggestion", suggestion);
+                    socket.emit("setNotification", owner);
                     console.log(suggestion);
                     $(".mfp-close").click();
                 } else {
@@ -1243,13 +1274,14 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                             data: {"type":"check"},
                             success: function(response){
                                 if(response.type == "success"){
-                                    socket.emit("setNotification", {
+                                    socket.emit("updateSuggestion", {
                                         "owner":owner,
                                         "user":user,
                                         "url":url,
                                         "status":status[parseInt(_status) - 1].toUpperCase(),
                                         "about":"suggestion"
                                     });
+                                    socket.emit("setNotification", owner);
                                     showSuccessMessage("success", response.text);
                                 } else if (response.type == "check" && parseInt(_status) == 1){
                                     iziToast.question({
@@ -1271,13 +1303,14 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                                     data: {"type":"update"},
                                                     success: function(response){
                                                         if(response.type == "success"){
-                                                            socket.emit("setNotification", {
+                                                            socket.emit("updateSuggestion", {
                                                                 "owner":owner,
                                                                 "user":user,
                                                                 "url":url,
                                                                 "status":status[parseInt(_status)].toUpperCase(),
                                                                 "about":"suggestion-status"
                                                             });
+                                                            socket.emit("setNotification", owner);
                                                             showSuccessMessage("success", response.text);
                                                             showSuccessMessage("borrow", response.borrow);
                                                         } else{
@@ -1382,6 +1415,7 @@ jQuery.fn.showMenu = function (){
     });
     $(this).click(function(ev){
         ev.stopPropagation();
+        ev.preventDefault();
         $("#yb-menu-items-" + id).fadeIn();
     });
 }
@@ -1455,7 +1489,7 @@ function updateMessageScroll(){
 function getUserCurrentLocation(lat, long, addr, where){
 
     if(!navigator.geolocation){
-        return alert('Geolocation not supported by your browser');
+        return showErrorMessage('error_geolocation', 'Geolocation not supported by your browser');
     }
    navigator.geolocation.getCurrentPosition(function(position){
 

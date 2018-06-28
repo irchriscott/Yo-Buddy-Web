@@ -61,6 +61,7 @@ class ItemBorrowUserController < ApplicationController
                 if item.user.id != session[:user_id] then
                     if @borrow.save then
                         save_message("new", @borrow)
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_borrow", ressource_id: item.id, is_read: false}])
                         render json: {"type" => "success", "text" => "Item Borrow Request Sent !!!"}
                     else
                         render json: {"type" => "error", "text" => @borrow.errors}
@@ -112,6 +113,7 @@ class ItemBorrowUserController < ApplicationController
                     if Array[@status[0], @status[2]].include?(@borrow.status)
                         if @borrow.update(update_params) then
                             save_message("data", @borrow)
+                            Notification.create([{user_from_id: session[:user_id], user_to_id: (@borrow.user.id == session[:user_id]) ? @borrow.item.user.id : @borrow.user.id , ressource: "update_borrow_content", ressource_id: @borrow.id, is_read: false}])
                             flash[:success] = "Borrow Item Updated !!!"
                             format.html{redirect_to item_item_borrow_user_path(@item, @borrow)}
                             format.json{render json: {"type" => "success", "text" => "Borrow Item Updated !!!"}}
@@ -151,6 +153,7 @@ class ItemBorrowUserController < ApplicationController
                             borrow.status = @status[status.to_i]
                             borrow.save
                             save_message(@status[status.to_i], borrow)
+                            Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
                             format.html{ redirect_to item_item_borrow_user_path(@item, borrow) }
                             format.json {render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}}
                             flash[:success] = "Borrow Request #{@status[status.to_i].capitalize} !!!"
@@ -169,6 +172,7 @@ class ItemBorrowUserController < ApplicationController
                         borrow.status = @status[status.to_i]
                         borrow.save
                         save_message(@status[status.to_i], borrow)
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
                         format.html{ redirect_to item_item_borrow_user_path(@item, borrow) }
                         format.json {render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}}
                         flash[:success] = "Borrow Request #{@status[status.to_i].capitalize} !!!"
@@ -182,6 +186,7 @@ class ItemBorrowUserController < ApplicationController
                         borrow.status = @status[status.to_i]
                         borrow.save
                         save_message(@status[status.to_i], borrow)
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
                         format.html{ redirect_to item_item_borrow_user_path(@item, borrow) }
                         format.json {render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}}
                         flash[:success] = "Borrow Request #{@status[status.to_i].capitalize} !!!"

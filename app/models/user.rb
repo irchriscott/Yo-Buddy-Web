@@ -70,6 +70,14 @@ class User < ApplicationRecord
         return self.followers.count
     end
 
+    def notifications
+        return Notification.where(user_to_id: self.id).order(created_at: "DESC")
+    end
+
+    def notification_count
+        return self.notifications.count
+    end
+
     def json
         return {
             "id" => self.id,

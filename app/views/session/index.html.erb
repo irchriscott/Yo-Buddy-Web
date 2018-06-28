@@ -66,10 +66,10 @@
 		                            <% end %>
 		                        </div>
 		                        <div class="yb-item-about">
-		                            <h3><a href="<%= item_path(item) %>"><%= item.name %></a></h3>
-		                            <p class="yb-item-category"><a href="<%= category_path(item.category) %>"><%= item.category.name %></a> - <a href="<%= subcategory_path(item.category, item.subcategory) %>"><%= item.subcategory.name %></a></p>
+		                            <h3><a href="<%= item_show_path(item.user.username, item.uuid, item) %>"><%= item.name %></a></h3>
+		                            <p class="yb-item-category"><a href="<%= category_path(item.category.uuid, item.category) %>"><%= item.category.name %></a> - <a href="<%= subcategory_path(item.category.uuid, item.category, item.subcategory) %>"><%= item.subcategory.name %></a></p>
 		                            <p class="yb-item-date">
-		                                <span>by <a href="<%= user_path(item.user) %>"><%= item.user.name %></a></span>
+		                                <span>by <a href="<%= user_items_path(item.user.username, item.user) %>"><%= item.user.name %></a></span>
 		                                -
 		                                <span id="yb-item-datetime-<%= item.id %>" data-date="<%= item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
 		                            </p>

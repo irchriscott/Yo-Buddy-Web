@@ -1,8 +1,8 @@
 <p><strong>ID : </strong><%= @borrow.code %></p>
-<p><strong>Owner : </strong><%= link_to @borrow.item.user.name, user_path(@borrow.item.user), target: "_blank" %></p>
-<p><strong>Borrower : </strong><%= link_to @borrow.user.name, user_path(@borrow.user), target: "_blank" %></p>
-<p><strong>Item : </strong><%= link_to @borrow.item.name, item_path(@borrow.item), target: "_blank" %></p>
-<p><strong>Category : </strong><%= link_to @borrow.item.category.name, category_path(@borrow.item.category), target: "_blank" %> - <%= link_to @borrow.item.subcategory.name, subcategory_path(@borrow.item.category, @borrow.item.subcategory), target: "_blank" %></p>
+<p><strong>Owner : </strong><%= link_to @borrow.item.user.name, user_items_path(@borrow.item.user.username, @borrow.item.user), target: "_blank" %></p>
+<p><strong>Borrower : </strong><%= link_to @borrow.user.name, user_items_path(@borrow.user.username, @borrow.user), target: "_blank" %></p>
+<p><strong>Item : </strong><%= link_to @borrow.item.name, item_show_path(@borrow.item.user.username, @borrow.item.uuid, @borrow.item.id), target: "_blank" %></p>
+<p><strong>Category : </strong><%= link_to @borrow.item.category.name, category_path(@borrow.item.category.uuid, @borrow.item.category), target: "_blank" %> - <%= link_to @borrow.item.subcategory.name, subcategory_path(@borrow.item.category.uuid, @borrow.item.category, @borrow.item.subcategory), target: "_blank" %></p>
 <p><strong>Single Price : </strong><span id="yb-borrow-single-price" data-number="<%= @borrow.price %>"><%= @borrow.price %></span> <%= @borrow.currency %> / <%= @borrow.per %></p>
 <p><strong>Number : </strong><%= @borrow.updated_numbers %> <% if @borrow.updated_numbers == 1 %><%= @borrow.per %>  <% else %> <%= "#{@borrow.per}s" %><% end %></p>
 <p><strong>Quantity : </strong><%= @borrow.count %> Items</p>

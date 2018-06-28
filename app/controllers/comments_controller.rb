@@ -15,7 +15,8 @@ class CommentsController < ApplicationController
         @item = Item.find(params[:item_id])
         @comment = @item.comment.create(comment_params)
         CommentChannel.broadcast_to(@item, @comment)
-        render json:{"type" => "success", "text"=>"Comment Saved !!!", "errors"=> @comment.errors.full_messages }
+        Notification.create([{user_from_id: session[:user_id], user_to_id: @item.user.id, ressource: "item_comment", ressource_id: @item.id, is_read: false}])
+        render json:{"type" => "success", "text" => "Comment Saved !!!", "errors" => @comment.errors.full_messages }
     end
 
     def edit

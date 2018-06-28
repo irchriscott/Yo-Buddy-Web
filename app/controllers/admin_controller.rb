@@ -1,6 +1,7 @@
 class AdminController < ApplicationController
 
 	include AdminHelper
+	include ApplicationHelper
 
 	before_action :check_admin_session, except: [:index, :signup]
 	skip_before_action :check_admin_session, only: [:index, :signup]
@@ -258,6 +259,7 @@ class AdminController < ApplicationController
 
 	def create_category
 		@category = Category.create(params[:category].permit(:name, :description))
+		@category.uuid = generate_uuid(params[:category][:name])
 		if @category.save then
 			flash[:success] = "Category Added Successfully !!!"
 		else
@@ -279,6 +281,7 @@ class AdminController < ApplicationController
 
 	def update_category
 		@category = Category.find(params[:id])
+		@category.uuid = generate_uuid(params[:category][:name])
 		if @category.update(params[:category].permit(:name, :description)) then
 			flash[:success] = "Category Updated Successfully !!!"
 		else
@@ -301,6 +304,7 @@ class AdminController < ApplicationController
 	def create_subcategory
 		@category = Category.find(params[:subcategory][:category_id])
 		@subcategory = @category.subcategory.create(params[:subcategory].permit(:name))
+		@subcategory.uuid = generate_uuid(params[:subcategory][:name])
 		if @subcategory.save then
 			flash[:success] = "Subcategory Added Successfully !!!"
 		else

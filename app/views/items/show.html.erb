@@ -24,8 +24,8 @@
 			</div>
 			<div class="yb-single-info-item">
 				<h3><%= @item.name %></h3>
-				<p class="yb-single-category"><%= link_to @item.category.name, category_path(@item.category) %> - <%= link_to @item.subcategory.name, subcategory_path(@item.category, @item.subcategory) %></p>
-				<p class="yb-single-user-date">by <%= link_to @item.user.name, user_path(@item.user) %> - <span id="item_date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+				<p class="yb-single-category"><%= link_to @item.category.name, category_path(@item.category.uuid, @item.category) %> - <%= link_to @item.subcategory.name, subcategory_path(@item.category.uuid, @item.category, @item.subcategory) %></p>
+				<p class="yb-single-user-date">by <%= link_to @item.user.name, user_items_path(@item.user.username, @item.user) %> - <span id="item_date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
 				<% if is_logged_in? %>
 					<div class="yb-single-follow" id="yb-user-follow-container-<%= @item.user.id %>" data-id="<%= @item.user.id %>">
 						<% if @item.user.followers.include?(session_user.id) %>
@@ -99,12 +99,12 @@
 					<ul>
 						<% if is_logged_in? %>
 						<% if session_user.id == @item.user.id %>
-						<li><a href="<%= edit_item_path(@item) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+						<li><a href="<%= item_edit_path(@item.user.username, @item.uuid, @item) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
 						<li><a href="#"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
 						<% end -%>
 						<% end -%>
-						<li><a href="<%= item_available_path(@item) %>" id="yb-item-check-available"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Available</span></a></li>
-						<li><a href="<%= new_item_item_borrow_user_path(@item) %>" id="yb-new-item-borrow-user-path"><span class="item-icon"><i class="icon ion-plus"></i></span><span class="item-text">Borrow</span></a></li>
+						<li><a href="<%= item_available_path(@item.user.username, @item.uuid, @item) %>" id="yb-item-check-available"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Available</span></a></li>
+						<li><a href="<%= borrow_item_path(@item.user.username, @item.uuid, @item) %>" id="yb-new-item-borrow-user-path"><span class="item-icon"><i class="icon ion-plus"></i></span><span class="item-text">Borrow</span></a></li>
 						<li><a id="yb-favourite-item"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourite</span></a></li>
 						<li><a href="<%= report_new_path(@item.id) %>?ressource=item" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
 					</ul>

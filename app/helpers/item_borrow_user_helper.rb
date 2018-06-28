@@ -13,6 +13,8 @@ module ItemBorrowUserHelper
 					borrow.status = "failed"
 					borrow.save
 					save_message "failed", borrow
+                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
 				end
 			elsif borrow.status == "accepted" then
 				received = borrow.borrow_item_admin.where(status: "received").last
@@ -25,13 +27,17 @@ module ItemBorrowUserHelper
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
+                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
 								end
 							else
 								if now > check_date(received.created_at.localtime, 0, 1, 0) then
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-								end
+                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                end
 							end
 						elsif borrow.per == pers[1] then
 							if borrow.numbers < 3 then
@@ -39,25 +45,33 @@ module ItemBorrowUserHelper
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-								end
+                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                end
 							else
 								if now > check_date(received.created_at.localtime, 1, 0, 0) then
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-								end
+                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                end
 							end
 						elsif borrow.per == pers[2] then
 							if now > check_date(received.created_at.localtime, 2, 0, 0) then
 								borrow.status = "failed"
 								borrow.save
 								save_message "failed", borrow
-							end
+                                Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                            end
 						else
 							if now > check_date(received.created_at.localtime, 3, 0, 0) then
 								borrow.status = "failed"
 								borrow.save
 								save_message "failed", borrow
+                                Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
 							end
 						end
 					end

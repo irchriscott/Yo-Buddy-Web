@@ -39,5 +39,8 @@ io.on("connection", function(socket){
 		io.emit("getSuggestion", suggestion);
 	});
 
+	socket.on("updateSuggestion", function(status){
+		io.emit("getSuggestionUpdate", status);
+	});
 });
 

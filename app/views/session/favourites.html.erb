@@ -47,10 +47,10 @@
 								<%= image_tag item.item.item_image[0].image.url, alt: item.item.name %>
 							</div>
 							<div class="yb-about">
-								<h3><%= link_to item.item.name, item_path(item.item) %></h3>
+								<h3><%= link_to item.item.name, item_show_path(item.item.user.username, item.item.uuid, item.item) %></h3>
 								<p class="yb-category">
-									<a href="<%= category_path(item.item.category) %>"><%= item.item.category.name %></a> - 
-									<a href="<%= subcategory_path(item.item.category, item.item.subcategory) %>"><%= item.item.subcategory.name %></a>
+									<a href="<%= category_path(item.item.category.uuid, item.item.category) %>"><%= item.item.category.name %></a> - 
+									<a href="<%= subcategory_path(item.item.category.uuid, item.item.category, item.item.subcategory) %>"><%= item.item.subcategory.name %></a>
 								</p>
 								<p class="yb-item-data" style="margin-top: -8px;">
 									<span>by <%= link_to item.item.user.name, user_path(item.item.user) %></span> - 

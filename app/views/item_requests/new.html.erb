@@ -54,7 +54,7 @@
 		CKEDITOR.replace( 'yb-item-request-description' );
 		$("#yb-close-add-request").closePopup();
 		$("#item_request_images").change(function(e){
-	        multipleImagesPreview(this, "#yb-images-preview");
+	        multipleImagesPreview(this, $("#yb-images-preview"));
 	    });
 
 	    filterSubcategories($("#item_request_category_id"), $("#item_request_subcategory_id"));

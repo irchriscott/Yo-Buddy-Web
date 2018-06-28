@@ -6,6 +6,8 @@ class ItemRequest < ApplicationRecord
     has_many :item_request_image
     has_many :item_request_like
 
+    validates :uuid, uniqueness: true
+
     def likes
         @likes = Array.new
         self.item_request_like.all do |user|

@@ -9,6 +9,7 @@ class BorrowItemUser < ApplicationRecord
 
 	validates :numbers, length: {minimum: 1}
 	validates :count, length: {minimum: 1}
+	validates :uuid, uniqueness: true
 
 	before_save {self.is_deleted = false}
 

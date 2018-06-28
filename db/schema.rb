@@ -10,21 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180604000540) do
-
-  create_table "active_admin_comments", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.string "namespace"
-    t.text "body"
-    t.string "resource_type"
-    t.bigint "resource_id"
-    t.string "author_type"
-    t.bigint "author_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
-    t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
-    t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id"
-  end
+ActiveRecord::Schema.define(version: 20180626041053) do
 
   create_table "addresses", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.float "longitude", limit: 24
@@ -89,13 +75,14 @@ ActiveRecord::Schema.define(version: 20180604000540) do
     t.string "conditions"
     t.string "status"
     t.integer "numbers"
+    t.integer "count"
+    t.boolean "is_deleted"
     t.datetime "from_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.datetime "to_date"
     t.integer "last_update_user_id"
-    t.boolean "is_deleted"
-    t.integer "count"
+    t.string "uuid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["item_id"], name: "index_borrow_item_users_on_item_id"
     t.index ["user_id"], name: "index_borrow_item_users_on_user_id"
   end
@@ -113,17 +100,18 @@ ActiveRecord::Schema.define(version: 20180604000540) do
     t.integer "sender_id"
     t.integer "receiver_id"
     t.string "message"
+    t.boolean "has_images"
     t.string "status"
     t.boolean "is_deleted"
     t.integer "deleted_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "has_images"
     t.index ["borrow_item_user_id"], name: "index_borrow_messages_on_borrow_item_user_id"
   end
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "name"
+    t.string "uuid"
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -201,19 +189,20 @@ ActiveRecord::Schema.define(version: 20180604000540) do
     t.bigint "category_id"
     t.bigint "subcategory_id"
     t.string "title"
-    t.string "description"
+    t.text "description", limit: 4294967295
     t.datetime "from_date"
     t.datetime "to_date"
-    t.string "per"
-    t.string "status"
-    t.boolean "is_deleted"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.float "min_price", limit: 24
     t.float "max_price", limit: 24
     t.string "currency"
+    t.string "per"
     t.integer "numbers"
     t.integer "count"
+    t.string "status"
+    t.boolean "is_deleted"
+    t.string "uuid"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_item_requests_on_category_id"
     t.index ["subcategory_id"], name: "index_item_requests_on_subcategory_id"
     t.index ["user_id"], name: "index_item_requests_on_user_id"
@@ -224,17 +213,18 @@ ActiveRecord::Schema.define(version: 20180604000540) do
     t.float "price", limit: 24
     t.string "per"
     t.string "currency"
-    t.string "description"
+    t.text "description", limit: 4294967295
     t.string "status"
+    t.integer "count"
     t.boolean "is_available"
     t.boolean "is_deleted"
+    t.boolean "is_temp"
+    t.string "uuid"
     t.bigint "category_id"
     t.bigint "subcategory_id"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_temp"
-    t.integer "count"
     t.index ["category_id"], name: "index_items_on_category_id"
     t.index ["subcategory_id"], name: "index_items_on_subcategory_id"
     t.index ["user_id"], name: "index_items_on_user_id"
@@ -251,6 +241,16 @@ ActiveRecord::Schema.define(version: 20180604000540) do
     t.index ["borrow_item_user_id"], name: "index_list_borrow_items_on_borrow_item_user_id"
   end
 
+  create_table "notifications", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.integer "user_from_id"
+    t.integer "user_to_id"
+    t.string "ressource"
+    t.integer "ressource_id"
+    t.boolean "is_read"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "reports", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.bigint "user_id"
     t.string "ressource"
@@ -264,6 +264,7 @@ ActiveRecord::Schema.define(version: 20180604000540) do
 
   create_table "subcategories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "name"
+    t.string "uuid"
     t.bigint "category_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -297,12 +298,12 @@ ActiveRecord::Schema.define(version: 20180604000540) do
     t.string "number"
     t.string "image"
     t.string "gender"
+    t.string "token"
     t.boolean "is_authenticated"
     t.boolean "is_private"
     t.boolean "is_blocked"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "token"
   end
 
   add_foreign_key "addresses", "users"

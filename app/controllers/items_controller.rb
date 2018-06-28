@@ -1,6 +1,7 @@
 class ItemsController < ApplicationController
 
     include ItemsHelper
+    include ApplicationHelper
 
     before_action :check_session, only: [:new, :edit]
     before_action :set_item_data_item, only: [:new, :edit, :create, :update, :show]
@@ -27,6 +28,7 @@ class ItemsController < ApplicationController
             @item.user_id = session[:user_id]
             @item.is_available = true
             @item.is_deleted = false
+            @item.uuid = generate_uuid(params[:item][:name])
 
             if @item.save then
                 images = params[:item][:image]
@@ -64,8 +66,9 @@ class ItemsController < ApplicationController
         respond_to do |format|
             @item = Item.find(params[:id])
             @item.is_available = params[:item][:is_available]
+            @item.uuid = generate_uuid(params[:item][:name])
             if @item.user.id == session[:user_id] then
-                subcat = Subcategory.find(params[:item_request][:subcategory_id])
+                subcat = Subcategory.find(params[:item][:subcategory_id])
                 if subcat.category.id == params[:item][:category_id].to_i then
                     if @item.update(item_params) then
                         images = params[:item][:image]
@@ -240,11 +243,14 @@ class ItemsController < ApplicationController
         @like.item_id = params[:like][:item_id]
         @like.user_id = (is_logged_in?) ? session[:user_id] : params[:like][:session]
         user_id = (is_logged_in?) ? session[:user_id] : params[:like][:session]
+
+        item = Item.find(params[:like][:item_id])
         
         check_like = ItemLike.where(user_id: user_id, item_id: params[:like][:item_id]).first
 
         if check_like == nil then
             if @like.save then
+                Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
                 render json: {"type" => "like", "text" => "Item Liked !!!"}
             else
                 render json: {"type" => "error", "error" => @like.errors.full_messages}

@@ -88,7 +88,7 @@
 								<% end %>
 							</div>
 							<div class="yb-about">
-								<h3 style="margin-top: 10px;"><%= link_to borrower.user.name, item_item_borrow_user_path(borrower.item, borrower) %></h3>
+								<h3 style="margin-top: 10px;"><%= link_to borrower.user.name, item_borrow_path(borrower.item.uuid, borrower.item, borrower) %></h3>
 								<p class="yb-category">Status - <span style="text-transform: capitalize;"><%= borrower.status %></span></p>
 								<p class="yb-item-data">
 									<span class="yb-data">From - <%= borrower.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>

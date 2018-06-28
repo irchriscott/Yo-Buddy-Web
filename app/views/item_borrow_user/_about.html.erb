@@ -57,11 +57,11 @@
 </div>
 <div class="yb-info">
 	<% if session_user.id == @borrow.item.user.id %>
-	<h4><%= link_to @borrow.user.name, user_path(@borrow.user), target: "_blank" %></h4>
+	<h4><%= link_to @borrow.user.name, user_items_path(@borrow.user.username, @borrow.user), target: "_blank" %></h4>
 	<% else %>
-	<h4><%= link_to @borrow.item.user.name, user_path(@borrow.item.user), target: "_blank" %></h4>
+	<h4><%= link_to @borrow.item.user.name, user_items_path(@borrow.item.user.username, @borrow.item.user), target: "_blank" %></h4>
 	<% end %>
-	<p class="yb-item"><%= link_to @borrow.item.name, item_path(@borrow.item) %></p>
+	<p class="yb-item"><%= link_to @borrow.item.name, item_show_path(@borrow.item.user.username, @borrow.item.uuid, @borrow.item) %></p>
 	<p class="yb-date">
 		<span><strong>From - </strong> <%= @borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
 		<span><strong> - To - </strong> <%= @borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>

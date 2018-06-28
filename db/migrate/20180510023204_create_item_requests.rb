@@ -16,6 +16,7 @@ class CreateItemRequests < ActiveRecord::Migration[5.1]
       t.integer :count
       t.string :status
       t.boolean :is_deleted
+      t.string :uuid
 
       t.timestamps
     end

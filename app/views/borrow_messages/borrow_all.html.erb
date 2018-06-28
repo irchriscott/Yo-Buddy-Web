@@ -59,9 +59,9 @@
 					</div>
 					<div class="yb-about">
 						<% if session_user.id == borrow["borrow"].user.id %>
-						<h4><%= link_to borrow["borrow"].item.user.name, item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %></h4>
+						<h4><%= link_to borrow["borrow"].item.user.name, item_borrow_path(borrow["borrow"].item.uuid, borrow["borrow"].item, borrow["borrow"]) %></h4>
 						<% else %>
-						<h4><%= link_to borrow["borrow"].user.name, item_item_borrow_user_path(borrow["borrow"].item, borrow["borrow"]) %></h4>
+						<h4><%= link_to borrow["borrow"].user.name, item_borrow_path(borrow["borrow"].item.uuid, borrow["borrow"].item, borrow["borrow"]) %></h4>
 						<% end %>
 						<p class="yb-name"><%= borrow["borrow"].item.name %></p>
 						<p class="yb-date">

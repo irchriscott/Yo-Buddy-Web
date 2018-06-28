@@ -45,10 +45,10 @@
 									<%= image_tag item["item"].item_image[0].image.url, alt: item["item"].name %>
 								</div>
 								<div class="yb-about">
-									<h3><%= link_to item["item"].name, item_item_borrow_user_index_path(item["item"]) %></h3>
+									<h3><%= link_to item["item"].name, item_borrows_path(item["item"].user.username, item["item"].uuid, item["item"]) %></h3>
 									<p class="yb-category">
-										<a href="<%= category_path(item["item"].category) %>"><%= item["item"].category.name %></a> - 
-										<a href="<%= subcategory_path(item["item"].category, item["item"].subcategory) %>"><%= item["item"].subcategory.name %></a>
+										<a href="<%= category_path(item["item"].category.uuid, item["item"].category) %>"><%= item["item"].category.name %></a> - 
+										<a href="<%= subcategory_path(item["item"].category.uuid, item["item"].category, item["item"].subcategory) %>"><%= item["item"].subcategory.name %></a>
 									</p>
 									<p class="yb-item-data">
 										<span class="yb-data"><span><i class="icon ion-ios-heart"></i></span><span class="number" id="like-sum-<%= item["item"].id %>" data-number="<%= item["item"].item_like.count %>"></span></span>
