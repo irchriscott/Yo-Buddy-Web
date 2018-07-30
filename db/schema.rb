@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180626041053) do
+ActiveRecord::Schema.define(version: 20180730102034) do
 
   create_table "addresses", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.float "longitude", limit: 24
@@ -32,6 +32,42 @@ ActiveRecord::Schema.define(version: 20180626041053) do
     t.index ["item_id"], name: "index_admin_items_on_item_id"
   end
 
+  create_table "admin_user_activations", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "admin_user_id"
+    t.string "key"
+    t.string "key_type"
+    t.integer "max_items"
+    t.integer "max_users"
+    t.datetime "activated_date"
+    t.datetime "expary_date"
+    t.boolean "is_active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_admin_user_activations_on_admin_users_id"
+  end
+
+  create_table "admin_user_paychecks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "admin_users_id"
+    t.float "amount", limit: 24
+    t.string "currency"
+    t.datetime "from_date"
+    t.datetime "to_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_users_id"], name: "index_admin_user_paychecks_on_admin_users_id"
+  end
+
+  create_table "admin_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "user_id"
+    t.string "email"
+    t.string "password_digest"
+    t.string "privileges"
+    t.string "image"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_admin_users_on_users_id"
+  end
+
   create_table "admins", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "name"
     t.string "username"
@@ -41,6 +77,16 @@ ActiveRecord::Schema.define(version: 20180626041053) do
     t.string "privileges"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "borrow_item_accounts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "borrow_item_users_id"
+    t.float "amount", limit: 24
+    t.float "penalties", limit: 24
+    t.string "currency"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["borrow_item_users_id"], name: "index_borrow_item_accounts_on_borrow_item_users_id"
   end
 
   create_table "borrow_item_admins", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
@@ -72,7 +118,7 @@ ActiveRecord::Schema.define(version: 20180626041053) do
     t.float "price", limit: 24
     t.string "currency"
     t.string "per"
-    t.string "conditions"
+    t.text "conditions"
     t.string "status"
     t.integer "numbers"
     t.integer "count"
@@ -262,6 +308,18 @@ ActiveRecord::Schema.define(version: 20180626041053) do
     t.index ["user_id"], name: "index_reports_on_user_id"
   end
 
+  create_table "reset_passwords", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "resource"
+    t.integer "resource_id"
+    t.string "email"
+    t.string "token"
+    t.datetime "expiry_date"
+    t.boolean "is_active"
+    t.integer "count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "subcategories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "name"
     t.string "uuid"
@@ -306,8 +364,21 @@ ActiveRecord::Schema.define(version: 20180626041053) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "yb_packages", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.string "type"
+    t.integer "items"
+    t.integer "users"
+    t.float "price", limit: 24
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "addresses", "users"
   add_foreign_key "admin_items", "items"
+  add_foreign_key "admin_user_activations", "admin_users"
+  add_foreign_key "admin_user_paychecks", "admin_users", column: "admin_users_id"
+  add_foreign_key "admin_users", "users"
+  add_foreign_key "borrow_item_accounts", "borrow_item_users", column: "borrow_item_users_id"
   add_foreign_key "borrow_item_admins", "admins"
   add_foreign_key "borrow_item_admins", "borrow_item_users"
   add_foreign_key "borrow_item_follow_ups", "admins"

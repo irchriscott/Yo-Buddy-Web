@@ -1,0 +1,24 @@
+<section class="yb-admin-container">
+	<div class="yb-activation-key">
+		<h1><%= session_admin_user.user.name %></h1>
+		<p><%= session_admin_user.user.username %></p>
+		<hr>
+		<p><strong>Key Type : </strong> <%= @activation.key_type.capitalize! %> </p>
+		<hr>
+		<p><strong>Product Key : </strong></p>
+		<div class="yb-key"><p><%= @activation.get_key %></p></div>
+		<% if @activation.key_type.downcase! == "trial" %>
+			<% if @activation.is_active? %>
+				<h4>Your trial period will expire in <%= @activation.remaining %> days. Please, buy our packages.</h4>
+			<% else %>
+				<h4>Your trial period has expired. Please, pay for the selected package of your account.</h4>
+			<% end %>
+		<% else %>
+			<% if @activation.is_active? %>
+				<h4>Your key product will expire in <%= @activation.remaining %>.</h4>
+			<% else %>
+				<h4>Your key product has expired. You are required to pay for the extension at Yo Buddy offices.</h4>
+			<% end %>
+		<% end %>
+	</div>
+</section>

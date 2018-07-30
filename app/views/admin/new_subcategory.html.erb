@@ -3,7 +3,7 @@
 		<h2>Add Subcategory</h2>
 		<%= form_for :subcategory, url: admin_create_subcategory_path(@category) do |form| %>
 			<label>Subcategory Name : </label>
-			<%= form.text_field :name, required: true, placeholder: "Enter Category Name" %>
+			<%= form.text_field :name, required: true, placeholder: "Enter Category Name", autocomplete: "off" %>
 			<label>Category : </label>
 			<%= form.select(:category_id, value: @category.id) do %>
 				<% @categories.each do |category| %>

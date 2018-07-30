@@ -1,3 +1,4 @@
+<% if @active == true %>
 <div class="yb-borrow-messages-list">
 	<% if @messages.count > 0 %>
 		<div class="yb-messages-container">
@@ -91,3 +92,6 @@
 		</div>
 	<% end -%>
 </div>
+<% else %>
+	<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+<% end %>

@@ -1,0 +1,35 @@
+check_borrows:
+  cron: "* * * * *"
+  class: "BorrowUserMailerWorker"
+  queue: default
+  active_job: true
+  args:
+    running: true
+
+
+reset_password:
+  cron: "* * * * *"
+  class: "ResetPasswordWorker"
+  queue: default
+  active_job: true
+  args:
+    running: true
+
+
+update_borrow:
+  cron: "0 5,15 * * *"
+  class: "BorrowUpdateWorker"
+  queue: default
+  active_job: true
+  args:
+    running: true
+
+
+borrow_reminder:
+  cron: "0 5,15 * * *"
+  class: "ReminderWorker"
+  queue: default
+  active_job: true
+  args:
+    running: true
+

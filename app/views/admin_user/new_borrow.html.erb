@@ -1,0 +1,75 @@
+<div class="yb-modal-container">
+	<div class="yb-add-item">
+		<% if @item.is_available? %>
+			<h2>Borrow Item</h2>
+			<% if @active == true %>
+				<%= form_for :item_borrow, url: admin_u_borrow_item_create_path(@item.uuid, @item), html: {id: "yb-borrow-item-admin-user", "data-user": @item.user.id, "data-url": admin_u_borrow_user_find_path} do |form| %>
+					<%= form.hidden_field :item_id, value: @item.id %>
+					<%= form.hidden_field :user_id, id: "admin_user_user_id" %>
+					<div class="yb-add-price">
+						<label>Enter User : </label>
+						<%= form.text_field :user, placeholder: "Search For User Here", style:"width:calc(100% + 4px)", autocomplete: 'off', id: "admin_search_admin_query" -%>
+						<div class="yb-users-suggestion" style="width: calc(100% - 34px); margin-top: 5px;">
+							<span class="yb-loading-spinner"><img src="/assets/loading.gif" /></span>
+							<div class="yb-suggestion-list"><ul></ul></div>
+							<a href="#">Collapse</a>
+						</div>
+						<label>Propose Price :</label>
+						<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true, value: @item.price, autocomplete: 'off' %>
+						<%= form.select(:currency, required: true) do -%>
+							<% @currencies.each do |currency| %>
+								<% if @item.currency == currency["currency"] %>
+								<%= content_tag(:option, currency["name"], value: currency["currency"], selected: "selected") %>
+								<% else %>
+								<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+								<% end %>
+							<% end %>
+						<% end %>
+						<%= form.select(:per, required: true) do %>
+							<% @per.each do |t| %>
+								<% if @item.per == t %>
+								<%= content_tag(:option, "Per #{t}", value: t, selected: "selected") %>
+								<% else %>
+								<%= content_tag(:option, "Per #{t}", value: t) %>
+								<% end %>
+							<% end %>
+						<% end %>
+					</div>
+					<div class="yb-from-date">
+						<label>From & Times number :</label>
+						<%= form.text_field :from_date, required:true, placeholder: "YYYY/MM/DD H:m", autocomplete: 'off' %>
+						<%= form.number_field :numbers, required:true, min: '1', placeholder: "Enter Number of Times", autocomplete: 'off' %>
+					</div>
+					<label>Quantity : </label>
+					<%= form.number_field :count, required:true, min:"1", value: "1", style:"width:calc(100% - 22px)",  placeholder: "Enter Quantity", autocomplete: 'off' %>
+					<label>Conditions :</label>
+					<%= form.text_area :conditions, required: true %>
+					<div style="display: block; position: relative;">
+						<button type="submit" id="yb-submit-borrow">Submit</button>
+						<button type="button" id="yb-close-borrow-item" class="yb-btn-cancel">Cancel</button>
+					</div>
+				<% end %>
+				<script type="text/javascript">CKEDITOR.replace( 'item_borrow_conditions' );</script>
+			<% else %>
+				<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+				<button type="button" id="yb-close-borrow-item" class="yb-btn-cancel">Cancel</button>
+			<% end %>
+		<% else %>
+			<p class="yb-error">YOU CANT BORROW THIS ITEM. IT IS NOT AVAILABLE</p>
+			<button type="button" id="yb-close-borrow-item" class="yb-btn-cancel">Cancel</button>
+		<% end %>
+	</div>
+	<script type="text/javascript">
+		$("#yb-submit-borrow").click(function(){
+			for (instance in CKEDITOR.instances) {
+	            CKEDITOR.instances[instance].updateElement();
+	        }
+		});
+		$("#yb-close-borrow-item").closePopup();
+		$("#yb-borrow-item").borrowItemUser();
+		$("#item_borrow_per").changeItemPrice("item_borrow_price", "<%= @item.price %>", "<%= @item.per %>");
+		$("#item_borrow_from_date").datetimepicker();
+		$("#yb-borrow-item-admin-user").searchAdminUser();
+	</script>
+</div>
+

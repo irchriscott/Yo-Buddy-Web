@@ -35,6 +35,9 @@ class UserController < ApplicationController
             if check_user_email == nil then
                 if check_user_username == nil then
                     if @user.save then
+                        if @user.is_private == true then
+                            UserMailer.with(user: @user).private_user.deliver_now
+                        end
                         format.html { redirect_to new_user_path, success: 'User Registred Successfully !!!' }
                         format.json { render json:{"type" => "success", "text" => @user} }
                         flash[:success] = 'User Registred Successfully !!!'
@@ -96,15 +99,20 @@ class UserController < ApplicationController
         if is_logged_in? or params[:token] then
             user_id = (is_logged_in?) ? session[:user_id] : params[:follow][:session]
             check_follow = UserFollow.where(user_id: user_id, following_id: params[:follow][:following_id]).first
-            if check_follow == nil then
-                follow = UserFollow.new(params[:follow].permit(:following_id))
-                follow.user_id = (is_logged_in?) ? session[:user_id] : params[:follow][:session]
-                follow.save
-                Notification.create([{user_from_id: user_id, user_to_id: params[:follow][:following_id] , ressource: "user_follow", ressource_id: borrow.id, is_read: false}])
-                render json: {"type" => "follow", "text" => "User Followed !!!"}
+            
+            if check_active_user == true then
+                if check_follow == nil then
+                    follow = UserFollow.new(params[:follow].permit(:following_id))
+                    follow.user_id = (is_logged_in?) ? session[:user_id] : params[:follow][:session]
+                    follow.save
+                    Notification.create([{user_from_id: user_id, user_to_id: params[:follow][:following_id] , ressource: "user_follow", ressource_id: borrow.id, is_read: false}])
+                    render json: {"type" => "follow", "text" => "User Followed !!!"}
+                else
+                    check_follow.destroy
+                    render json: {"type" => "unfollow", "text" => "User Unfollowed !!!"}
+                end
             else
-                check_follow.destroy
-                render json: {"type" => "unfollow", "text" => "User Unfollowed !!!"}
+                render json: {"type" => "error", "text" => "Your Private Account Not Active !!!!"}
             end
         else
             render json: {"type" => "error", "text" => "Loggin Please !!!!"}
@@ -172,6 +180,74 @@ class UserController < ApplicationController
             end
         rescue Exception => e
             render json: 404
+        end
+    end
+
+    def reset_password
+    end
+
+    def send_reset_password_mail
+        respond_to do |format|
+            user = User.find_by(email: params[:email][:email])
+            if user != nil then
+
+                token = SecureRandom.urlsafe_base64(user.name.length)
+                rsp_check = ResetPassword.where(resource: "user", resource_id: user.id).first
+
+                if rsp_check != nil then
+                    rsp_check.token = token
+                    rsp_check.is_active = true
+                    rsp_check.expiry_date = get_expiry_date(1)
+                    rsp_check.count += 1
+                    rsp_check.save
+                else
+                    ResetPassword.create([{resource: "user", resource_id: user.id, email: params[:email][:email], token: token, expiry_date: get_expiry_date(1), is_active: true, count: 1 }])
+                end
+
+                ResetPasswordMailer.send_link(params[:email][:email], user_rp_link_url(token)).deliver_now
+
+                flash[:success] = "Link Sent To The Email Address !!!";
+                format.html { redirect_to new_user_path }
+                format.json { render json: { "type" => "success", "text" => "Link Sent To The Email Address !!!" } }
+            else
+                flash[:danger] = "Unknown Email Address !!!";
+                format.html { redirect_to user_reset_password_path }
+                format.json { render json: { "type" => "error", "text" => "Unknown Email Address !!!" } }
+            end
+        end
+    end
+
+    def reset_password_form
+        rsp = ResetPassword.find_by(token: params[:token]).first
+        if rsp != nil then
+            if rsp.is_active? then
+                @token = params[:token]
+            else
+                flash[:danger] = "Token Desactivated. Resend Email Please !!!";
+                redirect_to user_reset_password_path
+            end
+        else
+            flash[:error] = "Unknown Token !!!"
+            redirect_to user_reset_password_path
+        end
+    end
+
+    def reset_change_password
+        rsp = ResetPassword.find_by(token: params[:new_pswd][:rsp_token])
+        if params[:new_pswd][:password] == params[:new_pswd][:conf_password] then
+            
+            admin = User.find(rsp.resource_id)
+            admin.password = params[:new_pswd][:password]
+            admin.save
+
+            rsp.is_active = false
+            rsp.save
+
+            flash[:success] = "Password Changed !!!"
+            redirect_to new_user_path
+        else
+            flash[:danger] = "Password Didnt Match !!!"
+            redirect_to user_rp_link_path(rsp.token)
         end
     end
 

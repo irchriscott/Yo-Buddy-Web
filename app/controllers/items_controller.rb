@@ -7,6 +7,7 @@ class ItemsController < ApplicationController
     before_action :set_item_data_item, only: [:new, :edit, :create, :update, :show]
     before_action :check_token, only:[:like_item, :like_item_destroy, :create, :destroy, :update, :delete_image_item]
     skip_before_action :verify_authenticity_token
+    before_action :check_active
 
     def index
         @items = Item.all.order(created_at: :desc)
@@ -17,6 +18,7 @@ class ItemsController < ApplicationController
     end
 
     def new
+        @source = params[:source]
         @item = Item.new
         render layout: false
     end
@@ -30,26 +32,37 @@ class ItemsController < ApplicationController
             @item.is_deleted = false
             @item.uuid = generate_uuid(params[:item][:name])
 
-            if @item.save then
-                images = params[:item][:image]
-                for image in images
-                    @image = ItemImage.new
-                    @image.item_id = @item.id
-                    @image.image = image
-                    if @image.save then
-                    else
-                        flash[:danger] = @image.errors.full_messages
-                        format.json{ render json: {"type" => "error", "text" => @image.errors.full_messages} }
-                    end
-                end
+            if @active == true then
 
-                format.html { redirect_to session_items_path }
-                format.json { render json: {"type" => "success", "text" => "Item Added Successfully !!!"} }
-                flash[:success] = "Item Added Successfully !!!"
+                if @item.save then
+                    images = params[:item][:image]
+                    for image in images
+                        @image = ItemImage.new
+                        @image.item_id = @item.id
+                        @image.image = image
+                        if @image.save then
+                        else
+                            flash[:danger] = @image.errors.full_messages
+                            format.json{ render json: {"type" => "error", "text" => @image.errors.full_messages} }
+                        end
+                    end
+
+                    if session_user.is_private? then
+                        AdminItem.create([item_id: @item.id, borrow_id: 0, status: "Returned", is_available: true])
+                    end
+
+                    params[:source] == "admin" ? format.html { redirect_to admin_u_items_path } : format.html { redirect_to session_items_path }
+                    format.json { render json: {"type" => "success", "text" => "Item Added Successfully !!!"} }
+                    flash[:success] = "Item Added Successfully !!!"
+                else
+                    params[:source] == "admin" ? format.html { redirect_to admin_u_items_path } : format.html { redirect_to session_items_path }
+                    format.json { render json: {"type" => "error", "text" => @item.errors.full_messages}, status: :unprocessable_entity }
+                    flash[:danger] = @item.errors.full_messages
+                end
             else
-                format.html { redirect_to session_items_path }
-                format.json { render json: {"type" => "error", "text" => @item.errors.full_messages}, status: :unprocessable_entity }
-                flash[:danger] = @item.errors.full_messages
+                params[:source] == "admin" ? format.html { redirect_to admin_u_items_path } : format.html { redirect_to session_items_path }
+                format.json { render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}, status: :unprocessable_entity }
+                flash[:danger] = "Your Private Account Is Not Active !!!"
             end
         end
 
@@ -57,8 +70,9 @@ class ItemsController < ApplicationController
 
     def edit
         @item = Item.find(params[:id])
+        @source = params[:source]
         if @item.user.id == session[:user_id] then
-        render layout: false
+            render layout: false
         end
     end
 
@@ -67,39 +81,47 @@ class ItemsController < ApplicationController
             @item = Item.find(params[:id])
             @item.is_available = params[:item][:is_available]
             @item.uuid = generate_uuid(params[:item][:name])
-            if @item.user.id == session[:user_id] then
-                subcat = Subcategory.find(params[:item][:subcategory_id])
-                if subcat.category.id == params[:item][:category_id].to_i then
-                    if @item.update(item_params) then
-                        images = params[:item][:image]
-                        if images then
-                            for image in images
-                                @image = ItemImage.new
-                                @image.item_id = @item.id
-                                @image.image = image
-                                if @image.save then
-                                else
-                                    flash[:danger] = @image.errors.full_messages
+
+            if @active == true then
+
+                if @item.user.id == session[:user_id] then
+                    subcat = Subcategory.find(params[:item][:subcategory_id])
+                    if subcat.category.id == params[:item][:category_id].to_i then
+                        if @item.update(item_params) then
+                            images = params[:item][:image]
+                            if images then
+                                for image in images
+                                    @image = ItemImage.new
+                                    @image.item_id = @item.id
+                                    @image.image = image
+                                    if @image.save then
+                                    else
+                                        flash[:danger] = @image.errors.full_messages
+                                    end
                                 end
                             end
+                            params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
+                            format.json { render json: {"type" => "success", "text" => @item} }
+                            flash[:success] = "Item Updated Successfully !!!"
+                        else
+                            params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
+                            format.json { render json: { "type" => "error", "text" => @item.errors }, status: :unprocessable_entity }
+                            flash[:danger] = @item.errors.full_messages
                         end
-                        format.html { redirect_to @item }
-                        format.json { render json: {"type" => "success", "text" => @item} }
-                        flash[:success] = "Item Updated Successfully !!!"
                     else
-                        format.html { redirect_to @item }
-                        format.json { render json: { "type" => "error", "text" => @item.errors }, status: :unprocessable_entity }
-                        flash[:danger] = @item.errors.full_messages
+                        params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
+                        format.json { render json: { "type" => "error", "text" => "Subcategory is not the child of Category !!!" }, status: :unprocessable_entity }
+                        flash[:danger] = "Subcategory is not the child of Category !!!"
                     end
                 else
-                    format.html { redirect_to @item }
-                    format.json { render json: { "type" => "error", "text" => "Subcategory is not the child of Category !!!" }, status: :unprocessable_entity }
-                    flash[:danger] = "Subcategory is not the child of Category !!!"
+                    params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
+                    format.json { render json: { "type" => "error", "text" => "You are not the owner !!!" }, status: :unprocessable_entity }
+                    flash[:danger] = "You are not the owner !!!"
                 end
             else
-                format.html { redirect_to @item }
-                format.json { render json: { "type" => "error", "text" => "You are not the owner !!!" }, status: :unprocessable_entity }
-                flash[:danger] = "You are not the owner !!!"
+                params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
+                format.json { render json: { "type" => "error", "text" => "Your Private Account Is Not Active !!!" }, status: :unprocessable_entity }
+                flash[:danger] = "Your Private Account Is Not Active !!!"
             end
         end
     end
@@ -217,23 +239,32 @@ class ItemsController < ApplicationController
         @item = Item.find(@image.item.id)
         @images = @item.item_image.all
 
-        if @image.item.user.id == session[:user_id] then
-            if @images.length > 2 then
-                @image.destroy
-                render json: {"type" => "success", "text" => "Image Deleted Successfully !!!"}
+        if @active == true then
+
+            if @image.item.user.id == session[:user_id] then
+                if @images.length > 2 then
+                    @image.destroy
+                    render json: {"type" => "success", "text" => "Image Deleted Successfully !!!"}
+                else
+                    render json: {"type" => "error", "text" => "Item Images Are Few !!!"}
+                end
             else
-                render json: {"type" => "error", "text" => "Item Images Are Few !!!"}
+                render json: {"type" => "error", "text" => "You are not the owner !!!"}
             end
         else
-            render json: {"type" => "error", "text" => "You are not the owner !!!"}
+            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end
     end
 
     def destroy
         @item = Item.find(params[:id])
-        if @item.user.id == session[:user_id] then
-        @item.is_deleted = true
-        @item.save
+        if @active == true then
+            if @item.user.id == session[:user_id] then
+                @item.is_deleted = true
+                @item.save
+            end
+        else
+            flash[:danger] = "Your Private Account Is Not Active !!!"
         end
         redirect_to session_items_path
     end
@@ -248,31 +279,40 @@ class ItemsController < ApplicationController
         
         check_like = ItemLike.where(user_id: user_id, item_id: params[:like][:item_id]).first
 
-        if check_like == nil then
-            if @like.save then
-                Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
-                render json: {"type" => "like", "text" => "Item Liked !!!"}
+        if @active == true then
+        
+            if check_like == nil then
+                if @like.save then
+                    Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
+                    render json: {"type" => "like", "text" => "Item Liked !!!"}
+                else
+                    render json: {"type" => "error", "error" => @like.errors.full_messages}
+                end
             else
-                render json: {"type" => "error", "error" => @like.errors.full_messages}
+                check_like.destroy
+                render json: {"type" => "dislike", "text" => "Item Disliked !!!"}
             end
         else
-            check_like.destroy
-            render json: {"type" => "dislike", "text" => "Item Disliked !!!"}
+            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end
     end
 
     def like_item_destroy
         like = ItemLike.find(params[:id])
-        if like != nil then
-            if like.user.id == session[:user_id] then
-                like.destroy
-                render json: {"type" => "success", "text" => "Item Disliked !!!"}
+        if @active == true then
+            if like != nil then
+                if like.user.id == session[:user_id] then
+                    like.destroy
+                    render json: {"type" => "success", "text" => "Item Disliked !!!"}
+                else
+                    render json:{"type" => "error", "text" => "You Are Not The Owner !!!"}
+                end
             else
-                render json:{"type" => "error", "text" => "You Are Not The Owner !!!"}
-            end
+                render json:{"type" => "error", "text" => "Item Like Not Found !!!"}
+            end 
         else
-            render json:{"type" => "error", "text" => "Item Like Not Found !!!"}
-        end 
+            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
+        end
     end
 
     def favourite_item
@@ -282,29 +322,38 @@ class ItemsController < ApplicationController
 
         check_favourite = ItemFavourite.where(user_id: session[:user_id], item_id: params[:favourite][:item_id]).first
 
-        if check_favourite == nil then
-            if @favourite.save then
-                render json: {"type" => "success", "text" => "Item Marked as Favourite !!!"}
+        if @active == true then
+        
+            if check_favourite == nil then
+                if @favourite.save then
+                    render json: {"type" => "success", "text" => "Item Marked as Favourite !!!"}
+                else
+                    render json: {"type" => "error", "error" => @favourite.errors.full_messages}
+                end
             else
-                render json: {"type" => "error", "error" => @favourite.errors.full_messages}
+                check_favourite.destroy
+                render json: {"type" => "unmark", "text" => "Item Unmarked as Favourite !!!"}
             end
         else
-            check_favourite.destroy
-            render json: {"type" => "unmark", "text" => "Item Unmarked as Favourite !!!"}
+            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end
     end
 
     def favourite_item_destroy
         favourite = ItemFavourite.find(params[:id])
-        if favourite != nil then
-            if favourite.user.id == session[:user_id] then
-                favourite.destroy
-                render json: {"type" => "success", "text" => "Item Unmarked as Favourite !!!"}
+        if @active == true then
+            if favourite != nil then
+                if favourite.user.id == session[:user_id] then
+                    favourite.destroy
+                    render json: {"type" => "success", "text" => "Item Unmarked as Favourite !!!"}
+                else
+                    render json: {"type" => "error", "text" => "You are not the Owner !!!"}
+                end
             else
-                render json: {"type" => "error", "text" => "You are not the Owner !!!"}
+                render json: {"type" => "error", "text" => "404: Favourite Not Found !!!"}
             end
         else
-            render json: {"type" => "error", "text" => "404: Favourite Not Found !!!"}
+            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end
     end
 

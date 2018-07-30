@@ -36,6 +36,7 @@
 					<%= f.text_field :username, value: session_user.username, required: true %>
 					<label>Password :</label>
 					<%= f.password_field :password, placeholder: 'Enter Password', required: true %>
+					<div class="yb-space"></div>
 					<button type="submit">Submit</button>
 				<% end %>
 			</div>
@@ -45,9 +46,10 @@
 					<label>Current Password :</label>
 					<%= f.password_field :old_password, placeholder: 'Enter Password', required: true %>
 					<label>New Password :</label>
-					<%= f.password_field :password, placeholder: 'Enter New Password', required: true %>
+					<%= f.password_field :password, placeholder: 'Enter New Password', id: 'credintials_password', required: true %>
 					<label>Confirm New Passsword :</label>
 					<%= f.password_field :confirm_password, placeholder: 'Confirm New Password', required: true %>
+					<div class="yb-space"></div>
 					<button type="submit">Submit</button>
 				<% end %>
 			</div>
@@ -60,6 +62,7 @@
 					<%= f.text_field :town, value: session_user.town, required: true %>
 					<label>Password :</label>
 					<%= f.password_field :password, placeholder: 'Enter Password', required: true, id:'address_password' %>
+					<div class="yb-space"></div>
 					<button type="submit">Submit</button>
 				<% end %>
 			</div>
@@ -75,6 +78,7 @@
 					<%= f.telephone_field :number, value: session_user.number, required: true %>
 					<label>Password :</label>
 					<%= f.password_field :password, placeholder: 'Enter Password', required: true, id:'contact_password' %>
+					<div class="yb-space"></div>
 					<button type="submit">Submit</button>
 				<% end %>
 			</div>

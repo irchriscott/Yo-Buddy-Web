@@ -11,6 +11,7 @@ class User < ApplicationRecord
     has_many :item_favourite
     has_many :item_request
     has_many :item_request_like
+    has_one :admin_user
 
     mount_uploader :image, ImageUploader
 

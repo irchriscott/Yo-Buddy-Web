@@ -1,0 +1,21 @@
+<div class="yb-modal-container" style="width:30%;">
+	<div class="yb-add-item">
+		<h2>Add Item</h2>
+		<%= form_for @borrow_item, url: admin_u_add_item_path(@item, @borrow) do |form| %>
+			<label>Name : </label>
+			<%= form.text_field :name, required: true, placeholder: "Enter Item Name" %>
+			<label>Item State : </label>
+			<%= form.select(:state) do %>
+				<% @item_states.each do |state| %>
+					<%= content_tag :option, state, value: state %>
+				<% end %>
+			<% end %>
+			<label>Description : </label>
+			<%= form.text_area :description, required:true, placeholder: "Enter Description" %>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+</div>

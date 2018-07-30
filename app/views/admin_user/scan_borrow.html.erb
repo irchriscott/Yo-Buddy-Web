@@ -1,0 +1,79 @@
+<div class="yb-modal-container" style="width:35%;">
+	<div class="yb-add-item">
+		<h2>Scan Borrow</h2>
+		<div class="yb-qr-preview-container" style="margin-top: 15px;">
+			<video style="width:100%;" id="preview"></video>
+		</div>
+		<div style="display: block; position: relative;">
+			<button type="button" id="admin-close-scan-borrow" class="yb-btn-cancel">Cancel</button>
+		</div>
+		<%= form_for :borrow_scan, url: admin_u_scan_borrow_post_path, html: {id: "yb-admin-scan-borrow-form"} do |form| %>
+			<%= form.hidden_field :data %>
+			<button type="submit" id="yb-submit-scan" style="display: none;">SUBMIT</button>
+		<% end %>
+	</div>
+	<script type="text/javascript">
+
+		$("#admin-close-scan-borrow").closePopup();
+
+		var selectedCameraID = null
+		var cameras = []
+
+		var scanner = new Instascan.Scanner({ video: document.getElementById('preview'), scanPeriod: 5 });
+		scanner.addListener('scan', function (data) {
+			$("#borrow_scan_data").val(data);
+			$("#yb-submit-scan").click();
+        });
+
+        $("#yb-admin-scan-borrow-form").submit(function(e){
+        	e.preventDefault();
+        	var url = $(this).attr("action");
+        	var data = new FormData($(this)[0]);
+        	$.ajax({
+        		type: "POST",
+        		url: url,
+        		data: data,
+        		processData: false,
+            	contentType: false,
+            	success: function(response){
+            		if(response.type == "success"){
+            			showSuccessMessage("success", "Borrow Item Found !!!")
+            			window.location = response.text
+            		} else {
+            			showErrorMessage("error", response.text)
+            		}
+            		$(".mfp-close").click();
+            	},
+            	error: function(error){
+            		showErrorMessage("error", error);
+            	}
+        	});
+        });
+
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+                selectedCameraID = cameras[0].id;
+
+               	for(var i = 0; i <= cameras.length; i++){
+                    var camera = cameras[i]
+                    // $("#cameras-list").append('<li onclick="selectCamera(camera)">' + cameraName(cameras[i].name) + '</li>')
+                }
+
+            } else {
+                console.error('No cameras found.');
+            }
+        }).catch(function (e) {
+            console.error(e);
+        });
+
+        function selectCamera (camera) {
+            selectedCameraID = camera.id;
+            scanner.start(camera);
+        }
+
+        function cameraName (name) {
+           	return name || '(unknown)';
+        }
+	</script>
+</div>

@@ -1,6 +1,9 @@
 class CommentsController < ApplicationController
-  
+    
+    include ApplicationHelper
+
     before_action :check_session, only: [:create, :edit, :update, :destroy]
+    before_action :check_active
 
     def index
         @item = Item.find(params[:item_id])

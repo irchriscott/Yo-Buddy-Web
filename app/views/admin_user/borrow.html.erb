@@ -1,0 +1,94 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<div class="yb-admin-item">
+			<div class="yb-admin-images">
+				<div class="yb-image">
+					<%= image_tag @item.item_image[0].image.url, alt: @item.name %>
+				</div>
+				<div class="yb-images-others">
+					<ul>
+						<% @item.item_image.each do |image| %>
+							<li>
+								<a href="<%= image.image.url %>">
+									<%= image_tag image.image.url, alt: @item.name %>
+								</a>
+							</li>
+						<% end -%>
+					</ul>
+				</div>
+			</div>
+			<div class="yb-admin-item-about">
+				<div class="yb-image">
+					<% if @item.user.image? %>
+						<%= image_tag @item.user.image.url, alt: @item.user.username %>
+					<% else %>
+						<%= image_tag '/assets/default.jpg', alt: @item.user.username %>
+					<% end %>
+				</div>
+				<div class="yb-admin-item-about-info">
+					<h3><%= link_to @item.name, item_show_path(@item.user.username, @item.uuid, @item), target: "_blank" %></h3>
+					<p class="yb-item-name"><%= link_to @item.category.name, admin_category_path %> - <%= link_to @item.subcategory.name, admin_subcategory_path(@item.category, @item.subcategory) %></p>
+					<p class="yb-item-date">by <%= link_to @item.user.name, user_items_path(@item.user.username, @item.user), target: "_blank" %> - <span id="admin-item-date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+				</div>
+			</div>
+			<div class="yb-admin-item-price">
+				<span id="admin-item-price" data-number="<%= @item.price %>"></span>
+				<%= @item.currency %> / <%= @item.per %>
+			</div>
+			<div class="yb-admin-item-description yb-description">
+				<%= raw @item.description %>
+			</div>
+			<br/>
+			<% if @admin_messages.count > 0 %>
+				<% if @admin_messages.last.status == "rendered" %>
+					<button style="background: green;" id="yb-admin-open-scan-qr-code" class="yb-add-borrow-item" href="#yb-admin-view-items-borrow">SCAN ITEMS</button>
+				<% else %>
+					<button style="background: var(--darkGray);" id="yb-view-item-admin" class="yb-add-borrow-item" href="#yb-admin-view-items-borrow">VIEW ITEMS</button>
+				<% end %>
+			<% elsif @borrow.status == "accepted" %>
+				<button id="yb-add-item-admin" class="yb-add-borrow-item" href="#yb-admin-add-item">ADD ITEM</button>
+			<% end %>
+		</div>
+		<div class="yb-admin-item-borrows">
+			<h3>USER - USER ADMIN MESSAGES</h3>
+			<% @user_messages.each do |message| %>
+				<div class="yb-admin-message">
+					<p><span class="yb-admin-message-date" id="admin-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"><%= message.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></span> : <span class="yb-admin-message-text"><%= raw message.admin_message %></span></p>
+				</div>
+			<% end %>
+			<h3 style="margin-top: 25px;">BORROW ITEM ADMIN</h3>
+			<% if @admin_messages.count > 0 %>
+				<% @admin_messages.each do |message| %>
+					<div class="yb-admin-message">
+						<p>
+							<span class="yb-admin-message-date" id="admin-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"><%= message.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></span> : 
+							<span class="yb-admin-message-text"><%= raw message.comment %></span>
+							<p><strong>Status : </strong> <span style="text-transform: capitalize;"><%= message.status %></span></p>
+							<p style="margin-top: -10px;"><strong>Item State : </strong> <span style="text-transform: capitalize;"><%= message.state %></span></p>
+						</p>
+					</div>
+				<% end %>
+			<% else %>
+				<p class="yb-error">NO ADMIN MESSAGE</p>
+			<% end %>
+			<div class="yb-admin-borrow-menu">
+				<button style="background: var(--primaryColor);" id="yb-admin-open-add-message" href="#yb-admin-add-message">ADD REPORT</button>
+				<button style="background: green;">REPORTS</button>
+				<button style="background: var(--gray);">FOLLOW UPS</button>
+				<a href="<%= item_borrow_path(@borrow.item.uuid, @borrow.item, @borrow) %>" target="_blank">SEE BORROW MESSAGES</a>
+			</div>
+		</div>
+	</div>
+	<div class="yb-admin-right-side" style="margin-top: 0;">
+		<h4>ABOUT BORROW</h4>
+		<%= render "item_borrow_user/descript" %>
+		<% if @borrow.status == @status[1] or @borrow.status == @status[3] %>
+			<div class="yb-admin-act-btn">
+				<h5>ACTS</h5>
+				<button id="yb-admin-act-received" href="<%= admin_u_borrow_act_received_path(@borrow.item, @borrow) %>">Received</button>
+				<button id="yb-admin-act-rendered" href="<%= admin_u_borrow_act_rendered_path(@borrow.item, @borrow) %>">Rendered</button>
+			</div>
+		<% end %>
+	</div>
+</section>
+<%= render "admin_user/borrowmodals" %>

@@ -1,7 +1,9 @@
-<section class="yb-admin-container">
+<section class="yb-jumbotron" style="flex-direction: column;">
+	<h1 style="margin-top: 60px;"><%= @category.name %></h1>
+	<p><%= @category.description %></p>
+</section>
+<section class="yb-admin-container" style="margin-top: 30px;">
 	<div class="yb-admin-data-container">
-		<h2><%= @category.name %></h2>
-		<p><%= @category.description %></p>
 		<% if is_logged_in? %>
 			<div class="yb-user-follow-category-single" id="yb-user-follow-category-container" data-id="user">
 				<% if @category.followers.include?(session_user.id) %>

@@ -1,0 +1,166 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-home-menu">
+		<div class="yb-admin-menu-items">
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#20a8da;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @rendered %></h1>
+							<p>Borrows</p>
+							<h3>To Be Rendered</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#0fe232;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @returned %></h1>
+							<p>Borrows</p>
+							<h3>To Be Returned</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#f8cb00;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @late_receive %></h1>
+							<p>Borrows</p>
+							<h3>Late To Be Received</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#ff5857;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @late_render %></h1>
+							<p>Borrows</p>
+							<h3>Late To Be Rendered</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#ca63de;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @late_return %></h1>
+							<p>Borrows</p>
+							<h3>Late To Be Returned</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="yb-admin-menu-else-container">
+			<div class="yb-admin-menu-search">
+				<div class="yb-admin-search-content">
+					<h1>Find Borrow</h1>
+					<div class="yb-search-form">
+						<input type="text" name="search" placeholder="Enter Borrow Code" autocomplete="off" />
+						<span><i class="icon ion-ios-search-strong"></i></span>
+					</div>
+					<div class="yb-search-btns">
+						<button type="button" style="margin-right: 10px;">Search Borrow</button>
+						<button type="button" style="background: green;" id="admin-open-scan-borrow" href="<%= admin_u_scan_borrow_path %>">Scan Borrow</button>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-menu-data">
+				
+			</div>
+		</div>
+	</div>
+	<div class="yb-admin-data-container" style="width: 100% !important;">
+		<h3>Recent Posted Items</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Category</th>
+					<th>Subcategory</th>
+					<th>Owner</th>
+					<th>Price</th>
+					<th>Data</th>
+					<th>Posted Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if @items.count > 0 %>
+					<% @items.each do |item| %>
+						<tr>
+							<td><%= item.id %></td>
+							<td><%= image_tag item.item_image[0].image.url, alt: item.name %></td>
+							<td><%= link_to item.name, admin_u_item_path(item.user.username, item.uuid, item) %></td>
+							<td><%= link_to item.category.name, category_path(item.category.uuid, item.category), target: "_blank" %></td>
+							<td><%= link_to item.subcategory.name, subcategory_path(item.category.uuid, item.category, item.subcategory), target: "_blank" %></td>
+							<td><%= link_to item.user.name, user_items_path(item.user.username, item.user), target: "_blank" %></td>
+							<td><span id="admin-item-price-<%= item.id %>" data-number="<%= item.price %>"></span> <%= item.currency %> / <%= item.per %></td>
+							<td></td>
+							<td><span id="admin-item-date-<%= item.id %>" data-date="<%= item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></td>
+						</tr>
+						<script type="text/javascript">$("#admin-item-price-<%= item.id %>").setNumber(); $("#admin-item-date-<%= item.id %>").setDate();</script>
+					<% end %>
+				<% else %>
+					<tr>
+						<td style="padding:20px 0;" colspan="9"><p class="yb-error">NO ITEM POSTED</p></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+		<h3 style="margin-top: 30px !important;">Recent Borrowed Items</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Owner</th>
+					<th>Borrower</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Total</th>
+					<th>From</th>
+					<th>To</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if @borrows.count > 0 %>
+					<% @borrows.each do |borrow| %>
+						<tr>
+							<td><%= borrow.id %></td>
+							<td><%= image_tag borrow.item.item_image[0].image.url, alt: borrow.item.name %></td>
+							<td><%= link_to borrow.item.name, admin_u_borrow_path(borrow.item.uuid, borrow.item, borrow) %></td>
+							<td><%= link_to borrow.item.user.name, user_items_path(borrow.item.user.username, borrow.item.user), target: "_blank" %></td>
+							<td><%= link_to borrow.user.name, user_items_path(borrow.user.username, borrow.user), target: "_blank" %></td>
+							<td><span id="admin-item-price-single-<%= borrow.id %>" data-number="<%= borrow.price %>"></span> <%= borrow.currency %> / <%= borrow.per %> (<%= borrow.updated_numbers %>)</td>
+							<td><%= borrow.count %></td>
+							<td><span id="admin-item-price-total-<%= borrow.id %>" data-number="<%= borrow.borrow_total %>"></span> <%= borrow.currency %></td>
+							<td><%= borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td><%= borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td style="text-transform: capitalize;"><%= borrow.status %></td>
+						</tr>
+						<script type="text/javascript">$("#admin-item-price-single-<%= borrow.id %>").setNumber(); $("#admin-item-price-total-<%= borrow.id %>").setNumber();</script>
+					<% end %>
+				<% else %>
+					<tr>
+						<td style="padding:20px 0;" colspan="11"><p class="yb-error">NO BORROW POSTED</p></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+</section>

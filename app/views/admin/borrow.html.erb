@@ -26,9 +26,9 @@
 					<% end %>
 				</div>
 				<div class="yb-admin-item-about-info">
-					<h3><%= link_to @item.name, item_path(@item), target: "_blank" %></h3>
+					<h3><%= link_to @item.name, item_show_path(@item.user.username, @item.uuid, @item), target: "_blank" %></h3>
 					<p class="yb-item-name"><%= link_to @item.category.name, admin_category_path() %> - <%= link_to @item.subcategory.name, admin_subcategory_path(@item.category, @item.subcategory) %></p>
-					<p class="yb-item-date">by <%= link_to @item.user.name, user_path(@item.user), target: "_blank" %> - <span id="admin-item-date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+					<p class="yb-item-date">by <%= link_to @item.user.name, user_items_path(@item.user.username, @item.user), target: "_blank" %> - <span id="admin-item-date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
 				</div>
 			</div>
 			<div class="yb-admin-item-price">

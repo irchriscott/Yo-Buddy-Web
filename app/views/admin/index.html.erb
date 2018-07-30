@@ -11,6 +11,7 @@
 					<%= f.text_field :admin, placeholder: 'Enter Email or Username', required: true, autocomplete: 'off' %>
 					<%= f.password_field :password, placeholder: 'Enter Password', required: true, autocomplete: 'off' %>
 					<p><%= f.check_box :remember, checked: true %> Remember Me</p>
+					<span style="position: absolute; right: 0; margin-top: -38px;"><a href="<%= admin_reset_password_path %>" style="color: var(--primaryColor); font-size: 15px;">Forgot your password ?</a></span>
 					<button type="submit">Sign In</button>
 				<% end -%>
 			</div>

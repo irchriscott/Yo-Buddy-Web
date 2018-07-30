@@ -1,9 +1,12 @@
+require 'securerandom'
+
 class AdminController < ApplicationController
 
 	include AdminHelper
 	include ApplicationHelper
+	include ItemBorrowUserHelper
 
-	before_action :check_admin_session, except: [:index, :signup]
+	before_action :check_admin_session, except: [:index, :signup, :reset_password, :reset_password_form, :send_reset_password_mail, :reset_change_password]
 	skip_before_action :check_admin_session, only: [:index, :signup]
 	before_action :set_data
 
@@ -23,7 +26,7 @@ class AdminController < ApplicationController
 			if admin then
 				if admin.authenticate(params[:admin][:password]) then
 					login_admin admin
-					flash[:success] = "Amin Logged In Successfully !!!"
+					flash[:success] = "Admin Logged In Successfully !!!"
 					@@login_attempts = 0
 					redirect_to admin_home_path
 				else
@@ -43,13 +46,21 @@ class AdminController < ApplicationController
 	end
 
 	def home
-		@items = Item.all.order(created_at: :desc).limit(20)
-		@borrows = BorrowItemUser.all.order(created_at: :desc).limit(20)
+		@items = Item.joins("INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).order(created_at: :desc).limit(20)
+		@borrows = BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).order(created_at: :desc).limit(20)
+		
+		@rendered = to_be_rendered(Time.now.to_date).count
+		@returned = to_be_returned(Time.now.to_date).length
+		
+		@late_render = late_to_be_rendered(Time.now.to_date).length
+		@late_receive = late_to_be_received(Time.now.to_date).length
+		@late_return = late_to_be_returned(Time.now).length
 	end
 
 	def admins
 		@new_admin = Admin.new
 		@admins = Admin.all.order(name: :asc)
+		@admin_users = AdminUser.all.order(created_at: :desc)
 	end
 
 	def create_admin
@@ -63,7 +74,7 @@ class AdminController < ApplicationController
 	end
 
 	def items
-		@items = AdminItem.all.order(created_at: :desc)
+		@items = AdminItem.joins("INNER JOIN items ON admin_items.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.is_private = ? ", false).order(created_at: :desc)
 	end
 
 	def item
@@ -72,12 +83,16 @@ class AdminController < ApplicationController
 	end
 
 	def borrows_all
-		@borrows = BorrowItemUser.all.order(created_at: :desc)
+		@borrows = BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).order(created_at: :desc)
 	end
 
 	def borrows_item
 		@item = AdminItem.find(params[:id])
 		@borrows = @item.item.borrow_item_user.all.order(created_at: :desc)
+		if @item.item.user.is_private? then
+			flash[:error] = "401 => Unauthorized !!!"
+			redirect_to admin_borrows_all_path
+		end
 	end
 
 	def scan_borrow
@@ -111,6 +126,11 @@ class AdminController < ApplicationController
 		elsif status == @borrow_admin_status[1] and state == 1 then
 			@act = borrow_rendered_act @borrow
 		end	
+
+		if @item.user.is_private? then
+			flash[:error] = "401 => Unauthorized !!!"
+			redirect_to admin_borrows_all_path
+		end
 	end
 
 	def add_item
@@ -238,13 +258,13 @@ class AdminController < ApplicationController
 
 	def borrow_act_received
 		@borrow = BorrowItemUser.find(params[:id])
-		@act = borrow_received_act @borrow
+		@act = borrow_received_act(@borrow, session_admin.name)
 		render layout: false
 	end
 
 	def borrow_act_rendered
 		@borrow = BorrowItemUser.find(params[:id])
-		@act = borrow_rendered_act @borrow
+		@act = borrow_rendered_act(@borrow, session_admin.name)
 		render layout: false
 	end
 
@@ -318,5 +338,112 @@ class AdminController < ApplicationController
 		@subcategory = @category.subcategory.find(params[:id])
 		@items = @subcategory.item.all.order(created_at: :desc)
 	end
+
+	def search_user
+		@users = User.where(is_private: true).where("name LIKE ? OR username LIKE ?", "%#{params[:query]}%", "%#{params[:query]}%").order(created_at: :desc)
+	end
+
+	def create_admin_user
+		user = User.find(params[:admin_user][:user_id])
+		if user.name == params[:admin_user][:name] and user.is_private == true then
+			if user.admin_user == nil then
+				
+				password = SecureRandom.urlsafe_base64(8)
+				
+				admin_user = AdminUser.new
+				admin_user.user_id = user.id
+				admin_user.email = user.email
+				admin_user.password = password
+				admin_user.privileges = "All"
+				admin_user.save
+				
+				activation = AdminUserActivation.new
+				activation.admin_user_id = admin_user.id
+				activation.key_type = "trial"
+				activation.max_items = 0
+				activation.max_users = 0
+				activation.activated_date = Time.now
+				activation.expary_date = Time.now + (AdminHelper::TRIAL_NUM_DAYS * 24 * 60 * 60)
+				activation.is_active = true
+				activation.save
+
+				AdminMailer.register_admin_user(user.email, password).deliver_now
+
+				flash[:success] =  "Admin User Created Successfully !!!"
+			else
+				flash[:danger] = "User Already Has Admin Account !!!"
+			end
+		else
+			flash[:danger] = "User Should Be Private !!!"
+		end
+		redirect_to admin_admins_path
+	end
+
+	def reset_password
+    end
+
+    def send_reset_password_mail
+    	respond_to do |format|
+            admin = Admin.find_by(email: params[:email][:email])
+            if admin != nil then
+                token = SecureRandom.urlsafe_base64(admin.name.length)
+                rsp_check = ResetPassword.where(resource: "admin", resource_id: admin.id).first
+
+                if rsp_check != nil then
+                    rsp_check.token = token
+                    rsp_check.is_active = true
+                    rsp_check.expiry_date = get_expiry_date(1)
+                    rsp_check.count += 1
+                    rsp_check.save
+                else
+                    ResetPassword.create([{resource: "admin", resource_id: admin.id, email: params[:email][:email], token: token, expiry_date: get_expiry_date(1), is_active: true, count: 1 }])
+                end
+
+                ResetPasswordMailer.send_link(params[:email][:email], admin_rp_link_url(token)).deliver_now
+
+                flash[:success] = "Link Sent To The Email Address !!!";
+                format.html { redirect_to admin_index_path }
+                format.json { render json: { "type" => "success", "text" => "Link Sent To The Email Address !!!" } }
+            else
+                flash[:danger] = "Unknown Email Address !!!";
+                format.html { redirect_to admin_reset_password_path }
+                format.json { render json: { "type" => "error", "text" => "Unknown Email Address !!!" } }
+            end
+        end
+    end
+
+    def reset_password_form
+    	rsp = ResetPassword.find_by(token: params[:token])
+        if rsp != nil then
+            if rsp.is_active? then
+            	@token = params[:token]
+            else
+                flash[:danger] = "Token Desactivated. Resend Email Please !!!";
+                redirect_to admin_reset_password_path
+            end
+        else
+            flash[:error] = "Unknown Token !!!"
+            redirect_to admin_reset_password_path
+        end
+    end
+
+    def reset_change_password
+    	rsp = ResetPassword.find_by(token: params[:new_pswd][:rsp_token])
+    	if params[:new_pswd][:password] == params[:new_pswd][:conf_password] then
+
+    		admin = Admin.find(rsp.resource_id)
+    		admin.password = params[:new_pswd][:password]
+    		admin.save
+
+    		rsp.is_active = false
+    		rsp.save
+    		
+    		flash[:success] = "Password Changed !!!"
+    		redirect_to admin_index_path
+    	else
+    		flash[:danger] = "Password Didnt Match !!!"
+    		redirect_to admin_rp_link_path(rsp.token)
+    	end
+    end
 	
 end

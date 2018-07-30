@@ -9,7 +9,11 @@
 	<%= form.hidden_field :receiver_id, value: @borrow_receiver %>
 	<%= form.hidden_field :status, value: "unread" %>
 	<%= form.hidden_field :is_deleted, value: false %>
+	<% if @active == true %>
 	<%= form.text_area :message, required: true, placeholder: "Enter Text Message" %>
+	<% else %>
+	<%= form.text_area :message, required: true, placeholder: "Enter Text Message", disabled: true %>
+	<% end %>
 	<div class="yb-status" id="yb-open-message-menu" data-id="message-menu"><i class="icon ion-plus-round"></i></div>
 	<button type="submit" id="yb-message-submit" disabled="disabled"><i class="icon ion-android-send" style="color: var(--lightGray);"></i></button>
 	<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-message-menu">

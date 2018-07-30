@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
 
+    require 'sidekiq/web'
+    require 'sidekiq/cron/web'
+
+    mount Sidekiq::Web => '/admin/sidekiq/report'
+
     get '/session', to: 'session#index', as: 'session'
     get '/session/profile', to: 'session#index', as: 'session_profile'
     get '/session/items', to: 'session#index', as: 'session_items'
@@ -30,6 +35,8 @@ Rails.application.routes.draw do
         end
     end
 
+    post '/item/create', to: 'items#create', as: 'item_create'
+
     get '/item/:username/enc-dt-:uuid-:id', to: 'items#show', as: 'item_show'
     get '/item/:username/enc-dt-:uuid-:id/edit', to: 'items#edit', as: 'item_edit'
     get '/item/:username/enc-dt-:uuid-:item_id/borrow', to: 'item_borrow_user#new', as: 'borrow_item'
@@ -41,17 +48,17 @@ Rails.application.routes.draw do
     post '/items/:item_id/borrow_item_user/:item_borrow_user_id/borrow_messages/images/send', to: 'borrow_messages#send_images', as: 'message_send_images'
 
     get '/items/requests/all', to: 'item_requests#index', as: 'item_requests'
-    get '/items/request/:id', to: 'item_requests#show', as: 'item_request'
+    get '/items/request/:username/enc-dt-:uuid-:id', to: 'item_requests#show', as: 'item_request'
     post '/items/request/:id/like', to: 'item_requests#like', as: 'item_request_like'
     get '/item/requests/new', to: 'item_requests#new', as: 'new_item_request'
     post '/item/requests/create', to: 'item_requests#create', as: 'create_item_request'
-    get '/item/request/:id/edit', to: 'item_requests#edit', as: 'edit_item_request'
+    get '/item/request/:username/enc-dt-:uuid-:id/edit', to: 'item_requests#edit', as: 'edit_item_request'
     get '/item/request/:item_request_id/image/:id/delete', to: 'item_requests#delete_item_request_image', as: 'delete_item_request_image'
     patch '/item/request/:id/update', to: 'item_requests#update', as: 'update_item_request'
     get '/item/request/:id/status/update', to: 'item_requests#update_request_status', as: 'update_item_request_status'
     delete '/item/request/:id/destroy', to: 'item_requests#destroy', as: 'destroy_item_request'
-    get '/item/request/:id/suggestions/new', to: 'item_requests#suggestion_new', as: 'item_request_new_suggestion'
-    get '/item/request/:id/suggestions/exist', to: 'item_requests#suggestion_exist', as: 'item_request_exist_suggestion'
+    get '/item/request/:username/enc-dt-:uuid-:id/suggestions/new', to: 'item_requests#suggestion_new', as: 'item_request_new_suggestion'
+    get '/item/request/:username/enc-dt-:uuid-:id/suggestions/exist', to: 'item_requests#suggestion_exist', as: 'item_request_exist_suggestion'
     post '/item/request/:id/suggestions/create', to: 'item_requests#suggestion_create', as: 'item_request_create_suggestion'
     post '/item/request/:id/suggestions/create/exist', to: 'item_requests#suggesion_create_exist', as: 'item_request_create_exist_suggestion'
     get '/item/request/:id/suggestions/all', to: 'item_requests#suggestion_all', as: 'item_request_suggestions'
@@ -86,6 +93,11 @@ Rails.application.routes.draw do
     post '/user/:id/follow', to: 'user#follow_user', as: 'user_follow'
     get '/user/get_and_update/user_s_data/from_token/in_the_application', to: 'user#update_from_api'
 
+    get '/user/password/reset', to:'user#reset_password', as: 'user_reset_password'
+    post '/user/password/reset/mail/send', to: 'user#send_reset_password_mail', as: 'user_rp_send_mail'
+    get '/user/password/reset/dt-token-:token/form', to: 'user#reset_password_form', as: 'user_rp_link'
+    post '/user/password/reset/change', to: 'user#reset_change_password', as: 'user_reset_password_change'
+
     resources :comments
 
     get '/categories/all', to: 'category#index', as: 'category_index'
@@ -99,15 +111,52 @@ Rails.application.routes.draw do
   	root 'home#index'
     get 'home/index'
 
+    #ADMIN USERS ROUTES
+
+    get '/admin/u/signin', to: 'admin_user#index', as: 'admin_u_index'
+    post '/admin/u/signin/post', to: 'admin_user#signin', as: 'admin_u_signin'
+    get '/admin/u', to: 'admin_user#home', as: 'admin_u'
+    get '/admin/u/home', to: 'admin_user#home', as: 'admin_u_home'
+    get '/admin/u/items', to: 'admin_user#items', as: 'admin_u_items'
+    get '/admin/u/borrows', to: 'admin_user#borrows', as: 'admin_u_borrows'
+
+    get '/admin/u/password/reset', to:'admin_user#reset_password', as: 'admin_u_reset_password'
+    post '/admin/u/password/reset/mail/send', to: 'admin_user#send_reset_password_mail', as: 'admin_u_rp_send_mail'
+    get '/admin/u/password/reset/dt-token-:token/form', to: 'admin_user#reset_password_form', as: 'admin_u_rp_link'
+    post '/admin/u/password/reset/change', to: 'admin_user#reset_change_password', as: 'admin_u_reset_password_change'
+
+    get 'admin/u/item/:username/enc-dt-:uuid-:id/borrows', to: 'admin_user#item', as: 'admin_u_item'
+    get 'admin/u/item/enc-dt-:uuid-:item_id-:id/borrow', to: 'admin_user#borrow', as: 'admin_u_borrow'
+    post '/admin/u/item/:item_id/borrow/:id/item/check', to: 'admin_user#borrow_check_item', as: 'admin_u_borrow_check_item'
+    post '/admin/u/item/:item_id/borrow/:id/message/create', to: 'admin_user#borrow_item_admin_create', as: 'admin_u_create_message'
+    post '/admin/u/item/:item_id/borrow/:id/item/add', to: 'admin_user#add_item', as: 'admin_u_add_item'
+    get '/admin/u/item/:item_id/borrow/:id/act/received', to: 'admin_user#borrow_act_received', as: 'admin_u_borrow_act_received'
+    get '/admin/u/item/:item_id/borrow/:id/act/rendered', to: 'admin_user#borrow_act_rendered', as: 'admin_u_borrow_act_rendered'
+
+    get '/admin/u/borrows/scan/get', to: 'admin_user#scan_borrow', as: 'admin_u_scan_borrow'
+    post '/admin/u/borrows/scan/post', to: 'admin_user#scan_borrow_post', as: 'admin_u_scan_borrow_post'
+    get '/admin/u/item/:username/enc-dt-:uuid-:item_id/borrow', to: 'admin_user#new_borrow', as: 'admin_u_borrow_item_new'
+    post '/admin/u/item/enc-dt-:uuid-:item_id/borrow/create', to: 'admin_user#create_borrow', as: 'admin_u_borrow_item_create'
+    get '/admin/u/borrow/user/find.json', to: 'admin_user#search_user', as: 'admin_u_borrow_user_find'
+    
+    get '/admin/u/activation/key', to: 'admin_user#set_activation', as: 'admin_u_activation'
+
     # ADMIN ROUTES
 
     get '/admin', to: 'admin#index', as: 'admin_index'
-    post '/admin/signup', to: 'admin#signup', as: 'admin_signup'
+    post '/admin/signin', to: 'admin#signup', as: 'admin_signup'
     get '/admin/home', to: 'admin#home', as: 'admin_home'
     get '/admin/items', to: 'admin#items', as: 'admin_items'
 
+    get '/admin/password/reset', to:'admin#reset_password', as: 'admin_reset_password'
+    post '/admin/password/reset/mail/send', to: 'admin#send_reset_password_mail', as: 'admin_rp_send_mail'
+    get '/admin/password/reset/dt-token-:token/form', to: 'admin#reset_password_form', as: 'admin_rp_link'
+    post '/admin/password/reset/change', to: 'admin#reset_change_password', as: 'admin_reset_password_change'
+
     get '/admin/admins', to: 'admin#admins', as: 'admin_admins'
     post '/admin/admins/create', to: 'admin#create_admin', as: 'admin_create_admin'
+    post '/admin/admins/u/create', to: 'admin#create_admin_user', as: 'admin_u_create'
+    get '/admin/admins/u/create/find.json', to: 'admin#search_user', as: 'admin_u_find'
     
     get '/admin/borrows', to: 'admin#borrows_all', as: 'admin_borrows_all'
     get '/admin/borrows/scan/get', to: 'admin#scan_borrow', as: 'admin_scan_borrow'

@@ -7,6 +7,7 @@ class Item < ApplicationRecord
     has_many :comment
     has_many :borrow_item_user
     has_many :item_favourite
+    has_one :admin_item
 
     before_save { self.is_temp = false if self.is_temp == nil }
     validates :count, length: {minimum: 1}

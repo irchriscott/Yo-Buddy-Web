@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+        <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet"> 
+        <style type="text/css">
+            *{
+                margin: 0;
+                padding: 0;
+            }
+            a{
+                text-decoration: none;
+                outline: none;
+            }
+
+            body{
+                background: #DDDD !important;
+                padding: 50px !important;
+                display: block;
+                position: relative;
+                width: 100%;
+            }
+
+            section{
+                width: 60%;
+                margin: 50px auto;
+                background: red;
+                border:2px solid #cc8400;
+                background: white;
+                padding: 40px !important;
+            }
+
+            .yb-header{
+                border-bottom: 1px solid rgba(0,0,0,.1);
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+            }
+
+            .yb-header h1{
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 32px;
+                color: #cc8400;
+            }
+
+            .yb-message{
+                padding-bottom: 20px;
+                font-size: 16px;
+                border-bottom: 1px solid rgba(0,0,0,.1);
+            }
+
+            .yb-details{
+                margin: 20px 0;
+            }
+
+            .yb-borrow{
+                padding: 20px;
+                border:1px solid rgba(0,0,0,.1);
+                margin-top: 20px;
+                display: -webkit-flex;
+                display: flex;
+            }
+
+            .yb-borrow .yb-image{
+                width: 200px;
+                /*float: left;*/
+                margin-right: 25px;
+                background: rgba(0,0,0, .4);
+                min-height: 200px;
+                height: auto;
+                display: inline-table;
+            }
+
+            .yb-borrow .yb-image img{
+                width: 100%;
+                border: 3px solid rgba(0,0,0, .4);
+                border-radius: 5px;
+                background: rgba(0,0,0, .4);
+                min-height: 200px;
+                height: 200px;
+            }
+
+            .yb-borrow .yb-description{
+                width: calc(100% - 231px);
+                /*display: inline-block;*/
+
+                display: inline-table;
+            }
+
+            .yb-borrow .yb-description p{
+                margin-bottom: 5px;
+                font-size: 16px !important;
+            }
+
+            .yb-borrow .yb-description p strong{
+                font-size: 16px !important;
+            }
+
+            .yb-borrow .yb-description h3 a{
+                font-size: 22px;
+            }
+
+            .yb-link{
+                margin: 30px 0;
+            }
+
+            .yb-link a{
+                display: block;
+                background: rgba(0,0,255, .7);
+                color: #FFF;
+                text-align: center;
+                padding: 5px;
+                border-radius: 4px;
+                text-transform: uppercase;
+                font-size: 16px;
+            }
+
+            .yb-footer{
+                color: #cc8400;
+                font-size: 10px;
+            }
+
+            .yb-conditions{
+                margin-left: 20px;
+            }
+
+            .yb-conditions ul{
+                margin-left: 25px;
+            }
+
+            .yb-conditions *{
+                font-size: 16px !important;
+            }
+        </style>
+    </head>
+    <body style="font-family: Poppins, Avenir, Century Gothic !important; background: #DDDD !important;padding: 50px !important;display: block;position: relative;width: 100%;">
+        <section style="width: 60%;margin: 50px auto;background: red;border:2px solid #cc8400;background: white;padding: 40px !important;">
+            <div class="yb-header"><h1>Yo Buddy !</h1></div>
+            <div class="yb-content">
+                <p class="yb-message">Borrow Item Content No <strong><%= @borrow.code %></strong> has been updated</p>
+                <div class="yb-details">
+                    <h2>Borrow Details</h2>
+                    <div class="yb-borrow">
+                        <div class="yb-image">
+                            <%= image_tag @borrow.item.item_image[0].image.url %>
+                        </div>
+                        <div class="yb-description">
+                            <h3 style="margin-bottom: 15px;"><a href="<%= item_show_url(@borrow.item.user.username, @borrow.item.uuid, @borrow.item) %>"><%= @borrow.item.name %></a></h3>
+                            <p><strong>Single Price : </strong><%= @borrow.price %> <%= @borrow.currency %> / <%= @borrow.per %></p>
+                            <p><strong>Number : </strong><%= @borrow.updated_numbers %> <% if @borrow.updated_numbers == 1 %><%= @borrow.per %>  <% else %> <%= "#{@borrow.per}s" %><% end %></p>
+                            <p><strong>Quantity : </strong><%= @borrow.count %> Items</p>
+                            <p><strong>Total : </strong><%= @borrow.borrow_total %> <%= @borrow.currency %></p>
+                            <p><strong>From : </strong> <%= @borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
+                            <p><strong>To : </strong> <%= @borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
+                            <p><strong>Conditions : </strong></p>
+                            <div class="yb-conditions">
+                                <%= raw @borrow.conditions %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="yb-link">
+                    <a href="<%= item_borrow_url(@borrow.item.uuid, @borrow.item, @borrow) %>">View Borrow</a>
+                </div>
+            </div>
+            <p class="yb-footer">Sent By Team Split Orange - Yo Buddy !</p>
+        </section>
+    </body>
+</html>

@@ -1,0 +1,19 @@
+<div class="yb-modal-container" style="width:35%; position: relative; overflow: visible;">
+	<div class="yb-add-item" style="position: relative;">
+		<h2>Add New Admin-User</h2>
+		<%= form_for :admin_user, url: admin_u_create_path, html:{id: "yb-add-admin-user-form", "data-url": admin_u_find_path} do |form| %>
+			<%= form.hidden_field :user_id %>
+			<%= form.text_field :name, placeholder: "Search User Here", required: true, autocomplete: "off", id: "admin_search_admin_query" %>
+			<div class="yb-users-suggestion">
+				<span class="yb-loading-spinner"><img src="/assets/loading.gif" /></span>
+				<div class="yb-suggestion-list"><ul></ul></div>
+				<a href="#">Collapse</a>
+			</div>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-admin-user" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<style type="text/css">#admin_user_name{padding: 10px 15px;width: calc(100% - 32px);text-align: center;font-size: 17px;margin-bottom: 15px;}#admin_user_name:focus,#admin_user_name:active{text-align: left;}</style>
+</div>

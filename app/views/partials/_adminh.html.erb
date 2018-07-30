@@ -24,6 +24,12 @@
 				<div class="yb-header-sign-in">
 					<p><%= link_to "BORROWS", admin_borrows_all_path %></p>
 				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "REPORTS", "#" %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "SETTINGS", "#" %></p>
+				</div>
 				<div class="yb-header-signed-in">
 					<a href="#">
 						<%= image_tag session_admin.image.url, alt: session_admin.username %>
@@ -31,7 +37,7 @@
 				</div>
 			<% end %>
 			<div class="yb-header-menu">
-				<span><i class="icon ion-android-menu"></i></span>
+				<span><i class="icon ion-ios-search"></i></span>
 			</div>
 		</div>
 	</div>

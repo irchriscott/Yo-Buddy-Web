@@ -36,7 +36,7 @@
 							<img src="/assets/default.jpg" alt="Profile Image" title="<%= session_user.username %>" />
 						<% end %>
 					</a>
-					<div class="yb-menu-list" style="display:none; margin-left: -100px; margin-top: 5px;" id="yb-menu-items-session">
+					<div class="yb-menu-list" style="display:none; margin-left: -95px; margin-top: 5px;" id="yb-menu-items-session">
 						<ul>
 							<li><a href="/session/items"><span class="item-icon"><i class="icon ion-ios-cart"></i></span><span class="item-text">Items</span></a></li>
 							<li><a href="/session/requests"><span class="item-icon"><i class="icon ion-forward"></i></span><span class="item-text">Requests</span></a></li>
@@ -51,6 +51,9 @@
 							<li><a href="/session/following"><span class="item-icon"><i class="icon ion-ios-arrow-thin-left"></i></span><span class="item-text">Following</span></a></li>
 							<hr style="width: 100%"/>
 							<li><a href="/session/logout"><span class="item-icon"><i class="icon ion-log-out"></i></span><span class="item-text">Log Out</span></a></li>
+							<% if session_user.is_private? %>
+								<li><a href="<%= admin_u_path %>"><span class="item-icon"><i class="icon ion-log-in"></i></span><span class="item-text">Admin User</span></a></li>
+							<% end %>
 						</ul>
 					</div>
 				</div>

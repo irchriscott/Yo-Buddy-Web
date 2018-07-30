@@ -3,7 +3,7 @@
 		<h2>Add Category</h2>
 		<%= form_for :category, url: admin_create_category_path do |form| %>
 			<label>Category Name : </label>
-			<%= form.text_field :name, required: true, placeholder: "Enter Category Name" %>
+			<%= form.text_field :name, required: true, placeholder: "Enter Category Name", autocomplete: "off" %>
 			<label>Category Description : </label>
 			<%= form.text_area :description, required: true, placeholder: "Enter Category Description", style: "height:100px;" %>
 			<div style="display: block; position: relative;">

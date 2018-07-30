@@ -1,57 +1,62 @@
 <div class="yb-modal-container">
 	<div class="yb-add-item">
 		<h2>Add New Item Request</h2>
-		<%= form_for @request, url: create_item_request_path, html: {id: "yb-create-item-request"} do |form| %>
-			<label>Title :</label>
-			<%= form.text_field :title, placeholder: 'Enter Request Title', required: true, autocomplete: false %>
-			<div class="yb-add-item-category">
-				<label>Item Category & Subcategory :</label>
-				<%= form.select(:category_id, required: true) do -%>
-					<% @categories.each do |category| %>
-						<%= content_tag(:option, category.name, value: category.id) %>
+		<% if @active == true %>
+			<%= form_for @request, url: create_item_request_path, html: {id: "yb-create-item-request"} do |form| %>
+				<label>Title :</label>
+				<%= form.text_field :title, placeholder: 'Enter Request Title', required: true, autocomplete: "off" %>
+				<div class="yb-add-item-category">
+					<label>Item Category & Subcategory :</label>
+					<%= form.select(:category_id, required: true) do -%>
+						<% @categories.each do |category| %>
+							<%= content_tag(:option, category.name, value: category.id) %>
+						<% end %>
 					<% end %>
-				<% end %>
-				<%= form.select(:subcategory_id, required:true) do -%>
-					<% @subcategories.each do |subcategory| %>
-						<%= content_tag(:option, subcategory.name, value: subcategory.id, category: subcategory.category_id) %>
+					<%= form.select(:subcategory_id, required:true) do -%>
+						<% @subcategories.each do |subcategory| %>
+							<%= content_tag(:option, subcategory.name, value: subcategory.id, category: subcategory.category_id) %>
+						<% end %>
 					<% end %>
-				<% end %>
-			</div>
-			<div class="yb-request-price">
-				<label>Price & Currency</label>
-				<%= form.number_field :min_price, required:true, placeholder: "Min Price", min: "1" %>
-				<%= form.number_field :max_price, required:true, placeholder: "Max Price", min: "1" %>
-				<%= form.select(:currency, required: true) do -%>
-					<% @currencies.each do |currency| %>
-						<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+				</div>
+				<div class="yb-request-price">
+					<label>Price & Currency</label>
+					<%= form.number_field :min_price, required:true, placeholder: "Min Price", min: "1", autocomplete: "off" %>
+					<%= form.number_field :max_price, required:true, placeholder: "Max Price", min: "1", autocomplete: "off" %>
+					<%= form.select(:currency, required: true) do -%>
+						<% @currencies.each do |currency| %>
+							<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+						<% end %>
 					<% end %>
-				<% end %>
-				<%= form.select(:per, required: true) do %>
-					<% @per.each do |t| %>
-						<%= content_tag(:option, "Per #{t}", value: t) %>
+					<%= form.select(:per, required: true) do %>
+						<% @per.each do |t| %>
+							<%= content_tag(:option, "Per #{t}", value: t) %>
+						<% end %>
 					<% end %>
-				<% end %>
-			</div>
-			<div class="yb-from-date">
-				<label>From & Times number :</label>
-				<%= form.text_field :from_date, required:true, placeholder: "YYYY/MM/DD H:m" %>
-				<%= form.number_field :numbers, required:true, min: '1', placeholder: "Enter Number of Times" %>
-			</div>
-			<label>Quantity :</label>
-			<%= form.number_field :count, required:true, value:"1", min:"1", style:"width:calc(100% - 22px)", placeholder: "Enter Quantity" %>
-			<label>Description :</label>
-			<%= form.text_area :description, id: "yb-item-request-description", required: true %>
-			<%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
-			<span class="yb-upload-img">Add Item Images</span>
-			<div class="yb-item-images-preview" id="yb-images-preview"></div>
-			<div style="display: block; position: relative;">
-				<button type="submit">Submit</button>
-				<button type="button" id="yb-close-add-request" class="yb-btn-cancel">Cancel</button>
-			</div>
+				</div>
+				<div class="yb-from-date">
+					<label>From & Times number :</label>
+					<%= form.text_field :from_date, required:true, placeholder: "YYYY/MM/DD H:m", autocomplete: "off" %>
+					<%= form.number_field :numbers, required:true, min: '1', placeholder: "Enter Number of Times", autocomplete: "off" %>
+				</div>
+				<label>Quantity :</label>
+				<%= form.number_field :count, required:true, value:"1", min:"1", style:"width:calc(100% - 22px)", placeholder: "Enter Quantity", autocomplete: "off" %>
+				<label>Description :</label>
+				<%= form.text_area :description, id: "yb-item-request-description", required: true, autocomplete: "off" %>
+				<%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
+				<span class="yb-upload-img">Add Item Images</span>
+				<div class="yb-item-images-preview" id="yb-images-preview"></div>
+				<div style="display: block; position: relative;">
+					<button type="submit">Submit</button>
+					<button type="button" id="yb-close-add-request" class="yb-btn-cancel">Cancel</button>
+				</div>
+			<% end %>
+			<script type="text/javascript">CKEDITOR.replace( 'yb-item-request-description' );</script>
+		<% else %>
+			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<button type="button" id="yb-close-add-request" class="yb-btn-cancel">Cancel</button>
 		<% end %>
 	</div>
 	<script type="text/javascript">
-		CKEDITOR.replace( 'yb-item-request-description' );
 		$("#yb-close-add-request").closePopup();
 		$("#item_request_images").change(function(e){
 	        multipleImagesPreview(this, $("#yb-images-preview"));

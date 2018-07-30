@@ -1,4 +1,86 @@
 <section class="yb-admin-container">
+	<div class="yb-admin-home-menu">
+		<div class="yb-admin-menu-items">
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#20a8da;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @rendered %></h1>
+							<p>Borrows</p>
+							<h3>To Be Rendered</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#0fe232;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @returned %></h1>
+							<p>Borrows</p>
+							<h3>To Be Returned</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#f8cb00;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @late_receive %></h1>
+							<p>Borrows</p>
+							<h3>Late To Be Received</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#ff5857;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @late_render %></h1>
+							<p>Borrows</p>
+							<h3>Late To Be Rendered</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-item-menu">
+				<div class="yb-menu-content" style="background:#ca63de;">
+					<div class="yb-menu-dt-content">
+						<a>
+							<h1><%= @late_return %></h1>
+							<p>Borrows</p>
+							<h3>Late To Be Returned</h3>
+							<div class="yb-admin-menu-chart"></div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="yb-admin-menu-else-container">
+			<div class="yb-admin-menu-search">
+				<div class="yb-admin-search-content">
+					<h1>Find Borrow</h1>
+					<div class="yb-search-form">
+						<input type="text" name="search" placeholder="Enter Borrow Code" autocomplete="off" />
+						<span><i class="icon ion-ios-search-strong"></i></span>
+					</div>
+					<div class="yb-search-btns">
+						<button type="button" style="margin-right: 10px;">Search Borrow</button>
+						<button type="button" style="background: green;" id="admin-open-scan-borrow" href="<%= admin_scan_borrow_path %>">Scan Borrow</button>
+					</div>
+				</div>
+			</div>
+			<div class="yb-admin-menu-data">
+				
+			</div>
+		</div>
+	</div>
 	<div class="yb-admin-data-container" style="width: 100% !important;">
 		<h3>Recent Posted Items</h3>
 		<table>
@@ -24,7 +106,7 @@
 							<td><%= link_to item.name, admin_item_path(item) %></td>
 							<td><%= link_to item.category.name, admin_category_path(item.category) %></td>
 							<td><%= link_to item.subcategory.name, admin_subcategory_path(item.category, item.subcategory) %></td>
-							<td><%= link_to item.user.name, user_path(item.user), target: "_blank" %></td>
+							<td><%= link_to item.user.name, user_items_path(item.user.username, item.user), target: "_blank" %></td>
 							<td><span id="admin-item-price-<%= item.id %>" data-number="<%= item.price %>"></span> <%= item.currency %> / <%= item.per %></td>
 							<td></td>
 							<td><span id="admin-item-date-<%= item.id %>" data-date="<%= item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></td>
@@ -62,8 +144,8 @@
 							<td><%= borrow.id %></td>
 							<td><%= image_tag borrow.item.item_image[0].image.url, alt: borrow.item.name %></td>
 							<td><%= link_to borrow.item.name, admin_borrow_path(borrow.item, borrow) %></td>
-							<td><%= link_to borrow.item.user.name, user_path(borrow.item.user), target: "_blank" %></td>
-							<td><%= link_to borrow.user.name, user_path(borrow.user), target: "_blank" %></td>
+							<td><%= link_to borrow.item.user.name, user_items_path(borrow.item.user.username, borrow.item.user), target: "_blank" %></td>
+							<td><%= link_to borrow.user.name, user_items_path(borrow.user.username, borrow.user), target: "_blank" %></td>
 							<td><span id="admin-item-price-single-<%= borrow.id %>" data-number="<%= borrow.price %>"></span> <%= borrow.currency %> / <%= borrow.per %> (<%= borrow.updated_numbers %>)</td>
 							<td><%= borrow.count %></td>
 							<td><span id="admin-item-price-total-<%= borrow.id %>" data-number="<%= borrow.borrow_total %>"></span> <%= borrow.currency %></td>

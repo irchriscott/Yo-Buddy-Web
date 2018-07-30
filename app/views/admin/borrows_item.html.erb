@@ -70,7 +70,7 @@
 						<% @borrows.each do |borrow| %>
 							<tr>
 								<td><%= link_to borrow.id, admin_borrow_path(borrow.item, borrow) %></td>
-								<td><%= link_to borrow.user.name, user_path(borrow.user), target: "_blank" %></td>
+								<td><%= link_to borrow.user.name, user_items_path(borrow.user.username, borrow.user), target: "_blank" %></td>
 								<td><span id="admin-item-price-single-<%= borrow.id %>" data-number="<%= borrow.price %>"></span> <%= borrow.currency %> / <%= borrow.per %> (<%= borrow.updated_numbers %>)</td>
 								<td><%= borrow.count %></td>
 								<td><span id="admin-item-price-total-<%= borrow.id %>" data-number="<%= borrow.borrow_total %>"></span> <%= borrow.currency %></td>

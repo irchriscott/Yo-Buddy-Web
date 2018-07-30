@@ -1,86 +1,91 @@
 <div class="yb-modal-container">
 	<div class="yb-add-item">
 		<h2>Edit Item</h2>
-		<%= form_for :item, url: item_path(@item), method: :patch, html: {id: "yb-edit-item"} do |form| %>
-			<label>Item Name :</label>
-			<%= form.text_field :name, placeholder: 'Enter Item Name', required: true %>
-			<div class="yb-add-item-category">
-				<label>Item Category & Subcategory :</label>
-				<%= form.select(:category_id, required: true) do -%>
-					<% @categories.each do |category| %>
-						<% if @item.category.id == category.id %>
-						<%= content_tag(:option, category.name, value: category.id, selected: "selected") %>
-						<% else %>
-						<%= content_tag(:option, category.name, value: category.id) %>
+		<% if @active == true %>
+			<%= form_for :item, url: item_path(@item) + "?source=#{@source}", method: :patch, html: {id: "yb-edit-item"} do |form| %>
+				<label>Item Name :</label>
+				<%= form.text_field :name, placeholder: 'Enter Item Name', required: true, autocomplete: "off" %>
+				<div class="yb-add-item-category">
+					<label>Item Category & Subcategory :</label>
+					<%= form.select(:category_id, required: true) do -%>
+						<% @categories.each do |category| %>
+							<% if @item.category.id == category.id %>
+							<%= content_tag(:option, category.name, value: category.id, selected: "selected") %>
+							<% else %>
+							<%= content_tag(:option, category.name, value: category.id) %>
+							<% end %>
 						<% end %>
 					<% end %>
-				<% end %>
 
-				<%= form.select(:subcategory_id, required:true) do -%>
-					<% @subcategories.each do |subcategory| %>
-						<% if @item.subcategory.id == subcategory.id %>
-						<%= content_tag(:option, subcategory.name, value: subcategory.id, selected: "selected", category: subcategory.category_id) %>
-						<% else %>
-						<%= content_tag(:option, subcategory.name, value: subcategory.id, category: subcategory.category_id) %>
+					<%= form.select(:subcategory_id, required:true) do -%>
+						<% @subcategories.each do |subcategory| %>
+							<% if @item.subcategory.id == subcategory.id %>
+							<%= content_tag(:option, subcategory.name, value: subcategory.id, selected: "selected", category: subcategory.category_id) %>
+							<% else %>
+							<%= content_tag(:option, subcategory.name, value: subcategory.id, category: subcategory.category_id) %>
+							<% end %>
 						<% end %>
 					<% end %>
-				<% end %>
-			</div>
-			<div class="yb-add-price">
-				<label>Price :</label>
-				<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true %>
-				<%= form.select(:currency, required: true) do -%>
-					<% @currencies.each do |currency| %>
-						<% if @item.currency == currency["currency"] %>
-						<%= content_tag(:option, currency["name"], value: currency["currency"], selected: "selected") %>
-						<% else %>
-						<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+				</div>
+				<div class="yb-add-price">
+					<label>Price :</label>
+					<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true, autocomplete: "off" %>
+					<%= form.select(:currency, required: true) do -%>
+						<% @currencies.each do |currency| %>
+							<% if @item.currency == currency["currency"] %>
+							<%= content_tag(:option, currency["name"], value: currency["currency"], selected: "selected") %>
+							<% else %>
+							<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+							<% end %>
 						<% end %>
 					<% end %>
-				<% end %>
-				<%= form.select(:per, required: true) do %>
-					<% @per.each do |t| %>
-						<% if @item.per == t %>
-						<%= content_tag(:option, "Per #{t}", value: t, selected: "selected") %>
-						<% else %>
-						<%= content_tag(:option, "Per #{t}", value: t) %>
+					<%= form.select(:per, required: true) do %>
+						<% @per.each do |t| %>
+							<% if @item.per == t %>
+							<%= content_tag(:option, "Per #{t}", value: t, selected: "selected") %>
+							<% else %>
+							<%= content_tag(:option, "Per #{t}", value: t) %>
+							<% end %>
 						<% end %>
 					<% end %>
-				<% end %>
-			</div>
-			<label>Quantity : </label>
-			<%= form.number_field :count, required:true, min:"1", style:"width:calc(100% - 22px)" %>
-			<label>Description :</label>
-			<%= form.text_area :description, id: "yb-item-description", required: true %>
-			<p class="#"><%= form.check_box :is_available %><span>Is Available</span></p>
-			<%= form.file_field :image, multiple: true, style: "margin-top:162px;", accept: "image/jpeg, image/png, image/jpg" %>
-			<div class="yb-item-images-ex">
-				<label>Item Images</label>
-				<% if @item.item_image.count > 0 %>
-				<ul>
-					<% @item.item_image.each do |image| %>
-					<li>
-						<%= image_tag image.image.url, alt: @item.name %>
-						<span id="yb-delete-image-<%= image.id %>" data-url="<%= delete_item_image_path(image.item, image) %>"><i class="icon ion-close"></i></span>
-						<script type="text/javascript">$("#yb-delete-image-<%= image.id %>").deleteItemImage();</script>
-					</li>
+				</div>
+				<label>Quantity : </label>
+				<%= form.number_field :count, required:true, min:"1", style:"width:calc(100% - 22px)", autocomplete: "off" %>
+				<label>Description :</label>
+				<%= form.text_area :description, id: "yb-item-description", required: true %>
+				<p class="#"><%= form.check_box :is_available %><span>Is Available</span></p>
+				<%= form.file_field :image, multiple: true, style: "margin-top:162px;", accept: "image/jpeg, image/png, image/jpg" %>
+				<div class="yb-item-images-ex">
+					<label>Item Images</label>
+					<% if @item.item_image.count > 0 %>
+					<ul>
+						<% @item.item_image.each do |image| %>
+						<li>
+							<%= image_tag image.image.url, alt: @item.name %>
+							<span id="yb-delete-image-<%= image.id %>" data-url="<%= delete_item_image_path(image.item, image) %>"><i class="icon ion-close"></i></span>
+							<script type="text/javascript">$("#yb-delete-image-<%= image.id %>").deleteItemImage();</script>
+						</li>
+						<% end %>
+					</ul>
 					<% end %>
-				</ul>
-				<% end %>
-			</div>
-			<span class="yb-upload-img">Add Item Images</span>
-			<div class="yb-item-images-preview" id="yb-images-preview"></div>
-			<div style="display: block; position: relative;">
-				<button type="submit">Submit</button>
-				<button type="button" id="yb-close-edit-item" class="yb-btn-cancel">Cancel</button>
-			</div>
+				</div>
+				<span class="yb-upload-img">Add Item Images</span>
+				<div class="yb-item-images-preview" id="yb-images-preview"></div>
+				<div style="display: block; position: relative;">
+					<button type="submit">Submit</button>
+					<button type="button" id="yb-close-edit-item" class="yb-btn-cancel">Cancel</button>
+				</div>
+			<% end %>
+			<script type="text/javascript">CKEDITOR.replace( 'yb-item-description' );</script>
+		<% else %>
+			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<button type="button" id="yb-close-edit-item" class="yb-btn-cancel">Cancel</button>
 		<% end %>
 	</div>
 	<script type="text/javascript">
-		CKEDITOR.replace( 'yb-item-description' );
 		$("#yb-close-edit-item").closePopup();
 		$("#item_image").change(function(e){
-	        multipleImagesPreview(this, "#yb-images-preview");
+	        multipleImagesPreview(this, $("#yb-images-preview"));
 	    });
 
 	    $("#item_category_id").change(function(){

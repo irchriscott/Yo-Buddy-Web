@@ -1,30 +1,35 @@
 <div class="yb-modal-container" style="width: 30%;">
 	<div class="yb-add-item">
 		<h2>Update Request Suggestion</h2>
-		<%= form_for @suggestion, url: item_request_suggestion_update_path(@request, @suggestion), html: {id: "yb-update-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request), method: "patch", "data-from": "update"} do |form| %>
-			<label>Price :</label>
-			<%= form.number_field :price, required:true, placeholder: "Enter Price", min: "1" %>
-			<label>Currency :</label>
-			<%= form.select(:currency, required: true) do -%>
-				<% @currencies.each do |currency| %>
-					<% if @request.currency == currency["currency"] %>
-						<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+		<% if @active == true %>
+			<%= form_for @suggestion, url: item_request_suggestion_update_path(@request, @suggestion), html: {id: "yb-update-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request), method: "patch", "data-from": "update"} do |form| %>
+				<label>Price :</label>
+				<%= form.number_field :price, required:true, placeholder: "Enter Price", min: "1" %>
+				<label>Currency :</label>
+				<%= form.select(:currency, required: true) do -%>
+					<% @currencies.each do |currency| %>
+						<% if @request.currency == currency["currency"] %>
+							<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+						<% end %>
 					<% end %>
 				<% end %>
-			<% end %>
-			<label>Per : </label>
-			<%= form.select(:per, required: true) do %>
-				<% @per.each do |t| %>
-					<% if @request.per == t %>
-						<%= content_tag(:option, "Per #{t}", value: t) %>
+				<label>Per : </label>
+				<%= form.select(:per, required: true) do %>
+					<% @per.each do |t| %>
+						<% if @request.per == t %>
+							<%= content_tag(:option, "Per #{t}", value: t) %>
+						<% end %>
 					<% end %>
 				<% end %>
+				<%= form.hidden_field :status, value: @sug_status[0] %>
+				<div style="display: block; position: relative; margin-top: 10px;">
+					<button type="submit">Submit</button>
+					<button type="button" id="yb-close-update-suggestion-about" class="yb-btn-cancel">Cancel</button>
+				</div>
 			<% end %>
-			<%= form.hidden_field :status, value: @sug_status[0] %>
-			<div style="display: block; position: relative; margin-top: 10px;">
-				<button type="submit">Submit</button>
-				<button type="button" id="yb-close-update-suggestion-about" class="yb-btn-cancel">Cancel</button>
-			</div>
+		<% else %>
+			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<button type="button" id="yb-close-update-suggestion-about" class="yb-btn-cancel">Cancel</button>
 		<% end %>
 		<style type="text/css">input{width: calc(100% - 22px);} select{width: 100%;}</style>
 		<script type="text/javascript">$("#yb-close-update-suggestion-about").closePopup(); $("#yb-update-request-suggestion-item").suggestItemRequest();</script>

@@ -1,0 +1,2 @@
+class YbPackage < ApplicationRecord
+end

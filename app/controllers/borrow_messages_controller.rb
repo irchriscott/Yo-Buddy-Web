@@ -1,6 +1,9 @@
 class BorrowMessagesController < ApplicationController
 
+	include ApplicationHelper
+
 	before_action :set_data
+	before_action :check_active
 
 	def index
 		@messages = @borrow.borrow_message.all.order(created_at: :asc)
@@ -24,13 +27,17 @@ class BorrowMessagesController < ApplicationController
 	end
 
 	def create
-		@message = @borrow.borrow_message.create(message_params)
-		@message.sender_id = session[:user_id]
-		@message.has_images = false
-		if @message.save then
-			render json: {"type" => "success", "text" => params[:message][:message]}
+		if @active == true then
+			@message = @borrow.borrow_message.create(message_params)
+			@message.sender_id = session[:user_id]
+			@message.has_images = false
+			if @message.save then
+				render json: {"type" => "success", "text" => params[:message][:message]}
+			else
+				render json: {"type" => "error", "text" => @message.errors.full_messages}
+			end
 		else
-			render json: {"type" => "error", "text" => @message.errors.full_messages}
+			render json: {"type" => "success", "text" => "Your Private Account Is Npot Active !!!"}
 		end
 	end
 
@@ -38,20 +45,24 @@ class BorrowMessagesController < ApplicationController
 		@message = @borrow.borrow_message.create(message_params)
 		@message.sender_id = session[:user_id]
 		@message.has_images = true
-		if @message.save then
-			images = params[:message][:images]
-			for image in images
-				@image_message = BorrowMessageImage.new
-				@image_message.borrow_message_id = @message.id
-				@image_message.image = image
-				if @image_message.save then
-				else
-					render json: {"type" => "error", "text" => @image_message.errors.full_messages}
+		if @active == true then
+			if @message.save then
+				images = params[:message][:images]
+				for image in images
+					@image_message = BorrowMessageImage.new
+					@image_message.borrow_message_id = @message.id
+					@image_message.image = image
+					if @image_message.save then
+					else
+						render json: {"type" => "error", "text" => @image_message.errors.full_messages}
+					end
 				end
+				render json: {"type" => "success", "text" => "Has sent Images !!!"}
+			else
+				render json: {"type" => "error", "text" => @message.errors.full_messages}
 			end
-			render json: {"type" => "success", "text" => "Has sent Images !!!"}
 		else
-			render json: {"type" => "error", "text" => @message.errors.full_messages}
+			render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
 		end
 	end
 

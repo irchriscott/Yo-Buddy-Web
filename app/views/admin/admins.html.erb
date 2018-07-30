@@ -33,6 +33,42 @@
 				<% end %>
 			</tbody>
 		</table>
+		<br/>
+		<h2 style="margin-bottom: 10px;">ADMIN-USERS</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Remaining</th>
+					<th>Activated Date</th>
+					<th>Expary Date</th>
+					<th>Added Date</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if @admin_users.count > 0 %>
+					<% @admin_users.each do |user| %>
+						<tr>
+							<td><%= user.id %></td>
+							<td><% if user.user.image? %> <%= image_tag @user.user.image.url %> <% else %> <%= image_tag "/assets/default.jpg" %> <% end %></td>
+							<td><%= user.user.name %></td>
+							<td><%= user.admin_user_activation.key_type.capitalize %></td>
+							<td><%= user.admin_user_activation.remaining %></td>
+							<td><%= user.admin_user_activation.activated_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td><%= user.admin_user_activation.expary_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td><%= user.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+						</tr>
+					<% end %>
+				<% else %>
+					<tr>
+						<td colspan="8"><p class="yb-error">NO ADMIN-USER YET</p></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
 	</div>
 	<div class="yb-admin-right-side">
 		<h4>Filter Administrators</h4>
@@ -52,8 +88,10 @@
 				<% end %>
 				<button type="submit">Filter</button>
 				<button type="button" id="admin-add-admin" href="#yb-open-admin-add-admin">Add Admin</button>
+				<button type="button" id="admin-add-admin-user" href="#yb-open-admin-add-admin-user" style="display: block; width: 100%; margin-top: 15px; color: #FFF; background: var(--gray)">Add Admin User</button>
 			</div>
 		<% end %>
 	</div>
 </section>
 <section class="zoom-anim-dialog mfp-hide" id="yb-open-admin-add-admin"><%= render "admin/newadmin" %></section>
+<section class="zoom-anim-dialog mfp-hide" id="yb-open-admin-add-admin-user"><%= render "admin/newadminuser" %></section>

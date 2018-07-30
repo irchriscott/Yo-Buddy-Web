@@ -1,0 +1,86 @@
+<section class="yb-admin-container">
+	<div class="yb-admin-data-container">
+		<h3>BORROW ITEMS</h3>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Borrower</th>
+					<th>Price</th>
+					<th>Quantity</th>
+					<th>Total</th>
+					<th>From</th>
+					<th>To</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if @borrows.count > 0 %>
+					<% @borrows.each do |borrow| %>
+						<tr>
+							<td><%= borrow.id %></td>
+							<td><%= image_tag borrow.item.item_image[0].image.url, alt: borrow.item.name %></td>
+							<td><%= link_to borrow.item.name, admin_u_borrow_path(borrow.item.uuid, borrow.item, borrow) %></td>
+							<td><%= link_to borrow.user.name, user_path(borrow.user), target: "_blank" %></td>
+							<td><span id="admin-item-price-single-<%= borrow.id %>" data-number="<%= borrow.price %>"></span> <%= borrow.currency %> / <%= borrow.per %> (<%= borrow.updated_numbers %>)</td>
+							<td><%= borrow.count %></td>
+							<td><span id="admin-item-price-total-<%= borrow.id %>" data-number="<%= borrow.borrow_total %>"></span> <%= borrow.currency %></td>
+							<td><%= borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td><%= borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td style="text-transform: capitalize;"><%= borrow.status %></td>
+						</tr>
+						<script type="text/javascript">$("#admin-item-price-single-<%= borrow.id %>").setNumber(); $("#admin-item-price-total-<%= borrow.id %>").setNumber();</script>
+					<% end %>
+				<% else %>
+					<tr>
+						<td style="padding:20px 0;" colspan="10"><p class="yb-error">NO BORROW POSTED</p></td>
+					</tr>
+				<% end %>
+			</tbody>
+		</table>
+	</div>
+	<div class="yb-admin-right-side" style="margin-top: 5px;">
+		<h4>Filter Borrows</h4>
+		<%= form_for :search_borrow, method: "GET", html: {"data-url": "#"} do |form| %>
+			<%= form.text_field :search_text, placeholder: "Search Term" %>
+			<div class="yb-order-by">
+				<label>Order By : </label>
+				<%= form.select :order_by do -%>
+					<% @order_by.each do |order| %>
+						<%= content_tag(:option, order["text"], value: order["id"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select :order do -%>
+					<% @order.each do |ord| %>
+						<%= content_tag(:option, ord["text"], value: ord["id"]) %>
+					<% end %>
+				<% end %>
+				<label>Statuts :</label>
+				<%= form.select :status do %>
+					<%= content_tag :option, "All", value: "all" %>
+					<% @status.each do |status| %>
+						<%= content_tag :option, status, value: status %>
+					<% end %>
+				<% end %>
+				<label>Category : </label>
+				<%= form.select :category do %>
+					<%= content_tag :option, "All", value: "all" %>
+					<% @categories.each do |category| %>
+						<%= content_tag :option, category.name, value: category.id %>
+					<% end %>
+				<% end %>
+				<label>Subcategory : </label>
+				<%= form.select :subcategory do %>
+					<%= content_tag :option, "All", value: "all", category: "all" %>
+					<% @subcategories.each do |subcategory| %>
+						<%= content_tag :option, subcategory.name, value: subcategory.id, category: subcategory.category_id %>
+					<% end %>
+				<% end %>
+				<button type="submit">Filter</button>
+				<button type="button" id="admin-open-scan-borrow" href="<%= admin_u_scan_borrow_path %>">Scan Borrow</button>
+			</div>
+		<% end %>
+	</div>
+</section>

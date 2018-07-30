@@ -18,7 +18,7 @@
 }
 
 *{
-    font-family: Roboto, Avenir, Century Gothic, sans-serif;
+    font-family: Poppins, Roboto, Avenir, Century Gothic, sans-serif;
     color: var(--darkGray);
 }
 
@@ -169,6 +169,10 @@ table tbody tr td img{
     list-style: disc;
 }
 
+.cke_editable *{
+    font-family: Poppins, Roboto, Avenir, Century Gothic, sans-serif !important;
+}
+
 /* MENU */
 
 .yb-menu-list{
@@ -220,7 +224,7 @@ table tbody tr td img{
     padding: 15px 100px;
     width: auto;
     background: var(--primaryColor);
-    box-shadow: 0px 1px 10px var(--lightGray);
+    box-shadow: -21.213px 21.213px 30px 0px rgba(158, 158, 158, 0.3);
 }
 
 .yb-header .yb-header-container h2{
@@ -234,7 +238,7 @@ table tbody tr td img{
 
 .yb-header .yb-header-container .yb-header-right {
     float: right;
-    margin-top: -37px;
+    margin-top: -43px;
     margin-right: 30px;
 }
 
@@ -262,6 +266,7 @@ table tbody tr td img{
     height: 40px;
     border-radius: 50%;
     border: 2px solid white;
+    margin-top: 4px;
 }
 
 .yb-header .yb-header-container .yb-header-right .yb-header-signed-in img{
@@ -279,6 +284,8 @@ table tbody tr td img{
     font-size: 37px;
     cursor: pointer;
     color: #FFF;
+    margin-top: -4px;
+    display: block;
 }
 
 .yb-header .yb-header-container .yb-header-right .yb-header-menu span i{
@@ -289,13 +296,13 @@ table tbody tr td img{
     position: absolute;
     font-size: 11px;
     display: block;
-    padding: 3px 4px;
+    padding: 1px 5px;
     color: #FFF;
     border-radius: 50%;
     background: red;
     top: 0;
     right: 0;
-    margin-right: -13px;
+    margin-right: -11px;
 }
 
 .yb-header-else{
@@ -320,7 +327,7 @@ table tbody tr td img{
     width: 25%;
     white-space: nowrap;
     float: left;
-    margin-top: 3px;
+    margin-top: 7px;
 }
 
 .yb-header-else .yb-header-else-container .yb-header-user .yb-header-image{
@@ -339,8 +346,9 @@ table tbody tr td img{
     float: left;
     padding: 0;
     margin: 0;
-    margin-top: 6px;
+    margin-top: 4px;
     font-size: 15px;
+    text-transform: uppercase;
 }
 
 /* LOGIN AND REGISTRATION */
@@ -416,6 +424,7 @@ table tbody tr td img{
 
 .yb-sign-in-up-container .yb-sign-in-up .yb-sign-content .yb-sign-form{
     padding-top: 15px;
+    white-space: normal;
 }
 
 .yb-sign-in-up-container .yb-sign-in-up .yb-sign-content .yb-sign-form input[type=text],
@@ -438,6 +447,8 @@ table tbody tr td img{
     background: var(--primaryColor);
     color: #FFF;
     font-size: 16px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
 }
 
 .yb-sign-in-up-container .yb-sign-in-up .yb-sign-content .yb-sign-form p{
@@ -564,6 +575,7 @@ table tbody tr td img{
     float: left;
     width: calc(100% - 30px) !important;
     padding:15px !important;
+    display: inline-block;
     -moz-column-width: 20em;
     -webkit-column-width: 20em;
     -ms-column-width:20em;
@@ -583,7 +595,7 @@ table tbody tr td img{
     margin-bottom: 15px;
     z-index: 120;
     position: relative;
-    display:inline-block;
+    display: inline-block !important;
     box-shadow: 0px 0px 6px 1px var(--lightGray);
     margin-top: 5px;
     width: 100%;
@@ -621,7 +633,7 @@ table tbody tr td img{
     background: rgba(0,0,0,.7);
     height: 35px;
     padding: 0 15px;
-    margin-top: -45px;
+    margin-top: -47px;
     left: 0;
     margin-left: 5px;
     border-radius: 3px;
@@ -907,11 +919,12 @@ table tbody tr td img{
 .yb-session-add-item button i{
     font-size: 30px;
     color: #FFF;
+    line-height: 36px;
 }
 
 .yb-session-add-item .yb-menu-list{
     position: absolute;
-    margin-top: -80px;
+    margin-top: -95px;
     left: 0;
     margin-left: -50px;
     display: block;
@@ -954,12 +967,25 @@ table tbody tr td img{
 
 .yb-session-about-edit button,
 .yb-session-edit .yb-session-edit-div  form button{
-    padding: 8px 20px;
+    padding: 8px 35px;
     color: #FFF;
     background: var(--primaryColor);
     border-radius: 3px;
     box-shadow: 0px 0px 1px 2px var(--veryLightGray);
     font-size: 15px;
+    display: block;
+}
+
+.yb-session-edit .yb-session-edit-div  form .yb-space{
+    padding: 2px 5px;
+}
+
+.yb-session-edit .yb-session-edit-div  form button{
+    margin: 10px 0;
+}
+
+.yb-session-about-edit button{
+    margin: auto !important;
 }
 
 .yb-session-about-edit input[type=file]{
@@ -1215,11 +1241,10 @@ table tbody tr td img{
     width: 100%;
     height: auto;
     overflow: hidden;
-    text-align: center;
+    text-align: center !important;
 }
 
 .yb-modal-container .yb-add-item .yb-item-images-preview img{
-    float: left;
     margin-bottom: 7px;
     margin-right: 7px;
     height: 100px;
@@ -1659,6 +1684,14 @@ table tbody tr td img{
     background: var(--veryLightGray);
     width: 90px;
     overflow: hidden;
+    display: flex;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    align-items: center;
+    -webkit-align-items:center;
+    -moz-align-items:center;
+    -ms-align-items:center;
 }
 
 .yb-borrow-items .yb-borrow-item-single .yb-image img{
@@ -1674,6 +1707,7 @@ table tbody tr td img{
 
 .yb-borrow-items .yb-borrow-item-single .yb-about h3{
     font-size: 16px;
+    margin-top: 6px;
 }
 
 .yb-borrow-items .yb-borrow-item-single .yb-about .yb-item-data {
@@ -1728,7 +1762,7 @@ table tbody tr td img{
 
 .yb-borrow-items .yb-borrow-item-single .yb-about .yb-item-data .yb-data{
     margin-bottom: 4px;
-    color: var(--lightGray)
+    color: var(--lightGray);
 }
 
 .yb-borrow-items .yb-borrow-item-single .yb-single-follow{
@@ -1794,7 +1828,7 @@ table tbody tr td img{
 
 .yb-session-main .yb-messages-all .yb-borrow-about {
     padding: 10px 0px;
-    height: 50px;
+    height: 55px;
     border-bottom: 1px solid var(--veryLightGray);
     position: relative;
     display: block;
@@ -1826,7 +1860,7 @@ table tbody tr td img{
 }
 
 .yb-session-main .yb-messages-all .yb-borrow-about .yb-info .yb-item{
-    margin-top: 0px;
+    margin-top: -2px;
     font-size: 14px;
     color: var(--gray);
 }
@@ -1838,7 +1872,7 @@ table tbody tr td img{
 .yb-session-main .yb-messages-all .yb-borrow-about .yb-info .yb-date{
     font-size: 12px;
     color: var(--lightGray);
-    margin-top: -13px;
+    margin-top: -15px;
 }
 
 .yb-session-main .yb-messages-all .yb-borrow-about .yb-info span,
@@ -1896,7 +1930,7 @@ table tbody tr td img{
 }
 
 .yb-session-main .yb-messages-all .yb-borrow-messages-container{
-    height: calc(100vh - (58.12px + 25px + 51px + 72px));
+    height: calc(100vh - (58.12px + 25px + 51px + 72px + 5px));
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -1948,7 +1982,7 @@ table tbody tr td img{
     position: absolute;
     right: 0;
     top: 0;
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
 .yb-session-main .yb-messages-all .yb-message-form button i {
@@ -1967,7 +2001,7 @@ table tbody tr td img{
 .yb-session-main .yb-messages-all .yb-message-form .yb-menu-list{
     display: block;
     position: absolute !important;
-    margin-top: -100px;
+    margin-top: -110px;
     right: 0;
     margin-right: 4px;
     display: none;
@@ -2319,12 +2353,19 @@ table tbody tr td img{
 .yb-user-single-row .yb-text{
     background: #EEEEEE !important;
     text-align: center;
+    display: flex;
+    align-items: center;
 }
 
 .yb-admin-single-row .yb-text p,
 .yb-user-single-row .yb-text p{
     font-size: 29px;
     color: var(--darkGray);
+    margin-top: 0;
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-top: 30px;
 }
 
 .yb-admin-container .yb-admin-right-side h4{
@@ -2389,7 +2430,8 @@ table tbody tr td img{
 
 .yb-admin-container .yb-admin-right-side form button[type=button]{
     width: calc(65% - 15px);
-    background: lightgreen;
+    background: green;
+    color: #FFF;
 }
 
 .yb-admin-data-container .yb-admin-item{
@@ -2506,6 +2548,17 @@ table tbody tr td img{
 .yb-admin-data-container .yb-admin-item .yb-admin-item-data{
     display: block;
     position: relative;
+    border-top: 1px solid rgba(0,0,0,.1);
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.yb-admin-data-container .yb-admin-item .yb-admin-item-data ul{
+    margin: 10px auto;
+    text-align: center;
+}
+
+.yb-admin-data-container .yb-admin-item .yb-admin-item-data ul li:first-child{
+    margin-left: -40px;
 }
 
 .yb-admin-data-container .yb-admin-item .yb-admin-item-data ul li{
@@ -2588,10 +2641,26 @@ table tbody tr td img{
     margin-right: 0;
 }
 
+.yb-admin-data-container .yb-admin-item-borrows .yb-admin-borrow-menu a{
+    display: block;
+    background: lightgreen;
+    padding: 10px 25px;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-right: 10px;
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
+    color: #FFF;
+    margin-top: 15px;
+    width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .yb-admin-container .yb-admin-right-side .yb-admin-act-btn{
     display: block;
     position: relative;
     border-top: 1px solid var(--veryLightGray);
+    margin-bottom: 25px;
 }
 
 .yb-admin-container .yb-admin-right-side .yb-admin-act-btn h5{
@@ -2599,6 +2668,7 @@ table tbody tr td img{
 }
 
 .yb-admin-container .yb-admin-right-side .yb-admin-act-btn button,
+.yb-admin-item-btns button,
 .yb-add-borrow-item{
     box-shadow: 0px 0px 1px 2px var(--veryLightGray);
     padding: 8px 20px;
@@ -2606,6 +2676,17 @@ table tbody tr td img{
     border-radius: 2px;
     background: var(--darkGray);
     color: #FFF;
+    width: calc(50% - 8px);
+    display: inline-block;
+}
+
+.yb-admin-item-btns{
+    margin-top: 15px;
+}
+
+.yb-admin-container .yb-admin-right-side .yb-admin-act-btn button:last-child,
+.yb-admin-item-btns button:last-child{
+    margin-right: 0 !important;
 }
 
 .yb-add-borrow-item{
@@ -2616,11 +2697,9 @@ table tbody tr td img{
 }
 
 .yb-user-follow-category-single{
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin-right: 3px;
-    margin-top: -5px;
+    width: calc(100% - 6px);
+    text-align: center;
+    margin: 0 auto;
 }
 
 .yb-user-follow-category-single p{
@@ -2632,6 +2711,7 @@ table tbody tr td img{
     box-shadow: 0px 0px 1px 2px var(--veryLightGray);
     border-radius: 2px;
     cursor: pointer;
+    text-align: center;
 }
 
 .yb-user-follow-category-single p *{
@@ -2723,6 +2803,15 @@ table tbody tr td img{
 .yb-item-suggestions{
     display: block;
     position: relative;
+    white-space: normal;
+    margin: 0;
+    padding: 0;
+}
+
+.yb-item-suggestions ul{
+    display: inline-block;
+    position: relative;
+    width: 100%;
     background: #fff;
     -moz-column-width: 12em;
     -webkit-column-width: 12em;
@@ -2736,21 +2825,16 @@ table tbody tr td img{
     margin-top: 15px;
 }
 
-.yb-item-suggestions ul{
-    display: block;
-    position: relative;
-    white-space: normal;
-    margin: 0;
-    padding: 0;
-}
-
 .yb-item-suggestions ul li{
-    display: inline-block;
-    box-shadow: 0px 0px 6px 1px var(--lightGray);
+    background: #FFF;
+    height: auto;
     margin-bottom: 15px;
+    z-index: 120;
     position: relative;
-    cursor: pointer;
+    display: inline-block !important;
+    box-shadow: 0px 0px 6px 1px var(--lightGray);
     margin-top: 5px;
+    width: 100%;
 }
 
 .yb-item-suggestions ul li .yb-image{
@@ -2767,7 +2851,7 @@ table tbody tr td img{
     color: #FFF;
     padding: 5px 10px;
     width: calc(100% - 20px);
-    margin-top: -62px;
+    margin-top: -78px;
 }
 
 .yb-item-suggestions ul li .yb-about *{
@@ -2903,4 +2987,276 @@ table tbody tr td img{
 
 .yb-item-request-suggestions .yb-request-suggestion .yb-suggestion-images .active img{
     border:2px solid var(--primaryColor);
+}
+
+.yb-users-suggestion{
+    position: absolute;
+    width: 100%;
+    box-shadow: 0 0 4px 2px rgba(0,0,0,.4);
+    padding: 10px 0;
+    padding-top: 20px;
+    background: #FFF;
+    z-index: 200;
+    display: none;
+    margin-bottom: 20px;
+}
+
+.yb-users-suggestion a{
+    text-align: center;
+    color: #00c6d7;
+    display: block;
+    margin-top: 8px;
+}
+
+.yb-users-suggestion .yb-suggestion-list{
+    display: block;
+    position: relative;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul{
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li{
+    position: relative;
+    display: block;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li:first-child{
+    border-top: 1px solid rgba(0,0,0,.1);
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li:hover{
+    background: var(--primaryColor);
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li:hover *{
+    color: #FFF !important;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-image{
+    display: block;
+    float: left;
+    margin-right: 20px;
+    height: 70px;
+    width: 70px;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-image img{
+    width: 100%;
+    border-radius: 4px;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about{
+    margin-left: 90px;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about h3{
+    margin-top: 0;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about p{
+    margin-bottom: 0;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about .yb-location{
+    margin-top: -22px;
+    color: var(--gray);
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about .yb-location i{
+    color: var(--gray);
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about .yb-email{
+    color: var(--lightGray);
+    font-size: 14px;
+    margin-top: 0px;
+}
+
+.yb-users-suggestion .yb-suggestion-list ul li .yb-about .yb-email i{
+    color: var(--lightGray);
+}
+
+.yb-button-full{
+    padding: 8px 0px;
+    font-size: 14px;
+    border-radius: 3px;
+    margin-top: 10px;
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
+    width: 100%;
+}
+
+.yb-jumbotron{
+    height: 250px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    background: rgba(158, 158, 158, 0.3);
+    margin-top: 60px;
+    width: 100%;
+    white-space: normal;
+    box-shadow: 0px 0px 21.213px 10px rgba(158, 158, 158, 0.3);
+}
+
+.yb-jumbotron *{
+    white-space: normal;
+}
+
+.yb-jumbotron h1{
+    display: block;
+    width: 100% !important;
+    text-align: center;
+    font-size: 30px;
+}
+
+.yb-jumbotron p{
+    display: block;
+    width: 100% !important;
+    text-align: center;
+    margin-top: 0;
+}
+
+.yb-admin-home-menu{
+    display: block;
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 65px - 20px);
+}
+
+.yb-admin-home-menu .yb-admin-menu-items{
+    position: relative;
+    width:100%;
+}
+
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu{
+    position: relative;
+    display: inline-block;
+    width: calc((100% - 16px - 48px) / 5) !important;
+    margin-right: 12px;
+    margin-top: 15px;
+}
+
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu:last-child{
+    margin-right: 0 !important;
+}
+
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu .yb-menu-content{
+    background: green;
+    height: 230px;
+    display: -webkit-flex;
+    display: -moz-flexbox;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items:center;
+    -moz-align-items:center;
+    -ms-align-items:center;
+    align-items: center;
+    overflow: hidden;
+    text-align: center;
+}
+
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu .yb-menu-content .yb-menu-dt-content{
+    width: 100%;
+    display: block;
+    position: relative;
+    text-align: center;
+}
+
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu .yb-menu-content .yb-menu-dt-content *{
+    color: #ffffff;
+}
+
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu .yb-menu-content .yb-menu-dt-content h1{
+    font-size: 40px;
+    margin: 0;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container{
+    position: relative;
+    height: calc(100vh - 85px - 100px - 230px);
+    margin-top: 45px;
+    width: 100%;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search,
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-data{
+    display: inline-block;
+    height: calc(100vh - 85px - 100px - 230px);
+    box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, .4);
+    display: -webkit-flex;
+    display: -moz-flexbox;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items:center;
+    -moz-align-items:center;
+    -ms-align-items:center;
+    align-items: center;
+    overflow: hidden;
+    text-align: center;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search {
+    width: calc(65% - 35px);
+    float: left;
+    margin-right: 35px;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content{
+    position: relative;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-data{
+    width: 35%;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content h1{
+    font-size: 40px;
+    margin: 0;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content .yb-search-form{
+    width: 60%;
+    border:1px solid rgba(0,0,0,.1);
+    border-radius: 3px;
+    text-align: left;
+    padding: 10px 15px;
+    margin:auto;
+    margin-top: 30px;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content .yb-search-form input{
+    font-size: 22px;
+    font-weight: 400;
+    width: calc(100% - 30px);
+    border:none;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content .yb-search-form input:focus{
+    box-shadow: none !important;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content .yb-search-form span i{
+    font-size: 25px;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content .yb-search-btns{
+    margin-top: 30px;
+}
+
+.yb-admin-home-menu .yb-admin-menu-else-container .yb-admin-menu-search .yb-admin-search-content .yb-search-btns button{
+    background: var(--primaryColor);
+    color: #FFF;
+    font-size: 18px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
+    padding: 10px 40px;
 }

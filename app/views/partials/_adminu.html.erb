@@ -1,0 +1,50 @@
+<script type="text/javascript">
+	<% flash.each do |key, value| %>
+		if("<%= key %>" == "notice" || "<%= key %>" == "success"){
+			showSuccessMessage("<%= key %>","<%= value %>");
+		} else {
+			showErrorMessage("<%= key %>","<%= value %>");
+		}
+	<% end -%>
+</script>
+<% if is_admin_user_logged_in? %>
+<%= hidden_field_tag(:session_user_id, session_admin_user.user.id) %>
+<%= hidden_field_tag(:session_username, session_admin_user.user.username) %>
+<%= hidden_field_tag(:session_name, session_admin_user.user.name) %>
+<% end -%>
+<section class="yb-header">
+	<div class="yb-header-container">
+		<h2><a href="<%= admin_u_path %>">Admin - User - Yo Buddy !</a></h2>
+		<div class="yb-header-right">
+			<% if is_admin_user_logged_in? %>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "USERS", "#" %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "ITEMS", admin_u_items_path %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "BORROWS", admin_u_borrows_path %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "REPORTS", "#" %></p>
+				</div>
+				<div class="yb-header-sign-in">
+					<p><%= link_to "ACTIVATION", admin_u_activation_path %></p>
+				</div>
+				<div class="yb-header-signed-in">
+					<a href="#">
+						<%= image_tag "/assets/default.jpg", alt: session_admin_user.user.username %>
+					</a>
+				</div>
+				<div class="yb-header-menu">
+					<span><i class="icon ion-ios-bell-outline"></i></span>
+					<span id="yb-session-notifications" class="yb-header-tag" <% if session_admin_user.user.notification_count <= 0 %> style="display: none;" <% end -%> ><%= session_admin_user.user.notification_count %></span>
+				</div>
+			<% end %>
+			<div class="yb-header-menu">
+				<span><i class="icon ion-ios-search"></i></span>
+			</div>
+		</div>
+	</div>
+</section>

@@ -1,8 +1,10 @@
 const http = require('http').createServer()
 const io = require('socket.io')(http);
 
-http.listen(5000, function(){
-	console.log("Running at Port 5000")
+const port = process.env.port || 5000;
+
+http.listen(port, function(){
+	console.log("Running at Port " + port);
 });
 
 io.on("connection", function(socket){

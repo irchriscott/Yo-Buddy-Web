@@ -1,5 +1,7 @@
 module AdminHelper
 
+	TRIAL_NUM_DAYS = 30
+
 	def login_admin(admin)
 		session[:admin] = admin.id
 	end
@@ -21,7 +23,7 @@ module AdminHelper
 		session[:admin]
 	end
 
-	def borrow_received_act(borrow)
+	def borrow_received_act(borrow, user="Yo Buddy")
 		now = Time.new
 		return "
 			<div style='font-family:Avenir, Century Gothic, sans-serif; font-size:17px; padding:15px; position:relative;'>
@@ -36,7 +38,7 @@ module AdminHelper
 				</div>
 				<div style='text-align:justify; line-height:25px;'>
 					<p>
-						I, <strong>#{session_admin.name}</strong> Admin of YO BUDDY, have received 
+						I, <strong>#{user}</strong> Admin of YO BUDDY, have received 
 						<strong>#{borrow.item.name}</strong> from <strong> #{borrow.item.user.name}</strong> of borrow No <strong>#{borrow.code}</strong> to give to 
 						<strong>#{borrow.user.name}</strong> who will be in posession of the item from
 						<strong>#{borrow.from_date.localtime.strftime("%A, %d %B %Y at %H:%M")}</strong> to <strong>#{borrow.to_date.localtime.strftime("%A, %d %B %Y at %H:%M")}</strong> for
@@ -57,14 +59,14 @@ module AdminHelper
 					<div style='float:left; margin-left:70px;'>
 						<p>Yo Buddy Admin</p>
 						<div style='height:10px;'></div>
-						<p><strong>#{session_admin.name}</strong></p>
+						<p><strong>#{user}</strong></p>
 					</div>
 				</div>
 			</div>
 		"
 	end
 
-	def borrow_rendered_act(borrow)
+	def borrow_rendered_act(borrow, user="Yo Buddy")
 		now = Time.new
 		return "
 			<div style='font-family:Avenir, Century Gothic, sans-serif; font-size:17px; padding:15px; position:relative;'>
@@ -99,7 +101,7 @@ module AdminHelper
 					<div style='float:left; margin-left:70px;'>
 						<p>Yo Buddy Admin</p>
 						<div style='height:10px;'></div>
-						<p><strong>#{session_admin.name}</strong></p>
+						<p><strong>#{user}</strong></p>
 					</div>
 				</div>
 			</div>
@@ -199,6 +201,7 @@ module AdminHelper
 		@status = Array["pending", "accepted", "rejected", "rendered", "returned", "succeeded", "failed"]
 		@categories = Category.all.order(name: :asc)
 		@subcategories = Subcategory.all.order(name: :asc)
+		@active = true
 	end
 
 	def check_admin_session
@@ -209,6 +212,9 @@ module AdminHelper
 	end
 
 	def save_message(status, borrow)
+		borrow.status = status
+        borrow.save
+        
         message = BorrowMessage.new
         message.borrow_item_user_id = borrow.id
         message.sender_id = 0
@@ -217,8 +223,6 @@ module AdminHelper
         message.status = "unread"
         message.is_deleted = false
         message.save
-        borrow.status = status
-        borrow.save
     end
 	
 end

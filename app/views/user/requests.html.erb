@@ -66,8 +66,8 @@
 		                            <% end %>
 		                        </div>
 		                        <div class="yb-item-about">
-		                            <h3><a href="<%= item_request_path(request) %>"><%= request.title %></a></h3>
-		                            <p class="yb-item-category"><a href="<%= category_path(request.category) %>"><%= request.category.name %></a> - <a href="<%= subcategory_path(request.category, request.subcategory) %>"><%= request.subcategory.name %></a></p>
+		                            <h3><a href="<%= item_request_path(request.user.username, request.uuid, request) %>"><%= request.title %></a></h3>
+		                            <p class="yb-item-category"><a href="<%= category_path(request.category.uuid, request.category) %>"><%= request.category.name %></a> - <a href="<%= subcategory_path(request.category.uuid, request.category, request.subcategory) %>"><%= request.subcategory.name %></a></p>
 		                            <p class="yb-item-date">
 		                                <span>by <a href="<%= user_path(request.user) %>"><%= request.user.name %></a></span>
 		                                -

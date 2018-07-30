@@ -5,6 +5,7 @@
 **/
 
 const socket = io("127.0.0.1:5000");
+
 let sessionID = null;
 let sessionUsername = null;
 let sessionName = null;
@@ -98,9 +99,9 @@ $(function() {
         previewImage(this, "profile_image");
     });
 
-    $("#yb-add-item-new, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else").magnificPopup({type:'ajax'});
+    $("#yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else").magnificPopup({type:'ajax'});
 
-    $("#yb-open-borrow-item-description, #yb-admin-open-add-message, #admin-add-admin, #yb-borrow-get-qr-code, #yb-add-item-admin, #yb-view-item-admin, #yb-admin-open-scan-qr-code, #yb-open-send-message-images").magnificPopup({
+    $("#yb-open-borrow-item-description, #admin-add-admin-user, #yb-admin-open-add-message, #admin-add-admin, #yb-borrow-get-qr-code, #yb-add-item-admin, #yb-view-item-admin, #yb-admin-open-scan-qr-code, #yb-open-send-message-images").magnificPopup({
         type: 'inline',
         fixedContentPos: false,
         fixedBgPos: true,
@@ -152,6 +153,9 @@ $(function() {
     $("#yb-user-else-menu").activateList();
     $("#yb-borrow-image-message-form").messageText();
     $("#yb-open-message-menu").showMenu();
+    $("#yb-add-admin-user-form").searchAdminUser();
+    $("#yb-number-else").setNumber();
+    $("#yb-number-else-yb").setNumber();
 
     $("#search_borrow_category").change(function(){
         filterSubcategories($(this), $("#search_borrow_subcategory"));
@@ -331,7 +335,7 @@ $(function() {
                 if(item == data.item && borrow == data.borrow){
                     var paragraph = $("#yb-type-status");
                     if(data.message != ""){
-                        paragraph.fadeIn().children("p").text(data.sender + " is typing...")
+                        paragraph.fadeIn().children("p").text(capitalize(data.sender) + " is typing...")
                     } else {
                         paragraph.fadeOut().children("p").text("");
                     }
@@ -449,10 +453,15 @@ $(function() {
     });
 });
 
+function capitalize(text){
+    return text.replace(text.charAt(0), text.charAt(0).toUpperCase())
+}
+
 function setLoadData(container, url){
     setTimeout(function(){
         $("#" + container).load(url, function(){
             $(this).children("span").hide();
+            updateMessageScroll();
         }, function(error){
             showErrorMessage("error", error);
         });
@@ -575,24 +584,31 @@ jQuery.fn.closePopup = function(){
 
 
 function printDocument(container) {
+    
     var contents = document.getElementById(container).innerHTML;
     var frame = document.createElement('iframe');
+    
     frame.name = "frame";
     frame.style.position = "absolute";
     frame.style.top = "-1000000px";
+    
     document.body.appendChild(frame);
+    
     var doc = (frame.contentWindow) ? frame.contentWindow : (frame.contentDocument.document) ? frame.contentDocument.document : frame.contentDocument;
+    
     doc.document.open();
     doc.document.write('<html><head><title>Document</title>');
     doc.document.write('</head><body>');
     doc.document.write(contents);
     doc.document.write('</body></html>');
     doc.document.close();
+
     setTimeout(function () {
         window.frames["frame"].focus();
         window.frames["frame"].print();
         document.body.removeChild(frame);
     }, 500);
+
     return false;
 }
 
@@ -802,7 +818,7 @@ jQuery.fn.likeItemRequestEvent = function(){
         var user = $(this).attr("data-owner");
         var data = new FormData($(this)[0]);
         jQuery.ajax({
-            type: "post",
+            type: "POST",
             url: url,
             data: data,
             processData: false,
@@ -1102,6 +1118,11 @@ jQuery.fn.borrowItemUser = function(){
         var form = new FormData($(this)[0]);
         var url = $(this).attr("action");
         var user = $(this).attr("data-user");
+
+        for (instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
+
         $.ajax({
             type:"POST",
             url: url,
@@ -1480,6 +1501,95 @@ jQuery.fn.activeImageSuggestion = function(){
     });
 }
 
+jQuery.fn.searchAdminUser = function(){
+
+    let form = $(this);
+    let textInput = form.find("#admin_search_admin_query");
+    let userInput = form.find("#admin_user_user_id");
+    let container = form.find(".yb-users-suggestion");
+    let list = container.find(".yb-suggestion-list ul");
+    let spinner = container.find("span");
+    let collapse = container.find("a");
+    let button = form.find("button[type=submit]");
+    let close = form.find("button[type=button]");
+    let url = form.attr("data-url");
+
+    close.closePopup();
+
+    button.click(function(e){
+        if(userInput.val() == null || userInput.val() == ""){
+            e.preventDefault();
+            showErrorMessage("error", "Please Select A User !!!")
+        } else {
+            from.submit();
+        } 
+    });
+
+    textInput.focus(function(){
+        container.show();
+    });
+
+    textInput.keyup(function(){
+
+        let query = textInput.val();
+        $.ajax({
+            type: "GET",
+            url: url,
+            data:{"query" : query},
+            success: function(response){
+                list.empty();
+                if(response.length > 0){
+                    spinner.hide();
+                    response.forEach(function(user){
+                        let item = $(adminUserTemplate(user));
+                        item.click(function(){
+                            userInput.val(user.id);
+                            textInput.val(user.name);
+                            list.empty();
+                            spinner.show();
+                            container.hide();
+                        });
+                        list.append(item);
+                    });
+                }
+            },
+            error: function(error){
+                showErrorMessage("error", error);
+            }
+        });
+    });
+
+    collapse.click(function(e){
+        e.preventDefault();
+        container.hide();
+    });
+
+    close.click(function(e){
+        reset();
+    });
+
+    function reset(){
+        list.empty();
+        spinner.show();
+        container.hide();
+        userInput.val("");
+        textInput.val("");
+    }
+}
+
+function adminUserTemplate(user){
+    return `<li data-id="${user.id}">
+                <div class="yb-image">
+                    <img src="${user.image}">
+                </div>
+                <div class="yb-about">
+                    <h3>${user.name}</h3>
+                    <p class="yb-location"><i class="icon ion-ios-location-outline"></i> ${user.town}, ${user.country}</p>
+                    <p class="yb-email"><i class="icon ion-ios-email-outline"></i> ${user.email}</p>
+                </div>
+            </li>`;
+}
+
 function updateMessageScroll(){
     var message_list = $("#yb-borrow-messages-container");
     message_list.scrollTop = message_list.scrollHeight;
@@ -1491,7 +1601,7 @@ function getUserCurrentLocation(lat, long, addr, where){
     if(!navigator.geolocation){
         return showErrorMessage('error_geolocation', 'Geolocation not supported by your browser');
     }
-   navigator.geolocation.getCurrentPosition(function(position){
+    navigator.geolocation.getCurrentPosition(function(position){
 
         var geocoder = new google.maps.Geocoder();
         var location = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);

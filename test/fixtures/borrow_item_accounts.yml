@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  borrow_item_users: one
+  amount: 
+  penalties: 
+  currency: MyString
+
+two:
+  borrow_item_users: two
+  amount: 
+  penalties: 
+  currency: MyString

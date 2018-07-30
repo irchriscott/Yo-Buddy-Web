@@ -1,19 +1,24 @@
 <div class="yb-modal-container">
 	<div class="yb-add-item">
 		<h2>Send Images</h2>
-		<%= form_for :message, url: message_send_images_path(@item, @borrow), html: {'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_item_borrow_user_path(@item, @borrow), id: 'yb-borrow-image-message-form' } do |form| %>
-			<%= form.hidden_field :receiver_id, value: @borrow_receiver %>
-			<%= form.hidden_field :status, value: "unread" %>
-			<%= form.hidden_field :is_deleted, value: false %>
-			<%= form.hidden_field :message, value: "images" %>
-			<%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
-			<span class="yb-upload-img">Add Item Images</span>
-			<div class="yb-item-images-preview" id="yb-images-preview"></div>
-			<div style="display: block; position: relative;">
-				<button type="submit" id="yb-send-borrow-message-images">Send</button>
-				<button type="button" id="yb-close-send-message-images-item" class="yb-btn-cancel">Cancel</button>
-			</div>
-		<% end -%>
+		<% if @active == true %>
+			<%= form_for :message, url: message_send_images_path(@item, @borrow), html: {'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_item_borrow_user_path(@item, @borrow), id: 'yb-borrow-image-message-form' } do |form| %>
+				<%= form.hidden_field :receiver_id, value: @borrow_receiver %>
+				<%= form.hidden_field :status, value: "unread" %>
+				<%= form.hidden_field :is_deleted, value: false %>
+				<%= form.hidden_field :message, value: "images" %>
+				<%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
+				<span class="yb-upload-img">Add Item Images</span>
+				<div class="yb-item-images-preview" id="yb-images-preview"></div>
+				<div style="display: block; position: relative;">
+					<button type="submit" id="yb-send-borrow-message-images">Send</button>
+					<button type="button" id="yb-close-send-message-images-item" class="yb-btn-cancel">Cancel</button>
+				</div>
+			<% end -%>
+		<% else %>
+			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<button type="button" id="yb-close-send-message-images-item" class="yb-btn-cancel">Cancel</button>
+		<% end %>
 	</div>
 	<script type="text/javascript">
 		$("#message_images").change(function(e){

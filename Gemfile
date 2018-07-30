@@ -25,7 +25,7 @@ gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '~> 4.0'
+gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 # For Countries List
@@ -35,8 +35,13 @@ gem 'country_select'
 # gem 'activemodel'
 # gem 'activesupport'
 gem 'carrierwave', '~> 1.0'
-
+# For CORS 
 gem 'rack-cors', :require => 'rack/cors'
+# For background processes
+gem 'sidekiq'
+gem 'sinatra', github: 'sinatra/sinatra'
+
+gem 'sidekiq-cron'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

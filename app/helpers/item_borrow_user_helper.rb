@@ -15,6 +15,8 @@ module ItemBorrowUserHelper
 					save_message "failed", borrow
                     Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
                     Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                    BorrowUserMailer.with(borrow: borrow).status(borrow.user.email).deliver_now
+                    BorrowUserMailer.with(borrow: borrow).status(borrow.item.user.email).deliver_now
 				end
 			elsif borrow.status == "accepted" then
 				received = borrow.borrow_item_admin.where(status: "received").last
@@ -29,6 +31,8 @@ module ItemBorrowUserHelper
 									save_message "failed", borrow
                                     Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
                                     Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
 								end
 							else
 								if now > check_date(received.created_at.localtime, 0, 1, 0) then
@@ -37,6 +41,8 @@ module ItemBorrowUserHelper
 									save_message "failed", borrow
                                     Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
 								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                                 end
 							end
 						elsif borrow.per == pers[1] then
@@ -47,6 +53,8 @@ module ItemBorrowUserHelper
 									save_message "failed", borrow
                                     Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
 								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                                 end
 							else
 								if now > check_date(received.created_at.localtime, 1, 0, 0) then
@@ -55,6 +63,8 @@ module ItemBorrowUserHelper
 									save_message "failed", borrow
                                     Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
 								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                                 end
 							end
 						elsif borrow.per == pers[2] then
@@ -64,6 +74,8 @@ module ItemBorrowUserHelper
 								save_message "failed", borrow
                                 Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
                                 Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+                                BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                             end
 						else
 							if now > check_date(received.created_at.localtime, 3, 0, 0) then
@@ -72,6 +84,8 @@ module ItemBorrowUserHelper
 								save_message "failed", borrow
                                 Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
                                 Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+                                BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+                                BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
 							end
 						end
 					end
@@ -200,6 +214,9 @@ module ItemBorrowUserHelper
     end
 
     def save_message(status, borrow)
+        borrow.status = status
+        borrow.save
+
         message = BorrowMessage.new
         message.borrow_item_user_id = borrow.id
         message.sender_id = 0
@@ -208,5 +225,71 @@ module ItemBorrowUserHelper
         message.status = "unread"
         message.is_deleted = false
         message.save
+    end
+
+    def to_be_rendered(*args)
+        return (args.length > 1) ? BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.id = ?", args[0]).where(status: "accepted").where("DATE(from_date) = ?", args[2]).order(created_at: :desc) : BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).where(status: "accepted").where("DATE(from_date) = ?", Time.now.to_date).order(created_at: :desc)
+    end
+
+    def to_be_returned(*args)
+        borrows = Array.new
+        BorrowItemUser.all.each do |borrow|
+            rendered = borrow.borrow_item_admin.where(status: "rendered").last
+            if rendered != nil && borrow.to_date.localtime.to_date == args[0] then
+                if args.length == 1 then
+                    borrows.push(borrow) if !borrow.item.user.is_private?
+                else
+                    borrows.push(borrow) if borrow.item.user.id == args[1]
+                end 
+            end
+        end
+        return borrows
+    end
+
+    def late_to_be_received(*args)
+        borrows = Array.new
+        BorrowItemUser.all.each do |borrow|
+            received = borrow.borrow_item_admin.where(status: "received").last
+            if received == nil && borrow.from_date.localtime.to_date < args[0] then
+                if args.length == 1 then
+                    borrows.push(borrow) if !borrow.item.user.is_private?
+                else
+                    borrows.push(borrow) if borrow.item.user.id == args[1]
+                end 
+            end
+        end
+        return borrows
+    end
+
+    def late_to_be_rendered(*args)
+        borrows = Array.new
+        BorrowItemUser.all.each do |borrow|
+            rendered = borrow.borrow_item_admin.where(status: "rendered").last
+            received = borrow.borrow_item_admin.where(status: "received").last
+            if received && !rendered && borrow.from_date.localtime.to_date < args[0] then
+                if args.length == 1 then
+                    borrows.push(borrow) if !borrow.item.user.is_private?
+                else
+                    borrows.push(borrow) if borrow.item.user.id == args[1]
+                end 
+            end
+        end
+        return borrows
+    end
+
+    def late_to_be_returned(*args)
+        borrows = Array.new
+        BorrowItemUser.all.each do |borrow|
+            rendered = borrow.borrow_item_admin.where(status: "rendered").last
+            received = borrow.borrow_item_admin.where(status: "received").last
+            if received && rendered && check_date(borrow.to_date.localtime, 0, 4, 0) < args[0] then
+                if args.length == 1 then
+                    borrows.push(borrow) if !borrow.item.user.is_private?
+                else
+                    borrows.push(borrow) if borrow.item.user.id == args[1]
+                end 
+            end
+        end
+        return borrows
     end
 end

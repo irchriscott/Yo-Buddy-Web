@@ -13,6 +13,9 @@ class BorrowItemUser < ApplicationRecord
 
 	before_save {self.is_deleted = false}
 
+	$pers = Array["Hour", "Day", "Week", "Month", "Year"]
+	$statuses = Array["accepted", "rendered", "returned", "succeeded"]
+
 	def check_expiration
 
 		from = self.from_date.localtime
@@ -34,16 +37,12 @@ class BorrowItemUser < ApplicationRecord
 	end
 
 	def borrow_total
-		return self.price * self.updated_numbers * self.count
+		return (self.price * self.updated_numbers * self.count) + self.penalties
 	end
 
 	def _code
-		message = BorrowMessage.where("borrow_item_user_id = :id AND message = :message", {id: self.id, message: "accepted"}).first
-		if message then
-			return self.created_at.to_i + message.created_at.to_i - self.updated_at.to_i
-		else
-			return Time.new.to_i
-		end
+		message = self.borrow_message.where("message = :message", {message: "accepted"}).first
+		return (message) ? self.created_at.to_i + message.created_at.to_i - self.updated_at.to_i : Time.new.to_i
 	end
 
 	def code
@@ -51,21 +50,19 @@ class BorrowItemUser < ApplicationRecord
 	end
 
 	def updated_numbers
-		statuses = Array["accepted", "rendered", "returned", "succeeded"]
 		received = self.borrow_item_admin.where(status: "received").last
-		pers = Array["Hour", "Day", "Week", "Month", "Year"]
-		if statuses.include?(self.status) and received != nil then
+		if $statuses.include?(self.status) and received != nil then
 			if self.from_date < received.created_at then
 				date = to_datetime(self.to_date) - to_datetime(received.created_at)
-				if self.per == pers[0] and self.numbers > 4 then
+				if self.per == $pers[0] and self.numbers > 4 then
 					return (self.to_date.localtime - received.created_at.localtime).to_i / (60 * 60 * 1000)
-				elsif self.per == pers[1] then
+				elsif self.per == $pers[1] then
 					return date.to_i / (24 * 60 * 60 * 1000)
-				elsif self.per == pers[2] then
+				elsif self.per == $pers[2] then
 					return date.to_i / (7 * 24 * 60 * 60 * 1000)
-				elsif self.per == pers[3] then
+				elsif self.per == $pers[3] then
 					return date.to_i / (30 * 24 * 60 * 60 * 1000)
-				elsif self.per == pers[4]
+				elsif self.per == $pers[4]
 					return date.to_i / (12 * 30 * 24 * 60 * 60 * 1000)
 				else
 					return self.numbers 
@@ -78,7 +75,72 @@ class BorrowItemUser < ApplicationRecord
 		end
 	end
 
+	def deadline
+
+		received = self.borrow_item_admin.where(status: "received").last
+		rendered = self.borrow_item_admin.where(status: "rendered").last
+
+		if received != nil then
+			if rendered == nil then
+				if self.per == $pers[0] then
+					return (self.numbers < 3) ? check_date(received.created_at.localtime, 0, 0, 30) : check_date(received.created_at.localtime, 0, 1, 0)
+				elsif self.per == $pers[1] then
+					return (self.numbers < 3) ? check_date(received.created_at.localtime, 0, 12, 0) : check_date(received.created_at.localtime, 1, 0, 0)
+				elsif self.per == $pers[2] then
+					return check_date(received.created_at.localtime, 2, 0, 0)
+				else
+					return check_date(received.created_at.localtime, 3, 0, 0)
+				end
+			end
+		else
+			return self.to_date
+		end
+	end
+
+	def penalties
+
+		rendered = self.borrow_item_admin.where(status: "rendered").last
+		returned = self.borrow_item_admin.where(status: "returned").last
+
+		now = Time.now.to_date
+		dead = now.to_time.to_i - self.to_date.to_time.to_i
+		hours = (dead / (60 * 60)) - 4
+
+		if rendered && !returned then
+			return (hours > 0) ? hours * self.price_per_hour * self.count : 0
+		elsif rendered && returned then
+			return ((now.to_time.to_i - created_at.localtime.to_time.to_i) / (60 * 60)) * self.price_per_hour * self.count
+		else
+			return 0
+		end
+	end
+
+	def penalties_start_time
+		return check_date(self.to_date.localtime, 0, 4, 0)
+	end
+
+	def price_per_hour
+		case self.per
+			when $pers[0] then
+				return self.price
+			when $pers[1] then
+				return self.price / 24
+			when $pers[2] then
+				return self.price / (7 * 24)
+			when $pers[3] then
+				return self.price / (30 * 24)
+			when $pers[4] then
+				return self.price / (12 * 30 * 24)
+			else
+				return 0
+		end
+	end
+
 	private def to_datetime(date)
         return Time.local(date.year, date.month, date.day, 0, 0, 0)
+    end
+
+    private def check_date(date, days, hours, minutes)
+    	return date + (days.to_i * 24 * 60 * 60) + (hours.to_i * 60 * 60) + (minutes.to_i * 60)
     end
 end

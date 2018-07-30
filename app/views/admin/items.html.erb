@@ -23,12 +23,12 @@
 							<td><%= item.item.id %></td>
 							<td><%= image_tag item.item.item_image[0].image.url, alt: item.item.name %></td>
 							<td><%= link_to item.item.name, admin_item_borrows_path(item) %></td>
-							<td><%= link_to item.item.user.name, user_path(item.item.user), target: "_blank" %></td>
+							<td><%= link_to item.item.user.name, user_items_path(item.item.user.username, item.item.user), target: "_blank" %></td>
 							<td style="text-transform: capitalize;"><%= item.status %></td>
 							<td style="text-transform: capitalize;"><%= item.is_available %></td>
 							<td><% if item.borrow != nil %><%= link_to item.borrow.user.name, admin_borrow_path(item.item, item.borrow) %><% else %>-<% end %></td>
-							<td><% if item.borrow != nil %><%= item.borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %><% else %>-<% end %>-</td>
-							<td><% if item.borrow != nil %><%= item.borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %><% else %>-<% end %>-</td>
+							<td><% if item.borrow != nil %><%= item.borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %><% else %>-<% end %></td>
+							<td><% if item.borrow != nil %><%= item.borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %><% else %>-<% end %></td>
 							<td style="text-transform: capitalize;"><% if item.borrow != nil %><%= item.borrow.status %><% else %>-<% end %></td>
 						</tr>
 					<% end %>

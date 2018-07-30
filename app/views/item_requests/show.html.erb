@@ -1,4 +1,8 @@
-<section class="yb-single-item">
+<section class="yb-jumbotron" style="flex-direction: column;">
+	<h1 style="margin-top: 60px;"><%= @request.title %></h1>
+	<p><span><i class="icon ion-ios-pricetags-outline"></i></span> <span id="yb-number-else" data-number="<%= @request.min_price %>"><%= @request.min_price %></span> - <span id="yb-number-else-yb"  data-number="<%= @request.max_price %>"><%= @request.max_price %></span> <%= @request.currency %></span> / <span><%= @request.per %><span style="margin-left: 30px;"><i class="icon ion-ios-location-outline"></i> <%= @request.user.town %>,  <%= @request.user.country_name %></span></p>
+</section>
+<section class="yb-single-item" style="margin-top: 30px;">
 	<div class="yb-single-item-main">
 		<div class="yb-single-image">
 			<%= image_tag @request.item_request_image[0].image.url, alt: @request.title, id: "item_image_main"%>
@@ -24,7 +28,7 @@
 			</div>
 			<div class="yb-single-info-item">
 				<h3><%= @request.title %></h3>
-				<p class="yb-single-category"><%= link_to @request.category.name, category_path(@request.category) %> - <%= link_to @request.subcategory.name, subcategory_path(@request.category, @request.subcategory) %></p>
+				<p class="yb-single-category"><%= link_to @request.category.name, category_path(@request.category.uuid, @request.category) %> - <%= link_to @request.subcategory.name, subcategory_path(@request.category.uuid, @request.category, @request.subcategory) %></p>
 				<p class="yb-single-user-date">by <%= link_to @request.user.name, user_path(@request.user) %> - <span id="item_date" data-date="<%= @request.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
 				<% if is_logged_in? %>
 					<div class="yb-single-follow" id="yb-user-follow-container-<%= @request.user.id %>" data-id="<%= @request.user.id %>">
@@ -93,7 +97,7 @@
 					<ul>
 						<% if is_logged_in? %>
 						<% if session_user.id == @request.user.id %>
-						<li><a href="<%= edit_item_request_path(@request) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+						<li><a href="<%= edit_item_request_path(@request.user.username, @request.uuid, @request) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
 						<li><a><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
 						<% if @suggestions > 0 and @request.status != @status[1] %>
 						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=1" data-status="Succeeded"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Succeed</span></a></li>
@@ -103,8 +107,8 @@
 						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=3" data-status="Reset"><span class="item-icon"><i class="icon ion-arrow-return-left"></i></span><span class="item-text">Reset</span></a></li>
 						<% end -%>
 						<% if @request.status == @status[0] %>
-						<li><a href="<%= item_request_new_suggestion_path(@request) %>" id="yb-add-suggestion-new"><span class="item-icon"><i class="icon ion-plus-round"></i></span><span class="item-text">Suggest - N</span></a></li>
-						<li><a href="<%= item_request_exist_suggestion_path(@request) %>" id="yb-add-suggestion-exist"><span class="item-icon"><i class="icon ion-plus-circled"></i></span><span class="item-text">Suggest - E</span></a></li>
+						<li><a href="<%= item_request_new_suggestion_path(@request.user.username, @request.uuid, @request) %>" id="yb-add-suggestion-new"><span class="item-icon"><i class="icon ion-plus-round"></i></span><span class="item-text">Suggest - N</span></a></li>
+						<li><a href="<%= item_request_exist_suggestion_path(@request.user.username, @request.uuid, @request) %>" id="yb-add-suggestion-exist"><span class="item-icon"><i class="icon ion-plus-circled"></i></span><span class="item-text">Suggest - E</span></a></li>
 						<% end %>
 						<% end %>
 						<li><a href="<%= report_new_path(@request.id) %>?ressource=request" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
