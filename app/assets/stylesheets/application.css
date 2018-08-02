@@ -305,7 +305,8 @@ table tbody tr td img{
     margin-right: -11px;
 }
 
-.yb-header-else{
+.yb-header-else,
+.yb-header-admin-else{
     position: fixed;
     width: 100%;
     box-shadow: 0 1px 2px -2px var(--lightGray);
@@ -318,31 +319,36 @@ table tbody tr td img{
     display: none;
 }
 
-.yb-header-else .yb-header-else-container{
+.yb-header-else .yb-header-else-container,
+.yb-header-admin-else .yb-header-else-container{
     width: calc(70% - 30px);
     margin:auto;
 }
 
-.yb-header-else .yb-header-else-container .yb-header-user{
+.yb-header-else .yb-header-else-container .yb-header-user,
+.yb-header-admin-else .yb-header-else-container .yb-header-user{
     width: 25%;
     white-space: nowrap;
     float: left;
     margin-top: 7px;
 }
 
-.yb-header-else .yb-header-else-container .yb-header-user .yb-header-image{
+.yb-header-else .yb-header-else-container .yb-header-user .yb-header-image,
+.yb-header-admin-else .yb-header-else-container .yb-header-user .yb-header-image{
     float: left;
     height: 30px;
     margin-right: 10px;
     border-radius: 3px;
 }
 
-.yb-header-else .yb-header-else-container .yb-header-user .yb-header-image img{
+.yb-header-else .yb-header-else-container .yb-header-user .yb-header-image img,
+.yb-header-admin-else .yb-header-else-container .yb-header-user .yb-header-image img{
     height: 100%;
     border-radius: 3px;
 }
 
-.yb-header-else .yb-header-else-container .yb-header-user h4{
+.yb-header-else .yb-header-else-container .yb-header-user h4,
+.yb-header-admin-else .yb-header-else-container .yb-header-user h4{
     float: left;
     padding: 0;
     margin: 0;
@@ -448,7 +454,7 @@ table tbody tr td img{
     color: #FFF;
     font-size: 16px;
     border-radius: 3px;
-    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);`
 }
 
 .yb-sign-in-up-container .yb-sign-in-up .yb-sign-content .yb-sign-form p{
@@ -845,13 +851,12 @@ table tbody tr td img{
 }
 
 .yb-session-main .yb-session-container,
-.yb-header-else .yb-header-else-container .yb-session-menu{
+.yb-header-else .yb-header-else-container .yb-session-menu,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu{
     float: left;
     height: auto;
     width: calc(75% - 20px);
     margin-left: 20px;
-/*    overflow-x: hidden;
-    overflow-y: visible !important;*/
 }
 
 .yb-session-main .yb-session-container .yb-session-menu{
@@ -860,36 +865,42 @@ table tbody tr td img{
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul,
-.yb-header-else .yb-header-else-container .yb-session-menu ul{
+.yb-header-else .yb-header-else-container .yb-session-menu ul,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul{
     padding: 0;
     margin:0;
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul li,
-.yb-header-else .yb-header-else-container .yb-session-menu ul li{
+.yb-header-else .yb-header-else-container .yb-session-menu ul li,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li{
     display: inline-block;
     margin-right: 30px;
     padding: 12px 0;
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul li a,
-.yb-header-else .yb-header-else-container .yb-session-menu ul li a{
+.yb-header-else .yb-header-else-container .yb-session-menu ul li a,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li a{
     font-size: 14px;
     text-transform: uppercase;
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul .active,
-.yb-header-else .yb-header-else-container .yb-session-menu ul .active{
+.yb-header-else .yb-header-else-container .yb-session-menu ul .active,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul .active{
     border-bottom: 2px solid var(--primaryColor);
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul .active a,
-.yb-header-else .yb-header-else-container .yb-session-menu ul .active a{
+.yb-header-else .yb-header-else-container .yb-session-menu ul .active a,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul .active a{
     color: var(--primaryColor);
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul li a span,
-.yb-header-else .yb-header-else-container .yb-session-menu ul li a span{
+.yb-header-else .yb-header-else-container .yb-session-menu ul li a span,
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li a span{
     display: inline-block;
     background: var(--veryLightGray);
     margin-left: 8px;
@@ -2737,7 +2748,7 @@ table tbody tr td img{
 .yb-categories-list ul li{
     display: block;
     position: relative;
-    padding: 5px;
+    padding: 8px;
     border-bottom: 1px solid var(--veryLightGray);
     height: 42px;
     border-left: 2px solid transparent;
@@ -2763,7 +2774,7 @@ table tbody tr td img{
     border-radius: 3px;
     text-align: center;
     float: left;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 .yb-categories-list ul li a .yb-image p{
@@ -2773,11 +2784,11 @@ table tbody tr td img{
 }
 
 .yb-categories-list ul li a .yb-category-name{
-    font-size: 15.5px;
+    font-size: 15px;
     font-weight: bold;
     line-height: 40px;
     text-overflow: ellipsis;
-    width: calc(100% - 80px);
+    width: calc(100% - 86px);
     overflow: hidden;
 }
 
@@ -3177,6 +3188,16 @@ table tbody tr td img{
     margin: 0;
 }
 
+.yb-admin-home-menu .yb-admin-menu-items .yb-admin-item-menu .yb-menu-content .yb-menu-dt-content .yb-menu-dt-price{
+    padding: 5px 0px;
+    background: rgba(0,0,0,.2);
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    width: calc(100% - 30px);
+    margin: auto;
+}
+
 .yb-admin-home-menu .yb-admin-menu-else-container{
     position: relative;
     height: calc(100vh - 85px - 100px - 230px);
@@ -3259,4 +3280,71 @@ table tbody tr td img{
     border-radius: 3px;
     box-shadow: 0px 0px 1px 2px var(--veryLightGray);
     padding: 10px 40px;
+}
+
+.yb-activation-key{
+    display: block;
+    position: relative;
+    width: auto;
+    text-align: center;
+    margin-top: 150px;
+    padding-bottom: 50px;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    margin-bottom:40px;
+}
+
+.yb-activation-key button{
+    padding: 10px 45px;
+    background: var(--primaryColor);
+    color: #FFF;
+    font-size: 18px;
+    border-radius: 3px;
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
+    margin-top: 10px;
+}
+
+.yb-activation-key .yb-key{
+    position: relative;
+    background: green;
+    width: 70%;
+    padding: 15px 0;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0px 0px 1px 2px var(--veryLightGray);
+}
+
+.yb-activation-key .yb-key p{
+    font-size: 24px;
+    color: #ffffff;
+    margin: 0px !important;
+}
+
+.yb-packages-all{
+    text-align: center;
+}
+
+.yb-activation-inputs{
+    display: block;
+    position: relative;
+    margin: 15px 0;
+}
+
+.yb-activation-inputs *{
+    display: inline-block;
+}
+
+.yb-activation-inputs input[type=text]{
+    width: calc(23% - 22px) !important;
+    font-size: 25px !important;
+    text-align: center;
+    text-transform: uppercase !important;
+}
+
+.yb-activation-inputs span{
+    width: calc(4% / 3);
+    text-align: center; 
+}
+
+.yb-admin-admin-user-data{
+    margin-top: 20px;
 }

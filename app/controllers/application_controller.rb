@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
       			user = User.find(user_id)
       			if user.is_private == true then
         				if user.admin_user != nil then
-        		        return user.admin_user.admin_user_activation.is_active
+        		        return user.admin_user.admin_user_activation.is_active && user.admin_user.admin_user_activation.yb_key.is_active
         				else
         				    return user.is_authenticated
         				end

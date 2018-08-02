@@ -1,7 +1,7 @@
 class CreateYbPackages < ActiveRecord::Migration[5.1]
   def change
     create_table :yb_packages do |t|
-      t.string :type
+      t.string :package
       t.integer :items
       t.integer :users
       t.float :price

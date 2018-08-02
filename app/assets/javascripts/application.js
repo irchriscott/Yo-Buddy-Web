@@ -419,6 +419,12 @@ $(function() {
         } else {
             $(".yb-header-else").hide();
         }
+
+        if($(this).scrollTop() > 20){
+            $(".yb-header-admin-else").show();
+        } else {
+            $(".yb-header-admin-else").hide();
+        }
     });
 
     $("#yb-update-request-status").click(function(e){

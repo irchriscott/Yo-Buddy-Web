@@ -257,6 +257,13 @@ class ItemRequestsController < ApplicationController
                     @item.user_id = session[:user_id]
                     @item.is_available = false
                     @item.is_deleted = false
+
+                    can_add = can_add_item(session[:user_id], params[:item][:count].to_i)
+
+                    if !can_add? then
+                        render json: {"type" => "error", "text" => "Your Private Account Is Not Active or Items Exceed The Subscribed Package !!!"}
+                    end
+
                     if @item.save then
                         images = params[:item][:image]
                         for image in images

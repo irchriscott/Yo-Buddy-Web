@@ -119,6 +119,7 @@ Rails.application.routes.draw do
     get '/admin/u/home', to: 'admin_user#home', as: 'admin_u_home'
     get '/admin/u/items', to: 'admin_user#items', as: 'admin_u_items'
     get '/admin/u/borrows', to: 'admin_user#borrows', as: 'admin_u_borrows'
+    get '/admin/u/logout', to: 'admin_user#logout', as: 'admin_u_logout'
 
     get '/admin/u/password/reset', to:'admin_user#reset_password', as: 'admin_u_reset_password'
     post '/admin/u/password/reset/mail/send', to: 'admin_user#send_reset_password_mail', as: 'admin_u_rp_send_mail'
@@ -140,6 +141,7 @@ Rails.application.routes.draw do
     get '/admin/u/borrow/user/find.json', to: 'admin_user#search_user', as: 'admin_u_borrow_user_find'
     
     get '/admin/u/activation/key', to: 'admin_user#set_activation', as: 'admin_u_activation'
+    post '/admin/u/activate/key', to: 'admin_user#activate_key', as: 'admin_u_activate_key'
 
     # ADMIN ROUTES
 
@@ -147,6 +149,7 @@ Rails.application.routes.draw do
     post '/admin/signin', to: 'admin#signup', as: 'admin_signup'
     get '/admin/home', to: 'admin#home', as: 'admin_home'
     get '/admin/items', to: 'admin#items', as: 'admin_items'
+    get '/admin/logout', to: 'admin#logout', as: 'admin_logout'
 
     get '/admin/password/reset', to:'admin#reset_password', as: 'admin_reset_password'
     post '/admin/password/reset/mail/send', to: 'admin#send_reset_password_mail', as: 'admin_rp_send_mail'
@@ -156,6 +159,7 @@ Rails.application.routes.draw do
     get '/admin/admins', to: 'admin#admins', as: 'admin_admins'
     post '/admin/admins/create', to: 'admin#create_admin', as: 'admin_create_admin'
     post '/admin/admins/u/create', to: 'admin#create_admin_user', as: 'admin_u_create'
+    get '/admin/admin/u/:usernane-:id', to: 'admin#show_admin_user', as: 'admin_show_admin_u'
     get '/admin/admins/u/create/find.json', to: 'admin#search_user', as: 'admin_u_find'
     
     get '/admin/borrows', to: 'admin#borrows_all', as: 'admin_borrows_all'

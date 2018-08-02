@@ -1,24 +1,102 @@
 <section class="yb-admin-container">
 	<div class="yb-activation-key">
-		<h1><%= session_admin_user.user.name %></h1>
-		<p><%= session_admin_user.user.username %></p>
+		<h1 style="font-size: 32px;"><%= session_admin_user.user.name %></h1>
+		<p style="margin-top: -8px; font-size: 20px;">@<%= session_admin_user.user.username %></p>
 		<hr>
-		<p><strong>Key Type : </strong> <%= @activation.key_type.capitalize! %> </p>
-		<hr>
-		<p><strong>Product Key : </strong></p>
-		<div class="yb-key"><p><%= @activation.get_key %></p></div>
-		<% if @activation.key_type.downcase! == "trial" %>
-			<% if @activation.is_active? %>
-				<h4>Your trial period will expire in <%= @activation.remaining %> days. Please, buy our packages.</h4>
+		<% if @activation.is_active? and @activation.yb_key.is_active? %>
+			<p style="font-size: 18px; color: #666666 !important;"><span style="color: #666666 !important;"><strong style="color: #666666 !important;">Key Type : </strong> <%= @activation.yb_key.yb_package.package.capitalize! %></span> <span style="margin-left: 35px; color: #666666 !important;"><strong style="color: #666666 !important;">Last Activated Date : </strong> <%= @activation.yb_key.activated_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span></p>
+			<p style="font-size: 18px;"><strong>Product Key</strong></p>
+			<div class="yb-key"><p><%= @activation.yb_key.get_key %></p></div>
+			<% if @activation.yb_key.yb_package.package.downcase! == "trial" %>
+				<p style="font-size: 18px;">Your trial key will be expired in <strong><%= @activation.yb_key.remaining %> Days</strong></p>
+				<hr>
+				<p><span><strong>Total Items Added : </strong> <%= @items %> Items</span><span style="margin-left: 35px"><strong>Minimum Package : </strong><%= @package.capitalize! %> Package</span></p>
 			<% else %>
-				<h4>Your trial period has expired. Please, pay for the selected package of your account.</h4>
+				<p>Your  key will be expired in <strong><%= @activation.yb_key.remaining %> Days</strong></p>
+				<button style="background: red;">Desactivate Key</button>
 			<% end %>
 		<% else %>
-			<% if @activation.is_active? %>
-				<h4>Your key product will expire in <%= @activation.remaining %>.</h4>
-			<% else %>
-				<h4>Your key product has expired. You are required to pay for the extension at Yo Buddy offices.</h4>
-			<% end %>
+			<p>Your account is not active. Please, Insert a key and activate your account.</p>
+			<button href="#yb-add-key-form" id="admin-add-admin-user">ACTIVATE KEY</button>
+			<section class="zoom-anim-dialog mfp-hide" id="yb-add-key-form"><%= render "admin_user/keyinput" %></section>
 		<% end %>
 	</div>
+	<div class="yb-packages-all">
+		<h3>YB PACKAGES</h3>
+		<hr>
+		<div class="yb-admin-home-menu" style="height:auto;">
+			<div class="yb-admin-menu-items">
+				<div class="yb-admin-item-menu">
+					<div class="yb-menu-content" style="background:#20a8da; height: 320px;">
+						<div class="yb-menu-dt-content">
+							<a>
+								<h1>SILVER</h1>
+								<p>1 User</p>
+								<p>15 Items</p>
+								<div class="yb-menu-dt-price">30K UGX / Month</div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="yb-admin-item-menu">
+					<div class="yb-menu-content" style="background:#0fe232; height: 320px;">
+						<div class="yb-menu-dt-content">
+							<a>
+								<h1>GOLD</h1>
+								<p>3 Users</p>
+								<p>50 Items</p>
+								<p>Reports</p>
+								<div class="yb-menu-dt-price">50K UGX / Month</div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="yb-admin-item-menu">
+					<div class="yb-menu-content" style="background:#f8cb00; height: 320px;">
+						<div class="yb-menu-dt-content">
+							<a>
+								<h1>DIAMOND</h1>
+								<p>5 Users</p>
+								<p>120 Items</p>
+								<p>Reports</p>
+								<p>Absorption</p>
+								<div class="yb-menu-dt-price">150K UGX / Month</div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="yb-admin-item-menu">
+					<div class="yb-menu-content" style="background:#ff5857; height: 320px;">
+						<div class="yb-menu-dt-content">
+							<a>
+								<h1>PLATINUM</h1>
+								<p>10 Users</p>
+								<p>250 Items</p>
+								<p>Reports</p>
+								<p>Absorption</p>
+								<div class="yb-menu-dt-price">150K UGX / Month</div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="yb-admin-item-menu">
+					<div class="yb-menu-content" style="background:#ca63de; height: 320px;">
+						<div class="yb-menu-dt-content">
+							<a>
+								<h1>ALTIMATE</h1>
+								<p>Unlimited Users</p>
+								<p>Unlimited Items</p>
+								<p>Reports</p>
+								<p>Absorption</p>
+								<div class="yb-menu-dt-price">250K UGX / Month</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<style type="text/css">
+		.yb-menu-dt-content p{margin: 7px; font-size: 18px;}
+	</style>
 </section>

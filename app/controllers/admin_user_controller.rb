@@ -3,8 +3,9 @@ class AdminUserController < ApplicationController
 	include AdminUserHelper
 	include AdminHelper
 	include ItemBorrowUserHelper
+	include ApplicationHelper
 
-	before_action :check_admin_user_session, except: [:signin, :index, :reset_password, :send_reset_password_mail, :reset_password_form, :reset_change_password]
+	before_action :check_admin_user_session, except: [:signin, :index, :reset_password, :send_reset_password_mail, :reset_password_form, :reset_change_password, :set_activation, :activate_key, :logout]
 	before_action :set_data
 
 	@@login_attempts = 0
@@ -40,6 +41,12 @@ class AdminUserController < ApplicationController
 			flash[:danger] = "Try Later !!!"
 			redirect_to root_path
 		end
+	end
+
+	def logout
+		logout_admin_user
+		flash[:success] = "Admin User Logged Out Successfully !!!"
+		redirect_to admin_u_index_path
 	end
 
 	def home
@@ -325,7 +332,62 @@ class AdminUserController < ApplicationController
 	end
 
 	def set_activation
+		if !is_admin_user_logged_in?
+			flash[:danger] = "Please, Log In !!!";
+			redirect_to admin_u_index_path
+		end
 		@activation = session_admin_user.admin_user_activation
+		@items = get_sum_items(session_admin_user.user.id)
+		@package = get_preferable_package(@items)
+	end
+
+	def activate_key
+		if !is_admin_user_logged_in?
+			flash[:danger] = "Please, Log In !!!";
+			redirect_to admin_u_index_path
+		end
+		full_key = "#{params[:activate_key][:key_1]}#{params[:activate_key][:key_2]}#{params[:activate_key][:key_3]}#{params[:activate_key][:key_4]}".upcase
+		
+		key = YbKey.find_by(key: full_key)
+
+		if key != nil then
+			if key.status == "on" then
+				if key.remaining.to_i >= 1 then
+					key_use = AdminUserActivation.where(yb_key_id: key.id).where(is_active: true).count
+					if key_use  == 0 then
+						items = get_sum_items(session_admin_user.user.id)
+						if (items.to_i == 0 and key.yb_package.package == "trial") or items.to_i <= key.yb_package.items.to_i or key.yb_package.package == "altimate" then
+							
+							session_admin_user.admin_user_activation.is_active = true
+							session_admin_user.admin_user_activation.yb_key_id = key.id
+							session_admin_user.admin_user_activation.save
+
+							key.is_active = true
+							key.activated_date = Time.now
+							key.save
+
+							usage = YbKeyUsage.new
+							usage.yb_key_id = key.id
+							usage.admin_user_id = session_admin_user.id
+							usage.save
+
+							flash[:success] = "Key And Account Activated !!!"
+						else
+							flash[:danger] = "The Key Didnt Match Your Package !!!"
+						end
+					else
+						flash[:danger] = "This Key Is Being Used !!!"
+					end
+				else
+					flash[:danger] = "Remaining Period Of This Key Is #{key.remaining} !!!"
+				end
+			else
+				flash[:danger] = "Key Status is #{key.status.capitalize!} !!!"
+			end
+		else
+			flash[:danger] = "Unknown Key !!!"
+		end
+		redirect_to admin_u_activation_path
 	end
 
 	def reset_password

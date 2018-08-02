@@ -1,7 +1,5 @@
 module AdminHelper
 
-	TRIAL_NUM_DAYS = 30
-
 	def login_admin(admin)
 		session[:admin] = admin.id
 	end

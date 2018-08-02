@@ -13,7 +13,7 @@
 			<p><i class="icon ion-ios-email-outline"></i><%= @user.email %></p>
 			<p><i class="icon ion-ios-telephone-outline"></i>
 				<% if @user.number? %>
-					<%= session_user.number %>
+					<%= @user.number %>
 				<% else %>
 					No Number
 				<% end %>

@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  yb_packages: one
+  key: MyString
+  is_active: false
+  integer: 30
+  string: day
+  activated_date: 2018-07-31 12:37:23
+  remaining: 1
+
+two:
+  yb_packages: two
+  key: MyString
+  is_active: false
+  integer: 30
+  string: day
+  activated_date: 2018-07-31 12:37:23
+  remaining: 1

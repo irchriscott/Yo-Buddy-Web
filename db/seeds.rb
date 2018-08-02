@@ -5,3 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+include YobuddyData
+
+packages = YbPackage.create([
+	{package: 'trial', items: 0, users: 0, price: 0},
+	{package: YobuddyData::PACKAGE_GOLD, items: YobuddyData::MAX_ITEMS_GOLD, users: YobuddyData::MAX_USERS_GOLD, price: YobuddyData::PRICE_GOLD},
+	{package: YobuddyData::PACKAGE_DIAMOND, items: YobuddyData::MAX_ITEMS_DIAMOND, users: YobuddyData::MAX_USERS_DIAMOND, price: YobuddyData::PRICE_DIAMOND},
+	{package: YobuddyData::PACKAGE_PLATINUM, items: YobuddyData::MAX_ITEMS_PLATINUM, users: YobuddyData::MAX_USERS_PLATINUM, price: YobuddyData::PRICE_PLATINUM},
+	{package: YobuddyData::PACKAGE_ALTIMATE, items: YobuddyData::ALTIMATE, users: YobuddyData::ALTIMATE, price: YobuddyData::PRICE_ALTIMATE}
+])

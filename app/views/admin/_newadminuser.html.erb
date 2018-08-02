@@ -4,7 +4,7 @@
 		<%= form_for :admin_user, url: admin_u_create_path, html:{id: "yb-add-admin-user-form", "data-url": admin_u_find_path} do |form| %>
 			<%= form.hidden_field :user_id %>
 			<%= form.text_field :name, placeholder: "Search User Here", required: true, autocomplete: "off", id: "admin_search_admin_query" %>
-			<div class="yb-users-suggestion">
+			<div class="yb-users-suggestion" style="margin-top: 8px;">
 				<span class="yb-loading-spinner"><img src="/assets/loading.gif" /></span>
 				<div class="yb-suggestion-list"><ul></ul></div>
 				<a href="#">Collapse</a>

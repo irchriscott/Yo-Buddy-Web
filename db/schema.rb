@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180730102034) do
+ActiveRecord::Schema.define(version: 20180731140923) do
 
   create_table "addresses", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.float "longitude", limit: 24
@@ -34,27 +34,23 @@ ActiveRecord::Schema.define(version: 20180730102034) do
 
   create_table "admin_user_activations", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.bigint "admin_user_id"
-    t.string "key"
-    t.string "key_type"
-    t.integer "max_items"
-    t.integer "max_users"
-    t.datetime "activated_date"
-    t.datetime "expary_date"
+    t.bigint "yb_key_id"
     t.boolean "is_active"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["admin_user_id"], name: "index_admin_user_activations_on_admin_users_id"
+    t.index ["admin_user_id"], name: "index_admin_user_activations_on_admin_user_id"
+    t.index ["yb_key_id"], name: "index_admin_user_activations_on_yb_key_id"
   end
 
-  create_table "admin_user_paychecks", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.bigint "admin_users_id"
+  create_table "admin_user_keypays", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "yb_key_id"
+    t.bigint "admin_user_id"
     t.float "amount", limit: 24
     t.string "currency"
-    t.datetime "from_date"
-    t.datetime "to_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["admin_users_id"], name: "index_admin_user_paychecks_on_admin_users_id"
+    t.index ["admin_user_id"], name: "index_admin_user_keypays_on_admin_user_id"
+    t.index ["yb_key_id"], name: "index_admin_user_keypays_on_yb_key_id"
   end
 
   create_table "admin_users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
@@ -65,7 +61,7 @@ ActiveRecord::Schema.define(version: 20180730102034) do
     t.string "image"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_admin_users_on_users_id"
+    t.index ["user_id"], name: "index_admin_users_on_user_id"
   end
 
   create_table "admins", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
@@ -80,13 +76,13 @@ ActiveRecord::Schema.define(version: 20180730102034) do
   end
 
   create_table "borrow_item_accounts", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.bigint "borrow_item_users_id"
+    t.bigint "borrow_item_user_id"
     t.float "amount", limit: 24
     t.float "penalties", limit: 24
     t.string "currency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["borrow_item_users_id"], name: "index_borrow_item_accounts_on_borrow_item_users_id"
+    t.index ["borrow_item_user_id"], name: "index_borrow_item_accounts_on_borrow_item_user_id"
   end
 
   create_table "borrow_item_admins", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
@@ -118,7 +114,7 @@ ActiveRecord::Schema.define(version: 20180730102034) do
     t.float "price", limit: 24
     t.string "currency"
     t.string "per"
-    t.text "conditions"
+    t.string "conditions"
     t.string "status"
     t.integer "numbers"
     t.integer "count"
@@ -235,7 +231,7 @@ ActiveRecord::Schema.define(version: 20180730102034) do
     t.bigint "category_id"
     t.bigint "subcategory_id"
     t.string "title"
-    t.text "description", limit: 4294967295
+    t.string "description"
     t.datetime "from_date"
     t.datetime "to_date"
     t.float "min_price", limit: 24
@@ -259,7 +255,7 @@ ActiveRecord::Schema.define(version: 20180730102034) do
     t.float "price", limit: 24
     t.string "per"
     t.string "currency"
-    t.text "description", limit: 4294967295
+    t.string "description"
     t.string "status"
     t.integer "count"
     t.boolean "is_available"
@@ -364,8 +360,31 @@ ActiveRecord::Schema.define(version: 20180730102034) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "yb_key_usages", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "yb_key_id"
+    t.bigint "admin_user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_user_id"], name: "index_yb_key_usages_on_admin_user_id"
+    t.index ["yb_key_id"], name: "index_yb_key_usages_on_yb_key_id"
+  end
+
+  create_table "yb_keys", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "yb_package_id"
+    t.string "key"
+    t.boolean "is_active"
+    t.integer "duration"
+    t.string "duration_type"
+    t.datetime "activated_date"
+    t.integer "remaining"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["yb_package_id"], name: "index_yb_keys_on_yb_package_id"
+  end
+
   create_table "yb_packages", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
-    t.string "type"
+    t.string "package"
     t.integer "items"
     t.integer "users"
     t.float "price", limit: 24
@@ -376,9 +395,11 @@ ActiveRecord::Schema.define(version: 20180730102034) do
   add_foreign_key "addresses", "users"
   add_foreign_key "admin_items", "items"
   add_foreign_key "admin_user_activations", "admin_users"
-  add_foreign_key "admin_user_paychecks", "admin_users", column: "admin_users_id"
+  add_foreign_key "admin_user_activations", "yb_keys"
+  add_foreign_key "admin_user_keypays", "admin_users"
+  add_foreign_key "admin_user_keypays", "yb_keys"
   add_foreign_key "admin_users", "users"
-  add_foreign_key "borrow_item_accounts", "borrow_item_users", column: "borrow_item_users_id"
+  add_foreign_key "borrow_item_accounts", "borrow_item_users"
   add_foreign_key "borrow_item_admins", "admins"
   add_foreign_key "borrow_item_admins", "borrow_item_users"
   add_foreign_key "borrow_item_follow_ups", "admins"
@@ -411,4 +432,7 @@ ActiveRecord::Schema.define(version: 20180730102034) do
   add_foreign_key "user_follows", "users"
   add_foreign_key "usercategories", "categories"
   add_foreign_key "usercategories", "users"
+  add_foreign_key "yb_key_usages", "admin_users"
+  add_foreign_key "yb_key_usages", "yb_keys"
+  add_foreign_key "yb_keys", "yb_packages"
 end

@@ -49,7 +49,7 @@
             }
 
             .yb-link{
-                margin: 20px 0;
+                margin: 30px 0;
             }
 
             .yb-link a{
@@ -78,17 +78,13 @@
         <section style="width: 60%;margin: 50px auto;background: red;border:2px solid #cc8400;background: white;padding: 40px !important;">
             <div class="yb-header"><h1>Yo Buddy !</h1></div>
             <div class="yb-content">
-                <p class="yb-message">Your Admin-User account has been created successfully !!!</p>
-                <p class="yb-message"><strong>Credintials & Activation : </strong></p>
-                <p style="font-size: 16px; margin-bottom: 15px;"><strong>Email : </strong> <%= @email %></p>
-                <p style="font-size: 16px; margin-bottom: 15px;"><strong>Password : </strong> <%= @password %></p>
-                <p style="font-size: 16px; margin-bottom: 15px;"><strong>Key : </strong> <%= @key.get_key %></p>
-                <p class="yb-message">Please, you can change your password to your customed password.</p>
-                <p class="yb-message">Thanks for your partenership and trust.</p>
-                <div class="yb-link">
-                    <a href="<%= admin_u_index_url %>">Login Here For Admin-User</a>
-                </div>
+                <p class="yb-message">Dear <%= @admin.user.name %>,</p>
+                <p class="yb-message">
+                	Your trial period has been expired and we kindly ask you to buy one of our packages. Your minimum package is <strong><%= @package.upcase! %></strong> due to the items you have been adding in your trial period.
+                    You are now asked to come and pay for this package before you start using it.
+                </p>
             </div>
+            <p class="yb-message">Regards !</p>
             <p class="yb-footer">Sent By Team Split Orange - Yo Buddy !</p>
         </section>
     </body>

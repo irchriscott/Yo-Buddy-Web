@@ -34,6 +34,12 @@ class ItemsController < ApplicationController
 
             if @active == true then
 
+                if can_add_item(session[:user_id], params[:item][:count].to_i) == false then
+                    params[:source] == "admin" ? format.html { redirect_to admin_u_items_path } : format.html { redirect_to session_items_path }
+                    format.json { render json: {"type" => "error", "text" => "Your Private Account Is Not Active or Items Exceed The Subscribed Package !!!"}, status: :unprocessable_entity }
+                    flash[:danger] = "Your Private Account Is Not Active or Items Exceed The Subscribed Package !!!"
+                end
+
                 if @item.save then
                     images = params[:item][:image]
                     for image in images

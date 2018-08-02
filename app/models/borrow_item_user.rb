@@ -6,6 +6,7 @@ class BorrowItemUser < ApplicationRecord
 	has_many :borrow_message
 	has_many :borrow_item_follow_up
 	has_many :list_borrow_item
+	has_many :borrow_item_account
 
 	validates :numbers, length: {minimum: 1}
 	validates :count, length: {minimum: 1}

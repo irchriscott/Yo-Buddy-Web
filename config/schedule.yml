@@ -33,3 +33,12 @@ borrow_reminder:
   args:
     running: true
 
+
+key_activation:
+  cron: "0 5,15 * * *"
+  class: "KeyActivationWorker"
+  queue: default
+  active_job: true
+  args:
+    running: true
+

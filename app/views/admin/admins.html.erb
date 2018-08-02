@@ -44,7 +44,7 @@
 					<th>Type</th>
 					<th>Remaining</th>
 					<th>Activated Date</th>
-					<th>Expary Date</th>
+					<th>Is Key Active</th>
 					<th>Added Date</th>
 				</tr>
 			</thead>
@@ -54,11 +54,11 @@
 						<tr>
 							<td><%= user.id %></td>
 							<td><% if user.user.image? %> <%= image_tag @user.user.image.url %> <% else %> <%= image_tag "/assets/default.jpg" %> <% end %></td>
-							<td><%= user.user.name %></td>
-							<td><%= user.admin_user_activation.key_type.capitalize %></td>
-							<td><%= user.admin_user_activation.remaining %></td>
-							<td><%= user.admin_user_activation.activated_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
-							<td><%= user.admin_user_activation.expary_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+							<td><%= link_to user.user.name, admin_show_admin_u_path(user.user.username, user) %></td>
+							<td><%= user.admin_user_activation.yb_key.yb_package.package.capitalize! %></td>
+							<td><%= user.admin_user_activation.yb_key.remaining %> <%= user.admin_user_activation.yb_key.duration_type.capitalize! %>s</td>
+							<td><% if user.admin_user_activation.yb_key.activated_date != nil %><%= user.admin_user_activation.yb_key.activated_date.localtime.strftime("%a %d %b, %Y at %H:%M") %><% else %> - <% end %></td>
+							<td><%= user.admin_user_activation.yb_key.is_active.to_s.capitalize! %></td>
 							<td><%= user.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
 						</tr>
 					<% end %>

@@ -27,10 +27,10 @@ module AdminUserHelper
 			flash[:danger] = "Please, Log In !!!";
 			redirect_to admin_u_index_path
 
-		elsif !session_admin_user.admin_user_activation.is_active? then
+		elsif !session_admin_user.admin_user_activation.is_active? and !session_admin_user.admin_user_activation.yb_key.is_active? then
 			
 			flash[:danger] = "Your Private Account Is Not Active !!!";
-			redirect_to admin_u_index_path
+			redirect_to admin_u_activation_path
 		end
 	end
 end

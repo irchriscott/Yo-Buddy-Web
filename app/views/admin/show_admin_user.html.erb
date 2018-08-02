@@ -1,0 +1,112 @@
+<section class="yb-header-admin-else">
+	<div class="yb-header-else-container">
+		<div class="yb-header-user">
+			<div class="yb-header-image">
+				<% if @user.user.image? %>
+					<%= image_tag @user.user.image.url %>
+				<% else %>
+					<img src="/assets/default.jpg"/>
+				<% end %>
+			</div>
+			<h4><%= @user.user.username %></h4>
+		</div>
+		<div class="yb-session-menu">
+			<ul>
+				<li class="active"><a href="#yb-admin-tab-items">Added Items</a></li>
+				<li><a href="#yb-admin-tab-borrows">Borrowed Items</a></li>
+				<li><a href="#yb-admin-tab-users">Added Users</a></li>
+				<li><a href="#yb-admin-tab-keys-b">Keys Bought</a></li>
+				<li><a href="#yb-admin-tab-keys-u">Keys Used</a></li>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-admin-container yb-session-main">
+	<div class="yb-session-info-about">
+		<div class="yb-session-info">
+			<div class="yb-session-image">
+				<% if @user.user.image? %>
+					<%= image_tag @user.user.image.url %>
+				<% else %>
+					<img src="/assets/default.jpg"/>
+				<% end %>
+			</div>
+			<div class="yb-session-about">
+				<h2><%= @user.user.name %></h2>
+				<h3 class="yb-username"><%= @user.user.username %></h3>
+				<div class="yb-session-address">
+					<p><i class="icon ion-ios-email-outline"></i><%= @user.user.email %></p>
+					<p><i class="icon ion-ios-telephone-outline"></i>
+						<% if @user.user.number? %>
+							<%= @user.user.number %>
+						<% else %>
+							No Number
+						<% end %>
+					</p>
+					<p><i class="icon ion-ios-location-outline"></i><%= @user.user.town %>, <%= @user.user.country_name %></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="yb-session-container">
+		<div class="yb-session-menu">
+			<ul>
+				<li class="active"><a href="#yb-admin-tab-items">Added Items</a></li>
+				<li><a href="#yb-admin-tab-borrows">Borrowed Items</a></li>
+				<li><a href="#yb-admin-tab-users">Added Users</a></li>
+				<li><a href="#yb-admin-tab-keys-b">Keys Bought</a></li>
+				<li><a href="#yb-admin-tab-keys-u">Keys Used</a></li>
+			</ul>
+		</div>
+		<div class="yb-session-data yb-admin-admin-user-data">
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-items">
+				<table>
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Image</th>
+							<th>Name</th>
+							<th>Category / Sub</th>
+							<th>Price</th>
+							<th>Quantity</th>
+							<th>Borrows</th>
+							<th>Added Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if @items.count > 0 %>
+							<% @items.each do |item| %>
+								<tr>
+									<td><%= item.id %></td>
+									<td><%= image_tag item.item_image[0].image.url %></td>
+									<td><%= link_to item.name, item_show_path(item.user.username, item.uuid, item), target: "_blank" %></td>
+									<td><%= item.category.name %> - <%= item.subcategory.name %></td>
+									<td><span data-number="<%= item.price %>" id="yb-admin-item-<%= item.id %>"></span> <%= item.currency %> / <%= item.per %></td>
+									<td><%= item.count %></td>
+									<td><%= item.borrow_item_user.count %></td>
+									<td><%= item.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+								</tr>
+								<script type="text/javascript">$("#yb-admin-item-<%= item.id %>").setNumber();</script>
+							<% end %>
+						<% else %>
+							<tr>
+								<td style="padding:20px 0;" colspan="8"><p class="yb-error">NO ITEM POSTED</p></td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+				<p style="font-size: 20px; margin-top: 25px !important;"><strong>Total : </strong> <%= @items_count %> Items</p>
+			</div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-borrows"></div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-users"></div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-keys-b"></div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-keys-u"></div>
+		</div>
+	</div>
+</section>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<p>hello</p>

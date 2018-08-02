@@ -2,7 +2,9 @@ class AdminUser < ApplicationRecord
 
   	belongs_to :user
   	has_one :admin_user_activation
-
+    has_many :admin_user_keypay
+    has_many :yb_key_usage
+    
   	mount_uploader :image, ImageUploader
 
   	validates :email, uniqueness: true

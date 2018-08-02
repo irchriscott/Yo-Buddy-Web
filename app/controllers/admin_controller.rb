@@ -45,6 +45,12 @@ class AdminController < ApplicationController
 		end
 	end
 
+	def logout
+		logout_admin
+		flash[:success] = "Admin Logged Out Successfully !!!"
+		redirect_to admin_index_path
+	end
+
 	def home
 		@items = Item.joins("INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).order(created_at: :desc).limit(20)
 		@borrows = BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).order(created_at: :desc).limit(20)
@@ -63,8 +69,16 @@ class AdminController < ApplicationController
 		@admin_users = AdminUser.all.order(created_at: :desc)
 	end
 
+	def show_admin_user
+		@user = AdminUser.find(params[:id])
+		@keys_used = YbKeyUsage.where(admin_user_id: @user.id)
+		@keys_carts = AdminUserKeypay.where(admin_user_id: @user.id)
+		@items = @user.user.item.all
+		@items_count = get_sum_items(@user.user.id)
+	end
+
 	def create_admin
-		@new_admin = Admin.new(params[:admin].permit(:name, :username, :email, :privileges, :password, :image))
+		@new_admin = Admin.new(params.require(:admin).permit(:name, :username, :email, :privileges, :password, :image))
 		if @new_admin.save then
 			flash[:success] = "Admin Added Successfully !!!"
 		else
@@ -351,23 +365,33 @@ class AdminController < ApplicationController
 				password = SecureRandom.urlsafe_base64(8)
 				
 				admin_user = AdminUser.new
+
 				admin_user.user_id = user.id
 				admin_user.email = user.email
 				admin_user.password = password
 				admin_user.privileges = "All"
 				admin_user.save
+
+				key = YbKey.new
+
+				key.yb_package_id = 1
+				key.key = SecureRandom.hex(12).upcase
+				key.is_active = false
+				key.duration = YobuddyData::TRIAL_NUM_DAYS
+				key.duration_type = 'day'
+				key.activated_date = nil
+				key.remaining = YobuddyData::TRIAL_NUM_DAYS
+				key.status = 'on'
+				key.save
 				
 				activation = AdminUserActivation.new
+
 				activation.admin_user_id = admin_user.id
-				activation.key_type = "trial"
-				activation.max_items = 0
-				activation.max_users = 0
-				activation.activated_date = Time.now
-				activation.expary_date = Time.now + (AdminHelper::TRIAL_NUM_DAYS * 24 * 60 * 60)
-				activation.is_active = true
+				activation.yb_key_id = key.id
+				activation.is_active = false
 				activation.save
 
-				AdminMailer.register_admin_user(user.email, password).deliver_now
+				AdminMailer.register_admin_user(user.email, password, key).deliver_now
 
 				flash[:success] =  "Admin User Created Successfully !!!"
 			else

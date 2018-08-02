@@ -1,0 +1,20 @@
+<div class="yb-modal-container" style="width:40%;">
+	<div class="yb-add-item">
+		<h2>Activate Key</h2>
+		<%= form_for :activate_key, url: admin_u_activate_key_path do |form| %>
+			<div class="yb-activation-inputs">
+				<%= form.text_field :key_1, required: true, maxlength: "6", autocomplete: "off" %>
+				<span>-</span>
+				<%= form.text_field :key_2, required: true, maxlength: "6", autocomplete: "off" %>
+				<span>-</span>
+				<%= form.text_field :key_3, required: true, maxlength: "6", autocomplete: "off" %>
+				<span>-</span>
+				<%= form.text_field :key_4, required: true, maxlength: "6", autocomplete: "off" %>
+			</div>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+</div>
