@@ -16,7 +16,6 @@
 		<div class="yb-message-form"><%= render "borrow_messages/form" %></div>
 	</div>
 </section>
-<section class="zoom-anim-dialog mfp-hide" id="yb-borrow-item-description"><%= render "item_borrow_user/description" %></section>
 <% if @borrow.check_expiration == "green" %>
 	<section class="zoom-anim-dialog mfp-hide" id="yb-borrow-qr-code">
 		<div class="yb-modal-container" style="width:30%;">

@@ -99,9 +99,9 @@ $(function() {
         previewImage(this, "profile_image");
     });
 
-    $("#yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else").magnificPopup({type:'ajax'});
+    $("#yb-open-borrow-item-description, #yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else, #yb-admin-key-new").magnificPopup({type:'ajax'});
 
-    $("#yb-open-borrow-item-description, #admin-add-admin-user, #yb-admin-open-add-message, #admin-add-admin, #yb-borrow-get-qr-code, #yb-add-item-admin, #yb-view-item-admin, #yb-admin-open-scan-qr-code, #yb-open-send-message-images").magnificPopup({
+    $("#admin-add-admin-user, #yb-admin-open-add-message, #admin-add-admin, #yb-borrow-get-qr-code, #yb-add-item-admin, #yb-view-item-admin, #yb-admin-open-scan-qr-code, #yb-open-send-message-images").magnificPopup({
         type: 'inline',
         fixedContentPos: false,
         fixedBgPos: true,
@@ -456,6 +456,21 @@ $(function() {
                 showInfoMessage("info", "Operation Cancelled !!!");
             }
         });
+    });
+
+    // ADMIN TABS
+
+    $(".yb-admin-user-tabs-link ul li a").click(function(e){
+        e.preventDefault();
+        var target = $(this).attr("href");
+        $(this).parent("li").addClass("active").siblings().removeClass("active");
+        $(".yb-admin-admin-user-data " + target).addClass("active").siblings().removeClass("active");
+        let links =  $(".yb-admin-user-tabs-link ul li a");
+        for (let i = 0; i <= links.length; i++){
+            if($(links[i]).attr("href") == target){
+                $(links[i]).parent("li").addClass("active").siblings().removeClass("active");
+            }
+        }
     });
 });
 
@@ -1153,6 +1168,61 @@ jQuery.fn.borrowItemUser = function(){
     });
 }
 
+
+jQuery.fn.updateBorrowItemUser = function(){
+    $(this).submit(function(e){
+        e.preventDefault();
+
+        var form = new FormData($(this)[0]);
+        var _this = $(this);
+
+        var borrow = _this.attr("data-borrow");
+        var item = _this.attr("data-item");
+        var url = _this.attr("data-url");
+        var receiver = _this.attr("data-receiver");
+        var sender = _this.attr("data-sender");
+        var path = _this.attr("data-path");
+        var action = _this.attr("action");
+
+        for (instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }
+
+        $.ajax({
+            type:"POST",
+            url: action,
+            data: form,
+            processData: false,
+            contentType: false,
+            success: function(response){
+                if(response.type == "success"){
+                    showSuccessMessage("success", response.text);
+                    socket.emit("setNotification", receiver);
+                    var message = {
+                        "item": item,
+                        "borrow": borrow,
+                        "receiver": receiver,
+                        "sender": sender,
+                        "message": response.text,
+                        "url": url,
+                        "path": path
+                    }
+                    socket.emit("messageSent", message);
+                    $(".mfp-close").click();
+                } else if(response.type == "info") {
+                    showInfoMessage("info", response.text);
+                }else{
+                    showErrorMessage("error", response.text);
+                }
+            },
+            error: function(error){
+                showErrorMessage("error", error);
+            }
+        });
+    });
+}
+
+
 jQuery.fn.messageText = function(){
     var _this = $(this);
     var borrow = _this.attr("data-borrow");
@@ -1161,7 +1231,7 @@ jQuery.fn.messageText = function(){
     var receiver = _this.attr("data-receiver");
     var sender = _this.attr("data-sender");
     var path = _this.attr("data-path");
-    _this.find("textarea").keyup(function(){
+    _this.find("textarea").keyup(function(e){
         var value = $(this).val();
         if (value != ""){
             _this.find("button").removeAttr("disabled").children("i").addClass("yb-btn-color");
@@ -1169,6 +1239,7 @@ jQuery.fn.messageText = function(){
             _this.find("button").attr("disabled", "disabled").children("i").removeClass("yb-btn-color");
         }
         emitTypeTextSocket(value, _this);
+        if (e.keyCode === 13) _this.find("button[type=submit]").click();
     });
     _this.find("input[type=file]").change(function(){
         var value = $(this).val();

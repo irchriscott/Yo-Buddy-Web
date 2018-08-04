@@ -74,7 +74,7 @@
 	</p>
 	<div class="yb-borrow-menu-else yb-menu-list" id="yb-menu-items-yb-other">
 		<ul>
-			<li><a id="yb-open-borrow-item-description" href="#yb-borrow-item-description"><span class="item-icon"><i class="icon ion-document"></i></span><span class="item-text">Description</span></a></li>
+			<li><a id="yb-open-borrow-item-description" href="<%= item_borrow_description_path(@item.uuid, @item, @borrow) %>"><span class="item-icon"><i class="icon ion-document"></i></span><span class="item-text">Description</span></a></li>
 			<li><a href="#"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Review</span></a></li>
 			<li><a href="<%= report_new_path(@borrow.id) %>?ressource=borrow" id="yb-get-report-else"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 		</ul>

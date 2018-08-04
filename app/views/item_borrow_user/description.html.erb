@@ -9,9 +9,7 @@
 		<div class="yb-borrow-about" style="margin-top: -10px;">
 			<%= render "item_borrow_user/descript" %>
 		</div>
-		<% if Array[@status[0], @status[2]].include?(@borrow.status) %>
-		<button type="submit">Update</button>
-		<% end %>
 		<button type="button" id="yb-close-borrow-item-description" class="yb-btn-cancel">Cancel</button>
+		<script type="text/javascript">$("#yb-close-borrow-item-description")closePopup();</script>
 	</div>
 </div>

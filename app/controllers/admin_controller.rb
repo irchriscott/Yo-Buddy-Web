@@ -73,8 +73,10 @@ class AdminController < ApplicationController
 		@user = AdminUser.find(params[:id])
 		@keys_used = YbKeyUsage.where(admin_user_id: @user.id)
 		@keys_carts = AdminUserKeypay.where(admin_user_id: @user.id)
+		
 		@items = @user.user.item.all
 		@items_count = get_sum_items(@user.user.id)
+		@borrows = BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.id = ?", @user.id).order(created_at: :desc)
 	end
 
 	def create_admin
@@ -401,6 +403,49 @@ class AdminController < ApplicationController
 			flash[:danger] = "User Should Be Private !!!"
 		end
 		redirect_to admin_admins_path
+	end
+
+	def key_new
+		@user = AdminUser.find(params[:user_id])
+		@packages = YbPackage.all
+		
+		items = get_sum_items(@user.user.id)
+		package = get_preferable_package(items)
+		@min_package = YbPackage.find_by package: package
+
+		@currencies = Array.new
+
+        @currencies.append({"currency" => "UGX", "name" => "Uganda Shilling"})
+        @currencies.append({"currency" => "FRC", "name" => "Franc Congolais"})
+        @currencies.append({"currency" => "USD", "name" => "United State Dollars"})
+
+		render layout: false
+	end
+
+	def key_new_add
+		key = YbKey.new
+		key.yb_package_id = params[:key][:package]
+		key.key = SecureRandom.hex(12).upcase
+		key.duration = params[:key][:duration]
+		key.is_active = false
+		key.duration_type = "day"
+		key.remaining = params[:key][:duration]
+		key.status = "on"
+		key.save
+
+		user = AdminUser.find(params[:key][:user_id])
+
+		keypay = AdminUserKeypay.new
+		keypay.yb_key_id = key.id
+		keypay.admin_user_id = user.id
+		keypay.amount = params[:key][:amount]
+		keypay.currency = params[:key][:currency]
+		keypay.save
+
+		AdminMailer.new_key_sold(user, key).deliver_now
+
+		flash[:success] = "New Key Generated and Sold !!!"
+		redirect_to admin_show_admin_u_path(user.user.username, user)
 	end
 
 	def reset_password

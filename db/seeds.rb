@@ -10,6 +10,7 @@ include YobuddyData
 
 packages = YbPackage.create([
 	{package: 'trial', items: 0, users: 0, price: 0},
+	{package: YobuddyData::PACKAGE_SILVER, items: YobuddyData::MAX_ITEMS_SILVER, users: YobuddyData::MAX_USERS_SILVER, price: YobuddyData::PRICE_SILVER},
 	{package: YobuddyData::PACKAGE_GOLD, items: YobuddyData::MAX_ITEMS_GOLD, users: YobuddyData::MAX_USERS_GOLD, price: YobuddyData::PRICE_GOLD},
 	{package: YobuddyData::PACKAGE_DIAMOND, items: YobuddyData::MAX_ITEMS_DIAMOND, users: YobuddyData::MAX_USERS_DIAMOND, price: YobuddyData::PRICE_DIAMOND},
 	{package: YobuddyData::PACKAGE_PLATINUM, items: YobuddyData::MAX_ITEMS_PLATINUM, users: YobuddyData::MAX_USERS_PLATINUM, price: YobuddyData::PRICE_PLATINUM},

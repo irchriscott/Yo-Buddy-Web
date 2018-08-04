@@ -5,7 +5,7 @@
 			<%= form.hidden_field :ressource, value: @ressource %>
 			<%= form.hidden_field :ressource_id, value: @ressource_id %>
 			<label>About Report :</label>
-			<%= form.text_field :about, placeholder: 'Enter About Report', required: true %>
+			<%= form.text_field :about, placeholder: 'Enter About Report', required: true, autocomplete: "off" %>
 			<label>Report Content :</label>
 			<%= form.text_area :text, required: true, placeholder: 'Enter Report Content', style: 'height:100px;' %>
 			<div style="display: block; position: relative;">

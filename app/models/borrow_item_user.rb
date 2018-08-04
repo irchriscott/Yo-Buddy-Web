@@ -2,6 +2,7 @@ class BorrowItemUser < ApplicationRecord
 
 	belongs_to :item
 	belongs_to :user
+	
 	has_many :borrow_item_admin
 	has_many :borrow_message
 	has_many :borrow_item_follow_up

@@ -3,7 +3,7 @@
 		<% if @item_borrow.status != "failed" %>
 			<h2>Edit Borrow Item</h2>
 			<% if @active == true then %>
-				<%= form_for :item_borrow, url: item_item_borrow_user_path(@item, @item_borrow), method: :patch , html: {id: "yb-borrow-item" } do |form| %>
+				<%= form_for :item_borrow, url: item_item_borrow_user_path(@item, @item_borrow) + ".json", method: :patch , html: {id: "yb-borrow-item", 'data-borrow': @item_borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @item_borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_item_borrow_user_path(@item, @item_borrow),  } do |form| %>
 					<div class="yb-add-price">
 						<label>Propose Price :</label>
 						<%= form.hidden_field :item_id, value: @item.id %>
@@ -38,7 +38,7 @@
 					<%= form.text_area :conditions, required: true %>
 					
 					<div style="display: block; position: relative;">
-						<button type="submit">Submit</button>
+						<button type="submit" id="yb-submit-borrow">Submit</button>
 						<button type="button" id="yb-close-borrow-item" class="yb-btn-cancel">Cancel</button>
 					</div>
 				<% end %>
@@ -56,6 +56,12 @@
 		$("#yb-close-borrow-item").closePopup();
 		$("#item_borrow_per").changeItemPrice("item_borrow_price", "<%= @item.price %>", "<%= @item.per %>");
 		$("#item_borrow_from_date").datetimepicker();
+		$("#yb-submit-borrow").click(function(){
+			for (instance in CKEDITOR.instances) {
+	            CKEDITOR.instances[instance].updateElement();
+	        }
+		});
+		$("#yb-borrow-item").updateBorrowItemUser();
 	</script>
 </div>
 

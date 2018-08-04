@@ -44,6 +44,7 @@ Rails.application.routes.draw do
 
     get '/item/:username/enc-dt-:uuid-:item_id/borrows', to: 'item_borrow_user#index', as: 'item_borrows'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow', to: 'item_borrow_user#show', as: 'item_borrow'
+    get '/item//item/enc-dt-:uuid-:item_id-:id/borrow/description', to: 'item_borrow_user#description', as: 'item_borrow_description'
 
     post '/items/:item_id/borrow_item_user/:item_borrow_user_id/borrow_messages/images/send', to: 'borrow_messages#send_images', as: 'message_send_images'
 
@@ -161,7 +162,9 @@ Rails.application.routes.draw do
     post '/admin/admins/u/create', to: 'admin#create_admin_user', as: 'admin_u_create'
     get '/admin/admin/u/:usernane-:id', to: 'admin#show_admin_user', as: 'admin_show_admin_u'
     get '/admin/admins/u/create/find.json', to: 'admin#search_user', as: 'admin_u_find'
-    
+    get '/admin/admin/u/:usernane-:user_id/key/new', to: 'admin#key_new', as: 'admin_u_key_new'
+    post '/admin/admin/u/key/add', to: 'admin#key_new_add', as: 'admin_u_key_new_add'
+
     get '/admin/borrows', to: 'admin#borrows_all', as: 'admin_borrows_all'
     get '/admin/borrows/scan/get', to: 'admin#scan_borrow', as: 'admin_scan_borrow'
     post '/admin/borrows/scan/post', to: 'admin#scan_borrow_post', as: 'admin_scan_borrow_post'

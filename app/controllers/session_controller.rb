@@ -225,8 +225,13 @@ class SessionController < ApplicationController
 	end
 
 	private def set_session
-		@status = Array["pending", "accepted", "rejected", "rendered", "returned", "succeeded", "failed"]
-		@user = User.find_by(id: session[:user_id])
+		if is_logged_in? then
+			@status = Array["pending", "accepted", "rejected", "rendered", "returned", "succeeded", "failed"]
+			@user = User.find_by(id: session[:user_id])
+		else
+			flash[:danger] = "Please, Login !!!"
+			redirect_to root_url
+		end
 	end
     
 end

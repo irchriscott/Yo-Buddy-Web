@@ -1,0 +1,41 @@
+<div class="yb-modal-container" style="width: 40%;">
+	<div class="yb-add-item">
+		<h2>New Key</h2>
+		<%= form_for :key, url: admin_u_key_new_add_path do |form| %>
+			<%= form.hidden_field :user_id, value: @user.id %>
+			<div class="yb-add-price">
+				<label>Key Package Price :</label>
+				<%= form.number_field :amount, min: '0', placeholder: 'Enter Key Package Price', value: @min_package.price, required: true, autocomplete: 'off' %>
+				<%= form.select(:currency, required: true) do -%>
+					<% @currencies.each do |currency| %>
+						<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+					<% end %>
+				<% end %>
+				<%= form.select(:per) do %>
+					<option value="30">30 Days</option>
+				<% end %>
+			</div>
+			<div class="yb-admin-package">
+				<label>Package : </label>
+				<%= form.select(:package) do %>
+					<% @packages.each do |package| %>
+						<% if package.package == "trial" %>
+						<% elsif package.package == @min_package.package %>
+							<%= content_tag(:option, package.package.capitalize!, value: package.id, selected: "selected", "data-price": package.price) %>
+						<% else %>
+							<%= content_tag(:option, package.package.capitalize!, value: package.id, "data-price": package.price) %>
+						<% end %>
+					<% end %>
+				<% end %>
+			</div>
+			<label>Duration In Days : </label>
+			<%= form.number_field :duration, required:true, min:"1", value: "30", style:"width:calc(100% - 22px)",  placeholder: "Enter Quantity", autocomplete: 'off' %>
+			<div style="display: block; position: relative;">
+				<button type="submit">Submit</button>
+				<button type="button" id="yb-close-add-key" class="yb-btn-cancel">Cancel</button>
+			</div>
+		<% end %>
+	</div>
+	<script type="text/javascript">$("#yb-close-add-key").closePopup();$("#key_package").change(function(){$("#key_amount").val($("#key_package option:selected").attr("data-price"));});</script>
+</div>
+

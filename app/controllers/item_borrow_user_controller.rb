@@ -26,6 +26,11 @@ class ItemBorrowUserController < ApplicationController
         @time = Time.new
     end
 
+    def description
+        @borrow = @item.borrow_item_user.find(params[:id])
+        render layout: false
+    end
+
     def new
         @borrow = BorrowItemUser.new
         @last_borrow = @item.borrow_item_user.last
@@ -85,6 +90,12 @@ class ItemBorrowUserController < ApplicationController
 
     def edit
         @item_borrow = @item.borrow_item_user.find(params[:id])
+        @borrow_receiver = 0 
+        if session[:user_id] == @item_borrow.user.id then
+            @borrow_receiver = @item_borrow.item.user.id
+        else 
+            @borrow_receiver = @item_borrow.user.id
+        end
         render layout: false
     end
 

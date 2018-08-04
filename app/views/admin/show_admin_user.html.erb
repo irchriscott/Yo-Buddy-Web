@@ -10,7 +10,7 @@
 			</div>
 			<h4><%= @user.user.username %></h4>
 		</div>
-		<div class="yb-session-menu">
+		<div class="yb-session-menu yb-admin-user-tabs-link">
 			<ul>
 				<li class="active"><a href="#yb-admin-tab-items">Added Items</a></li>
 				<li><a href="#yb-admin-tab-borrows">Borrowed Items</a></li>
@@ -44,12 +44,16 @@
 						<% end %>
 					</p>
 					<p><i class="icon ion-ios-location-outline"></i><%= @user.user.town %>, <%= @user.user.country_name %></p>
+					<p><i class="icon ion-ios-bolt-outline"></i><%= @user.admin_user_activation.is_active.to_s.capitalize! %></p>
+					<p><i class="icon ion-ios-box-outline"></i><%= @user.admin_user_activation.yb_key.yb_package.package.capitalize! %></p>
+					<p><i class="icon ion-key"></i><%= @user.admin_user_activation.yb_key.get_key %></p>
+					<a class="yb-edit-user-link" id="yb-admin-key-new" href="<%= admin_u_key_new_path(@user.user.username, @user) %>">NEW KEY</a>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="yb-session-container">
-		<div class="yb-session-menu">
+		<div class="yb-session-menu yb-admin-user-tabs-link">
 			<ul>
 				<li class="active"><a href="#yb-admin-tab-items">Added Items</a></li>
 				<li><a href="#yb-admin-tab-borrows">Borrowed Items</a></li>
@@ -59,7 +63,7 @@
 			</ul>
 		</div>
 		<div class="yb-session-data yb-admin-admin-user-data">
-			<div class="yb-admin-item-borrows" id="yb-admin-tab-items">
+			<div class="yb-admin-item-borrows active" id="yb-admin-tab-items">
 				<table>
 					<thead>
 						<tr>
@@ -97,16 +101,126 @@
 				</table>
 				<p style="font-size: 20px; margin-top: 25px !important;"><strong>Total : </strong> <%= @items_count %> Items</p>
 			</div>
-			<div class="yb-admin-item-borrows" id="yb-admin-tab-borrows"></div>
-			<div class="yb-admin-item-borrows" id="yb-admin-tab-users"></div>
-			<div class="yb-admin-item-borrows" id="yb-admin-tab-keys-b"></div>
-			<div class="yb-admin-item-borrows" id="yb-admin-tab-keys-u"></div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-borrows">
+				<table>
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Image</th>
+							<th>Name</th>
+							<th>Borrower</th>
+							<th>Price</th>
+							<th>Quantity</th>
+							<th>Total</th>
+							<th>From</th>
+							<th>To</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if @borrows.count > 0 %>
+							<% @borrows.each do |borrow| %>
+								<tr>
+									<td><%= borrow.id %></td>
+									<td><%= image_tag borrow.item.item_image[0].image.url, alt: borrow.item.name %></td>
+									<td><%= link_to borrow.item.name, admin_u_borrow_path(borrow.item.uuid, borrow.item, borrow) %></td>
+									<td><%= link_to borrow.user.name, user_items_path(borrow.user.username, borrow.user), target: "_blank" %></td>
+									<td><span id="admin-item-price-single-<%= borrow.id %>" data-number="<%= borrow.price %>"></span> <%= borrow.currency %> / <%= borrow.per %> (<%= borrow.updated_numbers %>)</td>
+									<td><%= borrow.count %></td>
+									<td><span id="admin-item-price-total-<%= borrow.id %>" data-number="<%= borrow.borrow_total %>"></span> <%= borrow.currency %></td>
+									<td><%= borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+									<td><%= borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+									<td style="text-transform: capitalize;"><%= borrow.status %></td>
+								</tr>
+								<script type="text/javascript">$("#admin-item-price-single-<%= borrow.id %>").setNumber(); $("#admin-item-price-total-<%= borrow.id %>").setNumber();</script>
+							<% end %>
+						<% else %>
+							<tr>
+								<td style="padding:20px 0;" colspan="10"><p class="yb-error">NO BORROW POSTED</p></td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+				<p style="font-size: 20px; margin-top: 25px !important;"><strong>Total : </strong> <%= @borrows.count %> Borrows</p>
+			</div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-users">
+				
+			</div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-keys-b">
+				<table>
+					<thead>
+						<tr>
+							<th>Key ID</th>
+							<th>Key</th>
+							<th>Package</th>
+							<th>Duration</th>
+							<th>Remaining</th>
+							<th>Is Active</th>
+							<th>Last Active</th>
+							<th>Price</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if @keys_carts.count > 0 %>
+							<% @keys_carts.each do |key| %>
+								<tr>
+									<td><%= key.yb_key.id %></td>
+									<td><%= key.yb_key.get_key %></td>
+									<td><%= key.yb_key.yb_package.package.capitalize! %></td>
+									<td><%= key.yb_key.duration %> Days</td>
+									<td><%= key.yb_key.remaining %> Days</td>
+									<td><%= key.yb_key.is_active.to_s.capitalize! %></td>
+									<td><% if key.yb_key.yb_key_usage.count > 0 %><%= key.yb_key.yb_key_usage.last.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %><% else %> - <% end %></td>
+									<td><span data-number="<%= key.amount %>" id="admin-key-b-<%= key.id %>"></span> <%= key.currency %></td>
+									<td><%= key.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+								</tr>
+								<script type="text/javascript">$("#admin-key-b-<%= key.id %>").setNumber();</script>
+							<% end %>
+						<% else %>
+							<tr>
+								<td style="padding:20px 0;" colspan="9"><p class="yb-error">NO BAUGHT KEY</p></td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+				<p style="font-size: 20px; margin-top: 25px !important;"><strong>Total : </strong> <%= @keys_carts.count %> Keys</p>
+			</div>
+			<div class="yb-admin-item-borrows" id="yb-admin-tab-keys-u">
+				<table>
+					<thead>
+						<tr>
+							<th>Key ID</th>
+							<th>Key</th>
+							<th>Package</th>
+							<th>Duration</th>
+							<th>Remaining</th>
+							<th>Is Active</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<% if @keys_used.count > 0 %>
+							<% @keys_used.each do |key| %>
+								<tr>
+									<td><%= key.yb_key.id %></td>
+									<td><%= key.yb_key.get_key %></td>
+									<td><%= key.yb_key.yb_package.package.capitalize! %></td>
+									<td><%= key.yb_key.duration %> Days</td>
+									<td><%= key.yb_key.remaining %> Days</td>
+									<td><%= key.yb_key.is_active.to_s.capitalize! %></td>
+									<td><%= key.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></td>
+								</tr>
+							<% end %>
+						<% else %>
+							<tr>
+								<td style="padding:20px 0;" colspan="7"><p class="yb-error">NO USED KEY</p></td>
+							</tr>
+						<% end %>
+					</tbody>
+				</table>
+				<p style="font-size: 20px; margin-top: 25px !important;"><strong>Total : </strong> <%= @keys_used.count %> Keys</p>
+			</div>
 		</div>
 	</div>
 </section>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br><br><br>
-<p>hello</p>

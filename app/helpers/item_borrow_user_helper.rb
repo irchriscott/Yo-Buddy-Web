@@ -214,8 +214,11 @@ module ItemBorrowUserHelper
     end
 
     def save_message(status, borrow)
-        borrow.status = status
-        borrow.save
+        
+        if !Array["new", "data"].include?(status) then
+            borrow.status = status
+            borrow.save
+        end
 
         message = BorrowMessage.new
         message.borrow_item_user_id = borrow.id

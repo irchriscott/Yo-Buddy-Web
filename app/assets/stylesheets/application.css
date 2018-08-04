@@ -1146,12 +1146,15 @@ table tbody tr td img{
 .yb-modal-container .yb-add-item .yb-add-price #item_price,
 .yb-modal-container .yb-add-item .yb-add-price #item_borrow_price,
 .yb-modal-container .yb-add-item .yb-add-price #item_currency,
-.yb-modal-container .yb-add-item .yb-add-price #item_borrow_currency{
+.yb-modal-container .yb-add-item .yb-add-price #item_borrow_currency,
+.yb-modal-container .yb-add-item .yb-add-price #key_amount,
+.yb-modal-container .yb-add-item .yb-add-price #key_currency{
     width: calc((75% / 2) - 1px);
 }
 
 .yb-modal-container .yb-add-item .yb-add-price #item_per,
-.yb-modal-container .yb-add-item .yb-add-price #item_borrow_per{
+.yb-modal-container .yb-add-item .yb-add-price #item_borrow_per,
+.yb-modal-container .yb-add-item .yb-add-price #key_per{
     width: calc(25% - 1px);
 }
 
@@ -1166,6 +1169,10 @@ table tbody tr td img{
 
 .yb-modal-container .yb-add-item .yb-from-date input[type=number]{
     padding: 8px 10px;
+}
+
+.yb-modal-container .yb-add-item .yb-admin-package select{
+    width: 100%;
 }
 
 .yb-modal-container .yb-add-item .yb-item-images-ex{
@@ -3346,5 +3353,13 @@ table tbody tr td img{
 }
 
 .yb-admin-admin-user-data{
-    margin-top: 20px;
+    margin-top: 30px;
+}
+
+.yb-admin-admin-user-data .yb-admin-item-borrows{
+    display: none;
+}
+
+.yb-admin-admin-user-data div.active{
+    display: block;
 }

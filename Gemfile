@@ -40,8 +40,12 @@ gem 'rack-cors', :require => 'rack/cors'
 # For background processes
 gem 'sidekiq'
 gem 'sinatra', github: 'sinatra/sinatra'
-
 gem 'sidekiq-cron'
+# For PDF Generator
+gem 'wkhtmltopdf-binary'
+gem 'wicked_pdf'
+# For QR Code
+gem 'rqrcode-with-patches', '~> 0.5.4'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
