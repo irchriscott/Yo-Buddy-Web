@@ -3,6 +3,8 @@ const io = require('socket.io')(http);
 
 const port = process.env.port || 5000;
 
+let likes = [];
+
 http.listen(port, function(){
 	console.log("Running at Port " + port);
 });
@@ -15,6 +17,12 @@ io.on("connection", function(socket){
 
 	socket.on("like", function(like){
 		io.emit("getLike", like);
+
+		likes.forEach((l) => {
+			if(l.liker !== like.liker){
+				likes.push(like);
+			}
+		});
 	});
 
 	socket.on("rlike", function(like){

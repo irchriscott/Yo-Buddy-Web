@@ -1,6 +1,7 @@
 module ItemBorrowUserHelper
 	
 	include UserHelper
+    include ActionView::Helpers::OutputSafetyHelper
 
 	def check_borrows
 		pers = Array["Hour", "Day", "Week", "Month", "Year"]
@@ -269,7 +270,7 @@ module ItemBorrowUserHelper
         BorrowItemUser.all.each do |borrow|
             rendered = borrow.borrow_item_admin.where(status: "rendered").last
             received = borrow.borrow_item_admin.where(status: "received").last
-            if received && !rendered && borrow.from_date.localtime.to_date < args[0] then
+            if received != nil && rendered == nil && borrow.from_date.localtime.to_date < args[0] then
                 if args.length == 1 then
                     borrows.push(borrow) if !borrow.item.user.is_private?
                 else
@@ -285,7 +286,8 @@ module ItemBorrowUserHelper
         BorrowItemUser.all.each do |borrow|
             rendered = borrow.borrow_item_admin.where(status: "rendered").last
             received = borrow.borrow_item_admin.where(status: "received").last
-            if received && rendered && check_date(borrow.to_date.localtime, 0, 4, 0) < args[0] then
+            returned = borrow.borrow_item_admin.where(status: "returned").last
+            if received != nil && rendered != nil && returned == nil && check_date(borrow.to_date.localtime, 0, 4, 0) < args[0] then
                 if args.length == 1 then
                     borrows.push(borrow) if !borrow.item.user.is_private?
                 else
@@ -294,5 +296,73 @@ module ItemBorrowUserHelper
             end
         end
         return borrows
+    end
+
+    def borrow_data_template(borrow, qr_borrower, qr_owner, time)
+        return "<!DOCTYPE html>
+                <html>
+                    <head>
+                        <title></title>
+                        <style type='text/css'>
+                            table {
+                              border-width: 0;
+                              border-style: none;
+                              border-color: #0000ff;
+                              border-collapse: collapse;
+                            }
+
+                            td {
+                              border-left: solid 10px #000;
+                              padding: 0; 
+                              margin: 0; 
+                              width: 0px; 
+                              height: 10px; 
+                            }
+
+                            td.black { border-color: #000; }
+                            td.white { border-color: #fff; }
+                            .yb-description{display: none !important;}
+                        </style>
+                    </head>
+                    <body>
+                        <section id='yb-borrow-code-document' style='display: none !important;'>
+                            <div style='font-family:Avenir, Century Gothic, sans-serif; font-size:16px; padding:15px; position:relative; color: #333 !important;'>
+                                <div style='margin:auto; margin-bottom: 10px; border-bottom:2px solid #333; text-align:center;'>
+                                    <h3 style='font-size:26px;'>YO BUDDY</h3>
+                                </div>
+                                <div style='position: absolute; right:0; margin-top:-10px; margin-right:15px;'>
+                                    <p>#{session_user.town}, #{time.localtime.strftime("%d %B %Y at %H:%M")}</p>
+                                </div>
+                                <div style='text-align:center; margin-top:55px; margin-bottom:35px;'>
+                                    <h4 style='font-size:20px;'>BORROW DESCRIPTION</h4>
+                                </div>
+                                <p><strong>ID : </strong>#{borrow.code}</p>
+                                <p><strong>Owner : </strong>#{borrow.item.user.name}</p>
+                                <p><strong>Borrower : </strong>#{borrow.user.name}</p>
+                                <p><strong>Item : </strong>#{@borrow.item.name}</p>
+                                <p><strong>Category : </strong>#{borrow.item.category.name} - #{borrow.item.subcategory.name}</p>
+                                <p><strong>Single Price : </strong>#{borrow.price} #{borrow.currency} / #{borrow.per}</p>
+                                <p><strong>Number : </strong>#{borrow.updated_numbers} #{borrow.per}s</p>
+                                <p><strong>Quantity : </strong>#{borrow.count} Items</p>
+                                <p><strong>Total : </strong>#{borrow.borrow_total} #{borrow.currency}</p>
+                                <p><strong>From : </strong> #{borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M")}</p>
+                                <p><strong>To : </strong> #{borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M")}</p>
+                                <p><strong>Status : </strong> #{borrow.status}</p>
+                                <p><strong>Request Date : </strong> #{borrow.created_at.localtime.strftime('%Y-%m-%d %H:%M:%S')}</p>
+                                <div style='margin:30px 0;' data-id='#{borrow.code}'>
+                                    #{get_qr_user(borrow, qr_borrower, qr_owner)}
+                                </div>
+                            </div>
+                        </section>
+                    </body>
+                </html>"
+    end
+end
+
+def get_qr_user(borrow, qr_borrower, qr_owner)
+    if session_user.id == borrow.user.id then
+        return raw qr_borrower.as_html
+    else
+        return raw qr_owner.as_html
     end
 end

@@ -1,10 +1,13 @@
-json.extract! @item, :id, :name, :price, :currency, :per, :description, :status, :is_available, :created_at
+json.extract! @item, :id, :name, :price, :currency, :per, :description, :status, :is_available, :count
+
+json.created_at @item.created_at.localtime
+json.uuid @item.uuid
 
 json.user @item.user.json
 
-json.category @item.category, :id, :name
+json.category @item.category, :id, :name, :icon
 json.subcategory @item.subcategory, :id, :name
-json.url item_path(@item, format: :json)
+json.url item_show_path(@item.user.username, @item.uuid, @item, format: :json)
 json.likes do 
 	json.count @item.item_like.all.count
 	json.likers @item.likes

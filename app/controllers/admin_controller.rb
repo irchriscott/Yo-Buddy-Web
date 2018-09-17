@@ -294,7 +294,7 @@ class AdminController < ApplicationController
 	end
 
 	def create_category
-		@category = Category.create(params[:category].permit(:name, :description))
+		@category = Category.create(params[:category].permit(:name, :description, :icon))
 		@category.uuid = generate_uuid(params[:category][:name])
 		if @category.save then
 			flash[:success] = "Category Added Successfully !!!"

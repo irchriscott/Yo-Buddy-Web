@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class ItemBorrowUserController < ApplicationController
 
     include ItemBorrowUserHelper
@@ -29,6 +31,20 @@ class ItemBorrowUserController < ApplicationController
     def description
         @borrow = @item.borrow_item_user.find(params[:id])
         render layout: false
+    end
+
+    def download_borrow_data
+        @time = Time.new
+        @borrow = @item.borrow_item_user.find params[:id]
+        
+        borrower = "#{@borrow.code }-borrower-#{@borrow.user.username}-#{SecureRandom.hex(4)}"
+        owner = "#{@borrow.code}-owner-#{@borrow.item.user.username}-#{SecureRandom.hex(4)}"
+        
+        @qr_borrower = RQRCode::QRCode.new(borrower)
+        @qr_owner = RQRCode::QRCode.new(owner)
+
+        @pdf = render_to_string pdf: "borrow_no_#{@borrow.code}.pdf", template: "item_borrow_user/download_borrow_data", encoding: "UTF-8"
+        send_data @pdf, :filename => "borrow_no_#{@borrow.code}.pdf", :type => "application/pdf", :disposition => "attachment"
     end
 
     def new
@@ -166,7 +182,7 @@ class ItemBorrowUserController < ApplicationController
         status = params[:status]
         borrow = @item.borrow_item_user.find(params[:id])
         respond_to do |format|
-            if @active == true then
+            if @active == true and borrow.last_update_user_id != session[:user_id] then
                 if status != nil and Array[0,1,2].include?(status.to_i) then
                     if status.to_i == 1 then
                         if  Array[@status[0], @status[2]].include?(borrow.status) then

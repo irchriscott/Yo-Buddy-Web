@@ -156,6 +156,7 @@ $(function() {
     $("#yb-add-admin-user-form").searchAdminUser();
     $("#yb-number-else").setNumber();
     $("#yb-number-else-yb").setNumber();
+    $(".yb-update-borrow-status-link").updateBorrowItemUserStatus();
 
     $("#search_borrow_category").change(function(){
         filterSubcategories($(this), $("#search_borrow_subcategory"));
@@ -163,7 +164,7 @@ $(function() {
 
     $("#yb-print-borrow-description").click(function(e){
         e.preventDefault();
-        printDocument("yb-borrow-code-document");
+        window.location = $(this).attr("data-url");
     });
 
     $("#yb-admin-open-scan-qr-code").click(function(e){
@@ -206,8 +207,8 @@ $(function() {
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -278,6 +279,7 @@ $(function() {
     });
 
     socket.on("getLike", function(like){
+        console.log(like);
         var container = $("body").find(".like-sum-" + like.item);
         var sum = parseInt(container.attr("data-number"));
         if(like.type == "like"){
@@ -355,6 +357,17 @@ $(function() {
                     setLoadData("yb-borrow-messages-container", message.url);
                     updateMessageScroll();
                 } else {
+                    iziToast.info({
+                        id: message.borrow,
+                        timeout: 8000,
+                        title: message.sender,
+                        message: message.message,
+                        position: 'bottomLeft',
+                        transitionIn: 'bounceInLeft',
+                        close: false,
+                    });
+                }
+                if (message.type == "status"){
                     iziToast.info({
                         id: message.borrow,
                         timeout: 8000,
@@ -731,8 +744,8 @@ jQuery.fn.followCategoryEvent = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -767,8 +780,8 @@ jQuery.fn.followUserEvent = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -822,8 +835,8 @@ jQuery.fn.likeItemEvent = function(){
                     showErrorMessage(randomString(8), response.text)
                 }
             },
-            error: function(error){
-                showErrorMessage(randomString(8), error);
+            error: function(xhr, t, e){
+                showErrorMessage(randomString(8), e);
             }
         });
     });
@@ -858,8 +871,8 @@ jQuery.fn.likeItemRequestEvent = function(){
                     showErrorMessage(randomString(8), response.text)
                 }
             },
-            error: function(error){
-                showErrorMessage(randomString(8), error);
+            error: function(xhr, t, e){
+                showErrorMessage(randomString(8), e);
             }
         });
     });
@@ -890,8 +903,8 @@ jQuery.fn.favoutiteItem = function(){
                     $("#yb-menu-items-menu-item").fadeOut();
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -928,10 +941,10 @@ jQuery.fn.removeFavourite = function(){
                                 showErrorMessage("error", response.text);
                             }
                         },
-                        error: function(error){
-                            showErrorMessage("error", error);
+                        error: function(xhr, t, e){
+                            showErrorMessage("error", e);
                         }
-                    })
+                    });
                 }, true],
                 ['<button>NO</button>', function (instance, toast) {
                     instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
@@ -977,10 +990,10 @@ jQuery.fn.removeLike = function(){
                                 showErrorMessage("error", response.text);
                             }
                         },
-                        error: function(error){
-                            showErrorMessage("error", error);
+                        error: function(xhr, t, e){
+                            showErrorMessage("error", e);
                         }
-                    })
+                    });
                 }, true],
                 ['<button>NO</button>', function (instance, toast) {
                     instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
@@ -1022,8 +1035,8 @@ jQuery.fn.postItemComment = function(){
                 }
                 $("#new_comment")[0].reset();
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -1082,8 +1095,8 @@ jQuery.fn.deleteCommentEvent = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error)
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -1161,8 +1174,8 @@ jQuery.fn.borrowItemUser = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -1205,7 +1218,8 @@ jQuery.fn.updateBorrowItemUser = function(){
                         "sender": sender,
                         "message": response.text,
                         "url": url,
-                        "path": path
+                        "path": path,
+                        "type": "message"
                     }
                     socket.emit("messageSent", message);
                     $(".mfp-close").click();
@@ -1215,13 +1229,66 @@ jQuery.fn.updateBorrowItemUser = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
 }
 
+jQuery.fn.updateBorrowItemUserStatus = function(){
+    $(this).click(function(e){
+        e.preventDefault();
+
+        var _this = $(this);
+        var borrow = _this.attr("data-borrow");
+        var item = _this.attr("data-item");
+        var url = _this.attr("data-url");
+        var receiver = _this.attr("data-receiver");
+        var sender = _this.attr("data-sender");
+        var path = _this.attr("data-path");
+        var action = _this.attr("href");
+        var status = _this.attr("data-status");
+
+        iziToast.question({
+            timeout: 10000,
+            close: false,
+            overlay: true,
+            toastOnce: true,
+            id: 'accept',
+            zindex: 999,
+            title: 'Update Borrow Item User Status',
+            message: 'Do you really want to update the status to <b>' + status.toUpperCase() + ' ?</b>',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function (instance, toast) {
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                    socket.emit("setNotification", receiver);
+                    var message = {
+                        "item": item,
+                        "borrow": borrow,
+                        "receiver": receiver,
+                        "sender": sender,
+                        "message": "has updated borrow item status to " + status.toUpperCase() + " !!!",
+                        "url": url,
+                        "path": path,
+                        "type": "status"
+                    }
+                    window.location = action;
+                    socket.emit("messageSent", message);                     
+                }, true],
+                ['<button>NO</button>', function (instance, toast) {
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                    showInfoMessage("info", "Operation Cancelled !!!");
+                }],
+            ],
+            onClosing: function(instance, toast, closedBy){},
+            onClosed: function(instance, toast, closedBy){
+                showInfoMessage("info", "Operation Cancelled !!!");
+            }
+        });
+    });
+}
 
 jQuery.fn.messageText = function(){
     var _this = $(this);
@@ -1272,7 +1339,8 @@ jQuery.fn.messageText = function(){
                     "sender": sender,
                     "message": response.text,
                     "url": url,
-                    "path": path
+                    "path": path,
+                    "type": "message"
                 }
                 socket.emit("messageSent", message);
                 _this.children("textarea").val("");
@@ -1281,8 +1349,8 @@ jQuery.fn.messageText = function(){
                 $(".mfp-close").click();
                 emitTypeTextSocket("", _this);
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -1334,25 +1402,26 @@ jQuery.fn.suggestItemRequest = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
 }
 
 jQuery.fn.updateRequestSuggestionStatus = function(){
-    var _this = $(this);
-    var url = _this.attr("data-url");
-    var owner = _this.attr("data-owner");
-    var user = _this.attr("data-user");
-    var status = ["accepted", "rejected", "removed"]
+    
+    let _this = $(this);
+    let url = _this.attr("data-url");
+    let owner = _this.attr("data-owner");
+    let user = _this.attr("data-user");
+    let status = ["accepted", "rejected", "removed"]
 
     _this.find("a").click(function(e){
         e.preventDefault();
         if($(this).hasClass("yb-suggestion-status")){
-            var action = $(this).attr("href");
-            var _status = $(this).attr("data-status");
+            let action = $(this).attr("href");
+            let _status = $(this).attr("data-status");
             iziToast.question({
                 timeout: 10000,
                 close: false,
@@ -1415,8 +1484,8 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                                             showErrorMessage("error", response.text)
                                                         }
                                                     },
-                                                    error: function(error){
-                                                        showErrorMessage("error", error);
+                                                    error: function(xhr, t, e){
+                                                        showErrorMessage("error", e);
                                                     }
                                                 });
                                             }, true],
@@ -1434,8 +1503,8 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                     showErrorMessage("error", response.text)
                                 }
                             },
-                            error: function(error){
-                                showErrorMessage("error", error);
+                            error: function(xhr, t, e){
+                                showErrorMessage("error", e);
                             }
                         });
                     }, true],
@@ -1456,8 +1525,8 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
 jQuery.fn.submitReport = function(){
     $(this).submit(function(e){
         e.preventDefault();
-        var data = new FormData($(this)[0]);
-        var url = $(this).attr("action");
+        let data = new FormData($(this)[0]);
+        let url = $(this).attr("action");
         $.ajax({
             type: "POST",
             url: url,
@@ -1472,8 +1541,8 @@ jQuery.fn.submitReport = function(){
                     showErrorMessage("error", response.text);
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -1483,28 +1552,12 @@ jQuery.fn.changeItemPrice = function(input, value, def){
     $(this).change(function(){
         var per = ["Hour", "Day", "Week", "Month", "Year"]
         var price;
-        var change = new ChageItemPrice(value, $(this).val(), per)
-        switch(def){
-            case per[0]:
-                price = change.hour(value, $(this).val())
-            case per[1]:
-                price = change.day(value, $(this).val())
-            case per[2]:
-                price = change.week(value, $(this).val())
-            case per[3]:
-                price = change.month(value, $(this).val())
-            case per[4]:
-                price = change.year(value, $(this).val())
-            default:
-                showErrorMessage("error", "Per Not Recognized")
-                price = value;
-        }
         $("#" + input).val(parseFloat(price))
     });
 }
 
 jQuery.fn.showMenu = function (){
-    var id = $(this).attr("data-id");
+    let id = $(this).attr("data-id");
     $(window).click(function(e){
         $("#yb-menu-items-" + id).fadeOut();
     });
@@ -1519,8 +1572,8 @@ jQuery.fn.showMenu = function (){
 }
 
 jQuery.fn.activateList = function(){
-    var id = $(this).attr("data-id");
-    var list_items = $(this).find("li")
+    let id = $(this).attr("data-id");
+    let list_items = $(this).find("li")
     for(var i = 0; i <= list_items.length; i++){
         if($(list_items[i]).attr("data-id") == id){
             $(list_items[i]).addClass("active").siblings().removeClass("active");
@@ -1531,10 +1584,10 @@ jQuery.fn.activateList = function(){
 jQuery.fn.openImageGallery = function(){
     $(this).click(function(e){
         e.preventDefault();
-        var id = $(this).attr("data-id");
-        var items = $("#yb-image-gallery-" + id);
-        var list = items.find("a");
-        var first = list.get(0);
+        let id = $(this).attr("data-id");
+        let items = $("#yb-image-gallery-" + id);
+        let list = items.find("a");
+        let first = list.get(0);
         first.click();
     });
 }
@@ -1561,18 +1614,18 @@ jQuery.fn.imagesGallery = function(){
 jQuery.fn.selectItem = function(){
     $(this).click(function(e){
         e.preventDefault();
-        var id = $(this).attr("data-id");
+        let id = $(this).attr("data-id");
         $(this).children("span").html('<i class="icon ion-android-checkbox-outline"></i>').parent("li").siblings().children("span").html('<i class="icon ion-android-checkbox-outline-blank"></i>');
         $("body").find("#suggestion_item_id").val(id);
     });
 }
 
 jQuery.fn.activeImageSuggestion = function(){
-    var item = $(this).find("li");
-    var id = $(this).attr("data-id");
+    let item = $(this).find("li");
+    let id = $(this).attr("data-id");
     item.click(function(e){
         e.preventDefault();
-        var image = $(this).attr("data-image");
+        let image = $(this).attr("data-image");
         $(this).addClass("active").siblings().removeClass("active");
         $("#yb-suggestion-image-" + id).attr("src", image);
     });
@@ -1630,8 +1683,8 @@ jQuery.fn.searchAdminUser = function(){
                     });
                 }
             },
-            error: function(error){
-                showErrorMessage("error", error);
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
             }
         });
     });
@@ -1668,7 +1721,7 @@ function adminUserTemplate(user){
 }
 
 function updateMessageScroll(){
-    var message_list = $("#yb-borrow-messages-container");
+    let message_list = $("#yb-borrow-messages-container");
     message_list.scrollTop = message_list.scrollHeight;
     $("#yb-borrow-messages-container").animate({ scrollTop: 100000000}, 1000);
 }
@@ -1713,33 +1766,31 @@ function getUserCurrentLocation(lat, long, addr, where){
     });
 }
 
-class ChangeItemPrice {
+function ConvertItemPrice(price, to, per){
+    this.price = price
+    this.to = to
+    this.per = per
+}
 
-    constructor(price, to, per){
-        this.per = per
-        this.price = price
-        this.to = to
+ConvertItemPrice.prototype.hour = function() {
+    switch(this.to){
+        case this.per[0]:
+            return this.price
+        case this.per[1]:
+            return this.price * 24
+        case this.per[2]:
+            return this.price * 7 * 24
+        case this.per[3]:
+            return this.price * 30 * 24
+        case this.per[4]:
+            return this.price * 12 * 30 * 24
+        default:
+            return 0
     }
+};
 
-    hour(){
-        switch(this.to){
-            case this.per[0]:
-                return this.price
-            case this.per[1]:
-                return this.price * 24
-            case this.per[2]:
-                return this.price * 7 * 24
-            case this.per[3]:
-                return this.price * 30 * 24
-            case this.per[4]:
-                return this.price * 12 * 30 * 24
-            default:
-                return 0
-        }
-    }
-
-    day(){
-        switch(this.to){
+ConvertItemPrice.prototype.day = function() {
+    switch(this.to){
             case this.per[0]:
                 return this.price / 24
             case this.per[1]:
@@ -1753,10 +1804,10 @@ class ChangeItemPrice {
             default:
                 return 0
         }
-    }
+};
 
-    week(){
-        switch(this.to){
+ConvertItemPrice.prototype.week = function(){
+    switch(this.to){
             case this.per[0]:
                 return this.price / (7 * 24)
             case this.per[1]:
@@ -1770,10 +1821,10 @@ class ChangeItemPrice {
             default:
                 return 0
         }
-    }
+};
 
-    month(){
-        switch(this.to){
+ConvertItemPrice.prototype.month = function(){
+    switch(this.to){
             case this.per[0]:
                 return this.price / (30 * 24)
             case this.per[1]:
@@ -1787,10 +1838,10 @@ class ChangeItemPrice {
             default:
                 return 0
         }
-    }
+};
 
-    year(){
-        switch(this.to){
+ConvertItemPrice.prototype.year = function(){
+    switch(this.to){
             case this.per[0]:
                 this.price / (12 * 30 * 24)
             case this.per[1]:
@@ -1804,5 +1855,4 @@ class ChangeItemPrice {
             default:
                 return 0
         }
-    }
-}
+};

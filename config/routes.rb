@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     end
 
     post '/item/create', to: 'items#create', as: 'item_create'
+    post '/item/:id/update', to:'items#update', as: 'item_update'
 
     get '/item/:username/enc-dt-:uuid-:id', to: 'items#show', as: 'item_show'
     get '/item/:username/enc-dt-:uuid-:id/edit', to: 'items#edit', as: 'item_edit'
@@ -44,7 +45,8 @@ Rails.application.routes.draw do
 
     get '/item/:username/enc-dt-:uuid-:item_id/borrows', to: 'item_borrow_user#index', as: 'item_borrows'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow', to: 'item_borrow_user#show', as: 'item_borrow'
-    get '/item//item/enc-dt-:uuid-:item_id-:id/borrow/description', to: 'item_borrow_user#description', as: 'item_borrow_description'
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow/description', to: 'item_borrow_user#description', as: 'item_borrow_description'
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow/description/download.pdf', to: 'item_borrow_user#download_borrow_data', as: 'item_borrow_description_download'
 
     post '/items/:item_id/borrow_item_user/:item_borrow_user_id/borrow_messages/images/send', to: 'borrow_messages#send_images', as: 'message_send_images'
 

@@ -30,6 +30,8 @@ module UserHelper
 				user = User.find_by(token: token)
 				if user == nil then
 					render json:{"type" => "error", "text" => "Wrong token"}
+				else
+					login user
 				end
 			end
 		end

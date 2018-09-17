@@ -5,7 +5,7 @@
 			<% @categories.each do |category| %>
 				<div class="yb-borrow-item-single yb-admin-single-row">
 					<div class="yb-image yb-text">
-						<p><%= category.name[0] %> </p>
+						<p><i class="fas">&#x<%= category.icon %>;</i></p>
 					</div>
 					<div class="yb-about">
 						<h3><%= link_to category.name, admin_category_path(category) %></h3>

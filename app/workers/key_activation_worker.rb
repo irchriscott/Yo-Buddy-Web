@@ -8,11 +8,11 @@ class KeyActivationWorker
     		
     		if admin.admin_user_activation.is_active? and admin.admin_user_activation.yb_key.is_active? then
 
+    			items = get_user_items(admin.user.id)
+	    		remaining_time =  (admin.admin_user_activation.yb_key.updated_at.localtime.to_i + (admin.admin_user_activation.yb_key.remaining.to_i * 24 * 60 * 60)) - Time.now.to_i
+	    		remaining = remaining_time / (24 * 60 * 60)
+    			
     			if admin.admin_user_activation.yb_key.yb_package.package == "trial" then
-	    			
-	    			items = get_user_items(admin.user.id)
-	    			remaining_time =  (admin.admin_user_activation.yb_key.updated_at.localtime.to_i + (admin.admin_user_activation.yb_key.remaining.to_i * 24 * 60 * 60)) - Time.now.to_i
-	    			remaining = remaining_time / (24 * 60 * 60)
 
 	    			if remaining.truncate == 5 || remaining.truncate == 1 then
 	    			

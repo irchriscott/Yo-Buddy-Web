@@ -59,13 +59,13 @@ class BorrowItemUser < ApplicationRecord
 				if self.per == $pers[0] and self.numbers > 4 then
 					return (self.to_date.localtime - received.created_at.localtime).to_i / (60 * 60 * 1000)
 				elsif self.per == $pers[1] then
-					return date.to_i / (24 * 60 * 60 * 1000)
+					return date.to_i / (24 * 60 * 60)
 				elsif self.per == $pers[2] then
-					return date.to_i / (7 * 24 * 60 * 60 * 1000)
+					return date.to_i / (7 * 24 * 60 * 60)
 				elsif self.per == $pers[3] then
-					return date.to_i / (30 * 24 * 60 * 60 * 1000)
+					return date.to_i / (30 * 24 * 60 * 60)
 				elsif self.per == $pers[4]
-					return date.to_i / (12 * 30 * 24 * 60 * 60 * 1000)
+					return date.to_i / (12 * 30 * 24 * 60 * 60)
 				else
 					return self.numbers 
 				end	
@@ -104,14 +104,14 @@ class BorrowItemUser < ApplicationRecord
 		rendered = self.borrow_item_admin.where(status: "rendered").last
 		returned = self.borrow_item_admin.where(status: "returned").last
 
-		now = Time.now.to_date
-		dead = now.to_time.to_i - self.to_date.to_time.to_i
+		now = Time.now
+		dead = now.to_time.to_i - self.to_date.localtime.to_time.to_i
 		hours = (dead / (60 * 60)) - 4
 
-		if rendered && !returned then
+		if rendered != nil && returned == nil then
 			return (hours > 0) ? hours * self.price_per_hour * self.count : 0
-		elsif rendered && returned then
-			return ((now.to_time.to_i - created_at.localtime.to_time.to_i) / (60 * 60)) * self.price_per_hour * self.count
+		elsif rendered != nil && returned != nil then
+			return ((returned.created_at.to_time.to_i - self.to_date.localtime.to_time.to_i) / (60 * 60)) * self.price_per_hour * self.count
 		else
 			return 0
 		end

@@ -335,10 +335,11 @@ class AdminUserController < ApplicationController
 		if !is_admin_user_logged_in?
 			flash[:danger] = "Please, Log In !!!";
 			redirect_to admin_u_index_path
+		else
+			@activation = session_admin_user.admin_user_activation
+			@items = get_sum_items(session_admin_user.user.id)
+			@package = get_preferable_package(@items)
 		end
-		@activation = session_admin_user.admin_user_activation
-		@items = get_sum_items(session_admin_user.user.id)
-		@package = get_preferable_package(@items)
 	end
 
 	def activate_key

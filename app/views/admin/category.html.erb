@@ -1,6 +1,6 @@
 <section class="yb-admin-container">
 	<div class="yb-admin-data-container">
-		<h2><%= @category.name %></h2>
+		<h2><i class="fas">&#x<%= @category.icon %>;</i> <%= @category.name %></h2>
 		<p><%= @category.description %></p>
 		<div class="yb-borrow-items admin-categories" style="margin-top: -15px;">
 			<% @subcategories.each do |subcategory| %>

@@ -27,7 +27,7 @@ class ItemsController < ApplicationController
         respond_to do |format|
 
             @item = Item.new(item_params)
-            @item.user_id = session[:user_id]
+            @item.user_id = (is_logged_in?) ? session[:user_id] : params[:item][:user_id]
             @item.is_available = true
             @item.is_deleted = false
             @item.uuid = generate_uuid(params[:item][:name])
@@ -62,7 +62,7 @@ class ItemsController < ApplicationController
                     flash[:success] = "Item Added Successfully !!!"
                 else
                     params[:source] == "admin" ? format.html { redirect_to admin_u_items_path } : format.html { redirect_to session_items_path }
-                    format.json { render json: {"type" => "error", "text" => @item.errors.full_messages}, status: :unprocessable_entity }
+                    format.json { render json: {"type" => "error", "text" => @item.errors.full_messages.to_s}, status: :unprocessable_entity }
                     flash[:danger] = @item.errors.full_messages
                 end
             else
@@ -107,11 +107,11 @@ class ItemsController < ApplicationController
                                 end
                             end
                             params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
-                            format.json { render json: {"type" => "success", "text" => @item} }
+                            format.json { render json: {"type" => "success", "text" => "Item Updated Successfully !!!"} }
                             flash[:success] = "Item Updated Successfully !!!"
                         else
                             params[:source] == "admin" ? format.html { redirect_to admin_u_item_path(@item.user.username, @item.uuid, @item) } : format.html { redirect_to item_show_path(@item.user.username, @item.uuid, @item)  }
-                            format.json { render json: { "type" => "error", "text" => @item.errors }, status: :unprocessable_entity }
+                            format.json { render json: { "type" => "error", "text" => @item.errors.full_messages.to_s }, status: :unprocessable_entity }
                             flash[:danger] = @item.errors.full_messages
                         end
                     else
@@ -240,25 +240,30 @@ class ItemsController < ApplicationController
     end
 
     def delete_image_item
-        
-        @image = ItemImage.find(params[:id])
-        @item = Item.find(@image.item.id)
-        @images = @item.item_image.all
+        respond_to do |format|
+            @image = ItemImage.find(params[:id])
+            @item = Item.find(@image.item.id)
+            @images = @item.item_image.all
 
-        if @active == true then
+            if @active == true then
 
-            if @image.item.user.id == session[:user_id] then
-                if @images.length > 2 then
-                    @image.destroy
-                    render json: {"type" => "success", "text" => "Image Deleted Successfully !!!"}
+                if @image.item.user.id == session[:user_id] then
+                    if @images.length > 2 then
+                        @image.destroy
+                        format.html { render json: {"type" => "success", "text" => "Image Deleted Successfully !!!"} }
+                        format.json { render json: {"type" => "success", "text" => "Image Deleted Successfully !!!"} }
+                    else
+                        format.html { render json: {"type" => "error", "text" => "Item Images Are Few !!!"} }
+                        format.json { render json: {"type" => "error", "text" => "Item Images Are Few !!!"} }
+                    end
                 else
-                    render json: {"type" => "error", "text" => "Item Images Are Few !!!"}
+                    format.html { render json: {"type" => "error", "text" => "You are not the owner !!!"} }
+                    format.json { render json: {"type" => "error", "text" => "You are not the owner !!!"} }
                 end
             else
-                render json: {"type" => "error", "text" => "You are not the owner !!!"}
+                format.html { render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"} }
+                format.json { render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"} }
             end
-        else
-            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end
     end
 
@@ -286,18 +291,18 @@ class ItemsController < ApplicationController
         check_like = ItemLike.where(user_id: user_id, item_id: params[:like][:item_id]).first
 
         if @active == true then
-        
-            if check_like == nil then
-                if @like.save then
-                    Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
-                    render json: {"type" => "like", "text" => "Item Liked !!!"}
-                else
-                    render json: {"type" => "error", "error" => @like.errors.full_messages}
-                end
-            else
-                check_like.destroy
-                render json: {"type" => "dislike", "text" => "Item Disliked !!!"}
-            end
+            render json: {"type" => "like", "text" => "Item Liked !!!"}
+            # if check_like == nil then
+            #     if @like.save then
+            #         Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
+            #         render json: {"type" => "like", "text" => "Item Liked !!!"}
+            #     else
+            #         render json: {"type" => "error", "error" => @like.errors.full_messages}
+            #     end
+            # else
+            #     check_like.destroy
+            #     render json: {"type" => "dislike", "text" => "Item Disliked !!!"}
+            # end
         else
             render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end

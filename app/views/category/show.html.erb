@@ -1,5 +1,5 @@
 <section class="yb-jumbotron" style="flex-direction: column;">
-	<h1 style="margin-top: 60px;"><%= @category.name %></h1>
+	<h1 style="margin-top: 60px;"><i class="fas">&#x<%= @category.icon %>;</i> <%= @category.name %></h1>
 	<p><%= @category.description %></p>
 </section>
 <section class="yb-admin-container" style="margin-top: 30px;">
@@ -43,7 +43,7 @@
 					<% @categories.each do |category| %>
 						<li data-id="<%= category.id %>">
 							<a href="<%= category_path(category.uuid, category.id) %>?activate=<%= category.id %>">
-								<div class="yb-image"><p><%= category.name[0] %></p></div>
+								<div class="yb-image"><p><i class="fas">&#x<%= category.icon %>;</i></p></div>
 								<p class="yb-category-name"><%= category.name %></p>
 								<p class="yb-category-sub"><span class="subcategories-num"><%= category.subcategory.count %></span><span><i class="icon ion-chevron-right"></i></span></p>
 							</a>

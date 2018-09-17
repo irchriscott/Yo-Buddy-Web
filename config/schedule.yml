@@ -26,7 +26,7 @@ update_borrow:
 
 
 borrow_reminder:
-  cron: "0 5,15 * * *"
+  cron: "0 5,10,15,18 * * *"
   class: "ReminderWorker"
   queue: default
   active_job: true
