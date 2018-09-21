@@ -37,8 +37,8 @@
 		</div>
 		<div class="yb-session-data">
 			<% if is_logged_in? %>
-				<div class="yb-borrow-items">
-					<% if @borrowed.count > 0 %>
+				<% if @borrowed.count > 0 %>
+					<div class="yb-borrow-items">
 						<% @borrowed.each do |borrow| %>
 							<div class="yb-borrow-item-single">
 								<div class="yb-borrow-status">
@@ -95,10 +95,10 @@
 								<script type="text/javascript">$("#yb-show-menu-<%= borrow.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow.id %>, #yb-get-report-<%= borrow.id %>").magnificPopup({type: 'ajax'});</script>
 							</div>
 						<% end %>
-					<% else %>
-						<p class="yb-error">NO BORROWED</p>
-					<% end %>
-				</div>
+					</div>
+				<% else %>
+					<p class="yb-error">NO BORROWED</p>
+				<% end %>
 			<% else %>
 				<p class="yb-error">PLEASE, LOGIN TO SEE THE CONTENT</p>
 			<% end %>

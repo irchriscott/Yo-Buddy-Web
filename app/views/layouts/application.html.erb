@@ -4,6 +4,7 @@
         <title>Yo Buddy !</title>
         <%= csrf_meta_tags %>
         <meta name="viewport" content="width=device-width" />
+        <!-- <link rel="stylesheet" type="text/css" href="/assets/semantic/semantic.css" /> -->
         <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
         <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,400,300,500,600,700" rel="stylesheet"> 
         <link rel="stylesheet" type="text/css" href="/assets/ionicons/css/ionicons.min.css" />
@@ -13,6 +14,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/popup/magnific-popup.css" />
         <link rel="stylesheet" type="text/css" href="/assets/datetimepicker/jquery.datetimepicker.min.css"/>
         <script type="text/javascript" src="/assets/jquery-3.1.1.js"></script>
+        <script type="text/javascript" src="/assets/semantic/semantic.min.js"></script>
       	<script type="text/javascript" src="/assets/backstretch.js"></script>
         <script type="text/javascript" src="/assets/toast/iziToast.min.js"></script>
         <script type="text/javascript" src="/assets/intlTelInput.js"></script>
@@ -28,8 +30,10 @@
     </head>
 
     <body>
-        <%= render "partials/header" %>
         <%= render "partials/sidebar" %>
+        <%= render "partials/header" %>
         <%= yield %>
+        <%= render "partials/footer" %>
+        <%= render "partials/search" %>
     </body>
 </html>

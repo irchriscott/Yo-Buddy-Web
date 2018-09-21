@@ -1,3 +1,8 @@
+<section class="yb-header-else-main">
+	<div class="yb-header-else-container">
+		<h3 style="padding:0 !important; margin:0 !important;"><i class="fas">&#x<%= @category.icon %>;</i> <%= @category.name %></h3>
+	</div>
+</section>
 <section class="yb-jumbotron" style="flex-direction: column;">
 	<h1 style="margin-top: 60px;"><i class="fas">&#x<%= @category.icon %>;</i> <%= @category.name %></h1>
 	<p><%= @category.description %></p>
@@ -16,9 +21,9 @@
 				<%= form.hidden_field :category_id, value: @category.id %>
 			<% end %>
 		<% end %>
-		<div class="yb-borrow-items admin-categories" style="margin-top: -15px;">
+		<div class="yb-borrow-items admin-categories">
 			<% @subcategories.each do |subcategory| %>
-				<div class="yb-borrow-item-single yb-admin-single-row">
+				<div class="yb-borrow-item-single">
 					<div class="yb-image yb-text">
 						<p><%= subcategory.name[0] %> </p>
 					</div>

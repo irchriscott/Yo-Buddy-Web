@@ -36,8 +36,8 @@
 			</ul>
 		</div>
 		<div class="yb-session-data">
-			<div class="yb-borrow-items">
-				<% if @items.length > 0 %>
+			<% if @items.length > 0 %>
+				<div class="yb-borrow-items">
 					<% @items.each do |item| %>
 						<% if item["count"] > 0 %>
 							<div class="yb-borrow-item-single">
@@ -64,10 +64,10 @@
 							</div>
 						<% end %>
 					<% end %>
-				<% else %>
-					<p class="yb-error">NO BORROWED ITEM</p>
-				<% end %>
-			</div>
+				</div>
+			<% else %>
+				<p class="yb-error">NO BORROWED ITEM</p>
+			<% end %>
 		</div>
 	</div>
 </section>

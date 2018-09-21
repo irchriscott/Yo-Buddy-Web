@@ -1,3 +1,42 @@
-<section class="yb-right-navigation">
-	<div class="yb-navigation-container"></div>
+<section class="yb-left-navigation" id="yb-sidebar-ovarlay"></section>
+<section class="yb-navigation-container" id="yb-sidebar-navigation">
+	<% if is_logged_in? %>
+		<div class="yb-sidebar-user">
+			<div class="yb-notification">
+				<span><i class="icon ion-ios-bell-outline"></i></span>
+				<span id="yb-session-notifications" class="yb-header-tag" <% if session_user.notification_count <= 0 %> style="display: none;" <% end -%> ><%= session_user.notification_count %></span>
+			</div>
+			<% if session_user.image? %>
+				<%= image_tag session_user.image.url, title: session_user.username %>
+			<% else %>
+				<img src="/assets/default.jpg" alt="Profile Image" title="<%= session_user.username %>" />
+			<% end %>
+			<h4><%= session_user.name %></h4>
+			<p><%= session_user.email %></p>
+		</div>
+		<hr style="width: 100%;" />
+	<% end %>
+	<p><%= link_to "CATEGORIES", category_index_path %></p>
+	<p><%= link_to "ITEMS", items_path %></p>
+	<p><%= link_to "REQUESTS", item_requests_path %></p>
+	<% if !is_logged_in? %>
+		<p><a href="/user/new">SIGN IN</a></p>
+	<% end %>
+	<hr style="width: 100%;">
+	<% if is_logged_in? %>
+		<div class="yb-sidebar-menu-list">
+			<ul>
+				<li><a href="/session/items"><span class="item-icon"><i class="icon ion-ios-cart"></i></span><span class="item-text">Items</span></a></li>
+				<li><a href="/session/requests"><span class="item-icon"><i class="icon ion-forward"></i></span><span class="item-text">Requests</span></a></li>
+				<li><a href="/session/borrowed"><span class="item-icon"><i class="icon ion-ios-arrow-thin-right"></i></span><span class="item-text">Borrowed</span></a></li>
+				<li><a href="/session/borrowing"><span class="item-icon"><i class="icon ion-ios-arrow-thin-left"></i></span><span class="item-text">Borrowing</span></a></li>
+				<li><a href="/session/likes"><span class="item-icon"><i class="icon ion-ios-heart-outline"></i></span><span class="item-text">Likes</span></a></li>
+				<li><a href="/session/favourites"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourites</span></a></li>
+				<li><a href="/session/followers"><span class="item-icon"><i class="icon ion-ios-arrow-thin-right"></i></span><span class="item-text">Followers</span></a></li>
+				<li><a href="/session/following"><span class="item-icon"><i class="icon ion-ios-arrow-thin-left"></i></span><span class="item-text">Following</span></a></li>	
+				<hr style="width: 100%;">
+				<li><a href="/session/logout"><span class="item-icon"><i class="icon ion-log-out" style="color:red"></i></span><span class="item-text" style="color:red">Log Out</span></a></li>		
+			</ul>
+		</div>
+	<% end %>
 </section>

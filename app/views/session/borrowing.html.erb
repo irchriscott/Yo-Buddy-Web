@@ -36,8 +36,8 @@
 			</ul>
 		</div>
 		<div class="yb-session-data">
-			<div class="yb-borrow-items">
-				<% if @borrows.count > 0 %>
+			<% if @borrows.count > 0 %>
+				<div class="yb-borrow-items">
 					<% @borrows.each do |borrow| %>
 						<div class="yb-borrow-item-single">
 							<div class="yb-borrow-status">
@@ -94,10 +94,10 @@
 							<script type="text/javascript">$("#yb-show-menu-<%= borrow.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow.id %>, #yb-get-report-<%= borrow.id %>").magnificPopup({type: 'ajax'});</script>
 						</div>
 					<% end %>
-				<% else %>
-					<p class="yb-error">NO BORROWING ITEM</p>
-				<% end %>
-			</div>
+				</div>
+			<% else %>
+				<p class="yb-error">NO BORROWING ITEM</p>
+			<% end %>
 		</div>
 	</div>
 </section>

@@ -1,0 +1,19 @@
+<section class="yb-search-overlay" id="yb-search-overlay"></section>
+<section class="yb-search-container" id="yb-search-container">
+	<div class="yb-search-form">
+		<div class="yb-search-form-content">
+			<form method="get" action="<%= search_path %>" id="yb-live-search">
+				<div class="yb-search-form-icon">
+					<span><i class="icon ion-ios-search"></i></span>
+				</div>
+				<div class="yb-search-form-input">
+					<input type="text" name="q" placeholder="Search here at yobuddy.com" autocomplete="off">
+				</div>
+				<div class="yb-search-form-spinner" id="yb-search-form-spinner">
+					<span><img src="/assets/loading.gif" /></span>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="yb-search-result" id="yb-search-result"></div>
+</section>

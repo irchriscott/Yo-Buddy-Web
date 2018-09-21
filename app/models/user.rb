@@ -92,12 +92,14 @@ class User < ApplicationRecord
             "followers" => self.followers_count,
             "following" => self.following_count,
             "url" => "/user/#{self.id}.json",
+            "url_html" => "/user/#{self.username}-#{self.id}/items",
             "items" => self.item.count,
             "requests" => self.item_request.count,
             "borrow" => self.borrow_item_user.count,
             "followers_list" => self.followers,
             "following_list" => self.following,
-            "favourites" => self.item_favourite.count
+            "favourites" => self.item_favourite.count,
+            "created_at" => self.created_at
         }
     end
 

@@ -24,7 +24,13 @@ $(function() {
 
     $(document).on("keyup", function(e){
         if(e.keyCode === 27) {
-            $(document).find(".yb-item-menu-list").fadeOut();
+            $(document).find(".yb-item-menu-list, .yb-menu-list").fadeOut();
+            $("#yb-search-overlay, #yb-search-container, #yb-search-form-spinner").hide();
+            $("html, body").removeClass("yb-hide-sb");
+        }
+        if((e.shiftKey || e.altKey) && e.keyCode === 83){
+            $("html, body").addClass("yb-hide-sb");
+            $("#yb-search-overlay, #yb-search-container").show().find("input").focus();
         }
     });
 
@@ -40,6 +46,37 @@ $(function() {
             duration: 2000,
             fade: 750
         });
+    });
+
+    //SHOW MOBILE SIDEBAR
+
+    $("#yb-sidebar-toggle").click(function(e){
+        e.stopPropagation();
+        $("#yb-sidebar-navigation").addClass("yb-navigation-open");
+        $("html, body").addClass("yb-hide-sb");
+        $("#yb-sidebar-ovarlay").show();
+    });
+
+    $("#yb-sidebar-ovarlay").click(function(e){
+        e.preventDefault();
+        $(this).hide();
+        $("#yb-sidebar-navigation").removeClass("yb-navigation-open");
+        $("html, body").removeClass("yb-hide-sb");
+    });
+
+    //SEARCH TOGGLE
+
+    $("#yb-seach-toggle").click(function(e){
+        e.stopPropagation();
+        $("html, body").addClass("yb-hide-sb");
+        $("#yb-search-overlay, #yb-search-container").show().find("input").focus();
+    });
+
+    $("#yb-search-overlay").click(function(e){
+        e.preventDefault();
+        $(this).hide();
+        $("#yb-search-container, #yb-search-form-spinner").hide();
+        $("html, body").removeClass("yb-hide-sb");
     });
 
     //LOGIN MENU
@@ -113,6 +150,21 @@ $(function() {
         mainClass: 'my-mfp-zoom-in'
     });
 
+    $("#some_tags").magnificPopup({
+        type: 'image',
+        closeOnContentClick: true,
+        closeBtnInside: false,
+        fixedContentPos: true,
+        mainClass: 'mfp-no-margins mfp-with-zoom',
+        image: {
+            verticalFit: true
+        },
+        zoom: {
+            enabled: true,
+            duration: 300
+        }
+    });
+
     $(".like-item").likeItem();
     $(".like-form").likeItemEvent();
     $(".like-item-request").likeItemRequest();
@@ -121,8 +173,21 @@ $(function() {
     $(".yb-single-images ul li a").click(function(e){
         e.preventDefault();
         var image = $(this).attr("href");
+        var id = $(this).attr("data-image-id");
         $(this).parent("li").addClass("activated").siblings().removeClass("activated");
         $("#item_image_main").attr("src", image);
+        $("#item_image_main").parent(".yb-single-image").attr("data-image-id", id);
+    });
+
+    $(".yb-single-image").click(function(e){
+        e.preventDefault();
+        var images = $("#yb-item-images-gallery").find("a");
+        var id = $(this).attr("data-image-id");
+        for(let i = 0; i <= images.length; i++){
+            if($(images[i]).attr("data-image-id") == id){
+                $(images[i]).click();
+            }
+        }
     });
 
     $("#yb-show-session-menu").showMenu();
@@ -157,6 +222,8 @@ $(function() {
     $("#yb-number-else").setNumber();
     $("#yb-number-else-yb").setNumber();
     $(".yb-update-borrow-status-link").updateBorrowItemUserStatus();
+    $("#yb-item-images-gallery").imagesGallery();
+    $("#yb-live-search").ybLiveSeacrh();
 
     $("#search_borrow_category").change(function(){
         filterSubcategories($(this), $("#search_borrow_subcategory"));
@@ -331,7 +398,7 @@ $(function() {
         var receiver = $("#session_user_id").val();
         var form = $("body").find("#yb-borrow-message-form");
         if(data.receiver == receiver){
-            if(form != null){
+            if(form.length > 0){
                 var item = form.attr("data-item");
                 var borrow = form.attr("data-borrow");
                 if(item == data.item && borrow == data.borrow){
@@ -350,7 +417,7 @@ $(function() {
         var receiver = $("#session_user_id").val();
         var form = $("body").find("#yb-borrow-message-form");
         if(message.receiver == receiver){
-            if(form != null){
+            if(form.length > 0){
                 var item = form.attr("data-item");
                 var borrow = form.attr("data-borrow");
                 if(item == message.item && borrow == message.borrow){
@@ -437,6 +504,12 @@ $(function() {
             $(".yb-header-admin-else").show();
         } else {
             $(".yb-header-admin-else").hide();
+        }
+
+        if($(this).scrollTop() > 251){
+            $(".yb-header-else-main").show();
+        } else {
+            $(".yb-header-else-main").hide();
         }
     });
 
@@ -657,49 +730,51 @@ function makeQRCode(c, w, h){
     qrcode.makeCode(data);
 }
 
+function makeMoment(time){
+    var utc_timestamp = (Date.parse(time)) - (new Date().getTimezoneOffset() * 60 * 1000);
+    var hours_check = new Date(utc_timestamp).getHours();
+
+    var post_time = utc_timestamp / 1000;
+    var timee =  utc_timestamp;
+    var current_time = Math.floor(jQuery.now() / 1000);
+
+    real_time = (current_time - post_time);
+    if (real_time < 60) {
+        return 'Just Now';
+    }else if (real_time >= 60 && real_time < 3600) {
+        time_be = moment(timee).fromNow();
+        return time_be;
+    }else if (real_time >= 3600 && real_time < 86400) {
+        time_be = moment(timee).fromNow();
+        return time_be;
+    }else if (real_time >= 86400 && real_time < 604800) {
+        time_b = Math.floor(real_time / (60 * 60 * 24));
+        time_be = moment(timee).calendar();
+        return time_be;
+    }else if (real_time >= 604800 && real_time < 31104000 ) {
+        time_be = moment(timee).format('MMMM Do [at] h:mm a');
+        return time_be;
+    }else{
+        time_be = moment(timee).format('DD MMM YYYY [at] h:mm a');
+        return time_be;
+    }
+}
+
+function makeNumber(number){
+    return (number >= 1000) ? numeral(number).format('0.0 a') : numeral(number).format('0 a');
+}
+
 jQuery.fn.setDate = function(){
     setInterval(() => {
         var time = $(this).attr("data-date");
-        var utc_timestamp = (Date.parse(time)) - (new Date().getTimezoneOffset() * 60 * 1000);
-        var hours_check = new Date(utc_timestamp).getHours();
-
-        var post_time = utc_timestamp / 1000;
-        var timee =  utc_timestamp;
-        var current_time = Math.floor(jQuery.now() / 1000);
-
-        real_time = (current_time - post_time);
-        if (real_time < 60) {
-            $(this).text('Just Now');
-        }else if (real_time >= 60 && real_time < 3600) {
-            time_be = moment(timee).fromNow();
-            $(this).text(time_be);
-        }else if (real_time >= 3600 && real_time < 86400) {
-            time_be = moment(timee).fromNow();
-            $(this).text(time_be);
-        }else if (real_time >= 86400 && real_time < 604800) {
-            time_b = Math.floor(real_time / (60 * 60 * 24));
-            time_be = moment(timee).calendar();
-            $(this).text(time_be);
-        }else if (real_time >= 604800 && real_time < 31104000 ) {
-            time_be = moment(timee).format('MMMM Do [at] h:mm a');
-            $(this).text(time_be);
-        }else{
-            time_be = moment(timee).format('DD MMM YYYY [at] h:mm a');
-            $(this).text(time_be);
-        }
+        $(this).text(makeMoment(time));
         return false;
     }, 100)
 }
 
 jQuery.fn.setNumber = function(){
     var number = parseInt($(this).attr("data-number"));
-    var number_set;
-    if(number >= 1000){
-        number_set = numeral(number).format('0.0 a');
-    } else {
-        number_set = numeral(number).format('0 a');
-    }
-    $(this).text(number_set.toString().toUpperCase());
+    $(this).text(makeNumber(number).toString().toUpperCase());
 }
 
 jQuery.fn.followUser = function(){
@@ -1707,6 +1782,135 @@ jQuery.fn.searchAdminUser = function(){
     }
 }
 
+jQuery.fn.ybLiveSeacrh = function(){
+
+    let form = $(this);
+    let url = $(this).attr("action");
+    let input = form.find("input");
+    let spinner = $("#yb-search-form-spinner");
+    let results = $("#yb-search-result");
+    let dissallowed = [13, 38, 40];
+    let index = -1;
+
+    input.keyup(function(e){
+        spinner.show();
+        results.show().focus();
+        let query = $(this).val();
+        let active = results.find(".active");
+        let responses = results.find(".yb-search-data");
+        let resultsHeight = results.height();
+        if(e.keyCode === 13){
+            e.preventDefault();
+            if(active.length > 0){window.location = active.attr("data-url")} 
+            else { window.location = url + "?q=" + query}
+        }
+        if(e.keyCode === 38){
+            e.preventDefault();
+            if(responses.length > 0){
+                if(index <= 0) {index = responses.length; resultsHeight = results.height(); results.scrollTop(0)}
+                if(index >= responses.length){results.scrollTop(results.height())}
+                index--;
+                if(index <= 0) {}
+                $(responses[index]).addClass("active").siblings().removeClass("active");
+                input.val($(responses[index]).attr("data-name"));
+                if(index > 3 && index < responses.length - 3) { resultsHeight += 100; results.scrollTop(resultsHeight) }
+                if(index < 3) { resultsHeight = results.height(); results.scrollTop(0) }
+            }
+        }
+        if(e.keyCode === 40){
+            e.preventDefault();
+            if(responses.length > 0){
+                index++;
+                if(index == 0) {resultsHeight = results.height(); results.scrollTop(0)}
+                $(responses[index]).addClass("active").siblings().removeClass("active");
+                input.val($(responses[index]).attr("data-name"));
+                if(index > 3) { resultsHeight -= 100; results.scrollTop(resultsHeight) }
+                if(index >= responses.length - 1) {index = -1; results.scrollTop(results.height())}
+            }  
+        }
+        if(query == "" || query == null) {spinner.hide(); results.hide()}
+        if(!dissallowed.includes(e.keyCode)){
+            $.ajax({
+                type:"GET",
+                url: url + ".json",
+                data: {"q":query},
+                success: function(response){
+                    let data = response.results;
+                    if(data.length > 0){
+                        results.empty();
+                        index = -1;
+                        data.forEach((dt) => {
+                            let template = $(resultSearchTemplate(dt.data, dt.type));
+                            template.click(function(){
+                                if(window.location.href.toString().includes("/admin/")){
+                                    window.open($(this).attr("data-url"), "_blank");
+                                } else {window.location = $(this).attr("data-url")}
+                            }); 
+                            template.hover(function(){
+                                let resps = results.find(".yb-search-data");
+                                $(this).addClass("active").siblings().removeClass("active");
+                                input.val($(this).attr("data-name"));
+                                index = data.indexOf(dt) + 1;
+                            });
+                            results.append(template).focus();
+                        });
+                    } else {
+                        results.html('<p class="yb-error">NO RESULT FOUND</p>');
+                    }
+                },
+                error: function(xhr, t, e){
+                    showErrorMessage("error", e);
+                }
+            });
+        }
+    });
+}
+
+function resultSearchTemplate(data, type){
+    if(type == "user"){
+        return `
+            <div class="yb-search-data" data-url="${data.url_html}" data-name="${data.name}">
+                <div class="yb-search-data-image">
+                    <img src="${data.image}">
+                </div>
+                <div class="yb-search-data-description">
+                    <h4>${data.name}</h4>
+                    <p class="yb-location"><i class="icon ion-ios-location-outline"></i> ${data.town}, ${data.country}</p>
+                    <p class="yb-date">@${data.username} - ${makeMoment(data.created_at)}</p>
+                </div>
+            </div>
+        `;
+    } else if(type == "item"){
+        return `
+            <div class="yb-search-data" data-url="${data.url}" data-name="${data.name}">
+                <div class="yb-search-data-image">
+                    <img src="${data.image}">
+                </div>
+                <div class="yb-search-data-description">
+                    <h4>${data.name}</h4>
+                    <p class="yb-price"><i class="icon ion-ios-pricetags-outline"></i> ${makeNumber(data.price).toString().toUpperCase()} ${data.currency} / ${data.per}</p>
+                    <p class="yb-location"><i class="icon ion-ios-location-outline"></i> ${data.location} - ${data.category}, ${data.subcategory}</p>
+                    <p class="yb-date">By ${data.user} - ${makeMoment(data.created_at)}</p>
+                </div>
+            </div>
+        `;
+    } else if(type == "request"){
+        return `
+            <div class="yb-search-data" data-url="${data.url}" data-name="${data.name}">
+                <div class="yb-search-data-image">
+                    <img src="${data.image}">
+                </div>
+                <div class="yb-search-data-description">
+                    <h4>${data.name}</h4>
+                    <p class="yb-price"><i class="icon ion-ios-pricetags-outline"></i> ${makeNumber(data.min_price).toString().toUpperCase()} - ${makeNumber(data.max_price).toString().toUpperCase()} ${data.currency} / ${data.per}</p>
+                    <p class="yb-location"><i class="icon ion-ios-location-outline"></i> ${data.location} - ${data.category}, ${data.subcategory}</p>
+                    <p class="yb-date">By ${data.user} - ${makeMoment(data.created_at)}</p>
+                </div>
+            </div>
+        `;
+    }
+}
+
 function adminUserTemplate(user){
     return `<li data-id="${user.id}">
                 <div class="yb-image">
@@ -1791,68 +1995,68 @@ ConvertItemPrice.prototype.hour = function() {
 
 ConvertItemPrice.prototype.day = function() {
     switch(this.to){
-            case this.per[0]:
-                return this.price / 24
-            case this.per[1]:
-                return this.price
-            case this.per[2]:
-                return this.price * 7
-            case this.per[3]:
-                return this.price * 30
-            case this.per[4]:
-                return this.price * 12 * 30
-            default:
-                return 0
-        }
+        case this.per[0]:
+            return this.price / 24
+        case this.per[1]:
+            return this.price
+        case this.per[2]:
+            return this.price * 7
+        case this.per[3]:
+            return this.price * 30
+        case this.per[4]:
+            return this.price * 12 * 30
+        default:
+            return 0
+    }
 };
 
 ConvertItemPrice.prototype.week = function(){
     switch(this.to){
-            case this.per[0]:
-                return this.price / (7 * 24)
-            case this.per[1]:
-                return this.price / 7
-            case this.per[2]:
-                return this.price
-            case this.per[3]:
-                return this.price * (30 / 7)
-            case this.per[4]:
-                return this.price * ((12 * 30) / 7)
-            default:
-                return 0
-        }
+        case this.per[0]:
+            return this.price / (7 * 24)
+        case this.per[1]:
+            return this.price / 7
+        case this.per[2]:
+            return this.price
+        case this.per[3]:
+            return this.price * (30 / 7)
+        case this.per[4]:
+            return this.price * ((12 * 30) / 7)
+        default:
+            return 0
+    }
 };
 
 ConvertItemPrice.prototype.month = function(){
     switch(this.to){
-            case this.per[0]:
-                return this.price / (30 * 24)
-            case this.per[1]:
-                return this.price / 30
-            case this.per[2]:
-                return this.price / (30 / 7)
-            case this.per[3]:
-                return this.price
-            case this.per[4]:
-                return this.price * 12
-            default:
-                return 0
-        }
+        case this.per[0]:
+            return this.price / (30 * 24)
+        case this.per[1]:
+            return this.price / 30
+        case this.per[2]:
+            return this.price / (30 / 7)
+        case this.per[3]:
+            return this.price
+        case this.per[4]:
+            return this.price * 12
+        default:
+            return 0
+    }
 };
 
 ConvertItemPrice.prototype.year = function(){
     switch(this.to){
-            case this.per[0]:
-                this.price / (12 * 30 * 24)
-            case this.per[1]:
-                return this.price / (12 * 30)
-            case this.per[2]:
-                return this.price / ((12 * 30) / 7)
-            case this.per[3]:
-                return this.price / 12
-            case this.per[4]:
-                return this.price
-            default:
-                return 0
-        }
+        case this.per[0]:
+            this.price / (12 * 30 * 24)
+        case this.per[1]:
+            return this.price / (12 * 30)
+        case this.per[2]:
+            return this.price / ((12 * 30) / 7)
+        case this.per[3]:
+            return this.price / 12
+        case this.per[4]:
+            return this.price
+        default:
+            return 0
+    }
 };

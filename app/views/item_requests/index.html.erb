@@ -1,3 +1,8 @@
+<section class="yb-header-else-main">
+	<div class="yb-header-else-container">
+		<h3 style="padding:0 !important; margin:0 !important;">ITEM REQUESTS - ALL</h3>
+	</div>
+</section>
 <section class="yb-jumbotron">
 	<h1>ITEM REQUESTS - ALL</h1>
 </section>
@@ -34,7 +39,7 @@
 		                    </div>
 		                    <div class="yb-item-about">
 		                        <h3><a href="<%= item_request_path(request.user.username, request.uuid, request) %>"><%= request.title %></a></h3>
-		                        <p class="yb-item-category"><a href="<%= category_path(request.category.uuid, request.category) %>"><%= request.category.name %></a> - <a href="<%= subcategory_path(request.category.uuid, request.category, request.subcategory) %>"><%= request.subcategory.name %></a></p>
+		                        <p class="yb-item-category"><a href="<%= category_path(request.category.uuid, request.category, activate: request.category.id) %>"><%= request.category.name %></a> - <a href="<%= subcategory_path(request.category.uuid, request.category, request.subcategory) %>"><%= request.subcategory.name %></a></p>
 		                        <p class="yb-item-date">
 		                            <span>by <a href="<%= user_items_path(request.user.username, request.user) %>"><%= request.user.name %></a></span>
 		                            -

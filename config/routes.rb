@@ -5,6 +5,10 @@ Rails.application.routes.draw do
 
     mount Sidekiq::Web => '/admin/sidekiq/report'
 
+    root 'home#index'
+    get 'home/index'
+    get 'search/all', to:'home#search', as: 'search'
+
     get '/session', to: 'session#index', as: 'session'
     get '/session/profile', to: 'session#index', as: 'session_profile'
     get '/session/items', to: 'session#index', as: 'session_items'
@@ -110,9 +114,6 @@ Rails.application.routes.draw do
     get '/category/enc-dt-:uuid-:category_id-subcat-:id', to: 'subcategory#show', as: 'subcategory'
 
     post '/user/signup', to: 'user#signup', as: 'user_signup'
-
-  	root 'home#index'
-    get 'home/index'
 
     #ADMIN USERS ROUTES
 

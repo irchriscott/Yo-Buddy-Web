@@ -36,8 +36,8 @@
 			</ul>
 		</div>
 		<div class="yb-session-data">
-			<div class="yb-borrow-items">
-				<% if @following.count > 0 %>
+			<% if @following.count > 0 %>
+				<div class="yb-borrow-items">
 					<% @following.each do |user| %>
 						<div class="yb-borrow-item-single">
 							<div class="yb-image">
@@ -71,10 +71,10 @@
 							<% end %>
 						</div>
 					<% end %>
-				<% else %>
-					<p class="yb-error">NO FOLLOWING</p>
-				<% end %>
-			</div>
+				</div>
+			<% else %>
+				<p class="yb-error">NO FOLLOWING</p>
+			<% end %>
 		</div>
 	</div>
 </section>

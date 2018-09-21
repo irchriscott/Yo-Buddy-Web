@@ -36,8 +36,8 @@
 			</ul>
 		</div>
 		<div class="yb-session-data">
-			<div class="yb-borrow-items">
-				<% if @favourites.count > 0 %>
+			<% if @favourites.count > 0 %>
+				<div class="yb-borrow-items">
 					<% @favourites.each do |item| %>
 						<div class="yb-borrow-item-single" id="item-favourite-<%= item.id %>">
 							<div class="yb-borrow-status">
@@ -60,10 +60,10 @@
 							<script type="text/javascript">$("#fav-item-date-<%= item.id %>").setDate();$("#yb-favourite-remove-<%= item.id %>").removeFavourite();</script>
 						</div>
 					<% end %>
-				<% else %>
-					<p class="yb-error">NO FAVOURITE ITEMS</p>
-				<% end %>
-			</div>
+				</div>
+			<% else %>
+				<p class="yb-error">NO FAVOURITE ITEMS</p>
+			<% end %>
 		</div>
 	</div>
 </section>

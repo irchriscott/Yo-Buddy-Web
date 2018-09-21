@@ -43,4 +43,24 @@ class Item < ApplicationRecord
           return self.count - counts
         end
     end
+
+    def json
+        return {
+            "id" => self.id,
+            "name" => self.name,
+            "uuid" => self.uuid,
+            "category" => self.category.name,
+            "subcategory" => self.subcategory.name,
+            "user" => self.user.name,
+            "price" => self.price,
+            "currency" => self.currency,
+            "per" => self.per,
+            "location" => "#{self.user.town}, #{self.user.country_name}",
+            "url" => "/item/#{self.user.username}/enc-dt-#{self.uuid}-#{self.id.to_s}",
+            "likes" => self.item_like.count,
+            "borrows" => self.borrow_item_user.count,
+            "image" => self.item_image[0].image.url,
+            "created_at" => self.created_at,
+        }
+    end
 end

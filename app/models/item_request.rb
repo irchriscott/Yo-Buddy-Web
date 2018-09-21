@@ -36,4 +36,24 @@ class ItemRequest < ApplicationRecord
             return "green"
         end
     end
+
+    def json
+        return {
+            "id" => self.id,
+            "name" => self.title,
+            "uuid" => self.uuid,
+            "category" => self.category.name,
+            "subcategory" => self.subcategory.name,
+            "user" => self.user.name,
+            "min_price" => self.min_price,
+            "max_price" => self.max_price,
+            "currency" => self.currency,
+            "per" => self.per,
+            "location" => "#{self.user.town}, #{self.user.country_name}",
+            "url" => "/items/request/#{self.user.username}/enc-dt-#{self.uuid}-#{self.id.to_s}",
+            "likes" => self.item_request_like.count,
+            "image" => self.item_request_image[0].image.url,
+            "created_at" => self.created_at,
+        }
+    end
 end

@@ -36,8 +36,8 @@
 			</ul>
 		</div>
 		<div class="yb-session-data">
-			<div class="yb-borrow-items">
-				<% if @likes.count > 0 %>
+			<% if @likes.count > 0 %>
+				<div class="yb-borrow-items">
 					<% @likes.each do |item| %>
 						<div class="yb-borrow-item-single">
 							<div class="yb-image">
@@ -57,10 +57,10 @@
 							<script type="text/javascript">$("#like-item-date-<%= item.id %>").setDate();</script>
 						</div>
 					<% end %>
-				<% else %>
-					<p class="yb-error">NO LIKED ITEMS</p>
-				<% end %>
-			</div>
+				</div>
+			<% else %>
+				<p class="yb-error">NO LIKED ITEMS</p>
+			<% end %>
 		</div>
 	</div>
 </section>

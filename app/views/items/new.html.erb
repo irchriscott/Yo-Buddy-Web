@@ -22,12 +22,12 @@
 				<div class="yb-add-price">
 					<label>Price :</label>
 					<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true, autocomplete: "off" %>
-					<%= form.select(:currency, required: true) do -%>
+					<%= form.select(:currency, {required: true, class: "ui dropdown"}) do -%>
 						<% @currencies.each do |currency| %>
 							<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
 						<% end %>
 					<% end %>
-					<%= form.select(:per, required: true) do %>
+					<%= form.select(:per, {required: true, class: "ui dropdown"}) do %>
 						<% @per.each do |t| %>
 							<%= content_tag(:option, "Per #{t}", value: t) %>
 						<% end %>
@@ -58,7 +58,7 @@
 		$("#item_image").change(function(e){
 	        multipleImagesPreview(this, $("#yb-images-preview"));
 	    });
-
+	    
 	    filterSubcategories($("#item_category_id"), $("#item_subcategory_id"));
 
 	    $("#item_category_id").change(function(){

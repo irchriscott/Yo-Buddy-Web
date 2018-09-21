@@ -10,7 +10,7 @@ class ItemsController < ApplicationController
     before_action :check_active
 
     def index
-        @items = Item.all.order(created_at: :desc)
+        @items = Item.all.order(created_at: :desc).paginate(page: params[:page], per_page: 10)
     end
 
     def show

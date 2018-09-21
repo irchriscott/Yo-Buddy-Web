@@ -4,88 +4,89 @@
 		<div class="yb-messages-container">
 			<% @messages.each do |message| %>
 				<% if message.receiver_id == 0 and message.sender_id == 0 %>
-					
-					<div class="yb-message-admin">
-						<div class="yb-message-content">
-							<p class="yb-message-date" id="yb-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></p>
-							<p class="yb-message-text">
-								<% if message.admin_message == "new" %>
-									<% if message.borrow_item_user.user.id == session_user.id %>
-										Borrow Request Sent
+					<div class="yb-message-admin-container">
+						<div class="yb-message-admin">
+							<div class="yb-message-content">
+								<p class="yb-message-date" id="yb-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></p>
+								<p class="yb-message-text">
+									<% if message.admin_message == "new" %>
+										<% if message.borrow_item_user.user.id == session_user.id %>
+											Borrow Request Sent
+										<% else %>
+											Borrow Request Received
+										<% end %>
 									<% else %>
-										Borrow Request Received
+										<%= message.admin_message %>
 									<% end %>
-								<% else %>
-									<%= message.admin_message %>
-								<% end %>
-							</p>
+								</p>
+							</div>
 						</div>
 					</div>
 
 				<% elsif message.receiver_id == session_user.id %>
-					
-					<div class="yb-message-received">
-						<div class="yb-message-content">
-							<% if message.has_images? %>
-							<div class="yb-message-image" id="yb-open-images-galery-<%= message.id %>" data-id="<%= message.id %>">
-								<%= image_tag message.images[0].image.url, alt: message.message %>
-								<% if message.images.count > 1 %>
-									<div class="yb-message-images-count">
-										<p>+<%= message.images.count.to_i - 1 %></p>
-									</div>
-								<% end %>
-								<div id="yb-image-gallery-<%= message.id %>">
-									<% message.images.each do |image| %>
-									<a href="<%= image.image.url %>" title="Borrow Message Image"></a>
+					<div class="yb-message-received-container">
+						<div class="yb-message-received">
+							<div class="yb-message-content">
+								<% if message.has_images? %>
+								<div class="yb-message-image" id="yb-open-images-galery-<%= message.id %>" data-id="<%= message.id %>">
+									<%= image_tag message.images[0].image.url, alt: message.message %>
+									<% if message.images.count > 1 %>
+										<div class="yb-message-images-count">
+											<p>+<%= message.images.count.to_i - 1 %></p>
+										</div>
 									<% end %>
+									<div id="yb-image-gallery-<%= message.id %>">
+										<% message.images.each do |image| %>
+										<a href="<%= image.image.url %>" title="Borrow Message Image"></a>
+										<% end %>
+									</div>
 								</div>
+								<% else %>
+								<p class="yb-message-text"><%= raw message.message %></p>
+								<% end %>
+								<p class="yb-message-date" id="yb-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></p>
 							</div>
-							<% else %>
-							<p class="yb-message-text"><%= raw message.message %></p>
-							<% end %>
-							<p class="yb-message-date" id="yb-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></p>
-						</div>
-						<div class="yb-message-user-image">
-							<% if message.sender.image? %>
-								<%= image_tag message.sender.image.url, alt: message.sender.username %>
-							<% else -%>
-								<%= image_tag "/assets/default.jpg", alt: message.sender.username %>
-							<% end -%>
+							<div class="yb-message-user-image">
+								<% if message.sender.image? %>
+									<%= image_tag message.sender.image.url, alt: message.sender.username %>
+								<% else -%>
+									<%= image_tag "/assets/default.jpg", alt: message.sender.username %>
+								<% end -%>
+							</div>
 						</div>
 					</div>
-
 				<% elsif message.sender_id == session_user.id %> 
-					
-					<div class="yb-message-sent">
-						<div class="yb-message-content">
-							<% if message.has_images? %>
-							<div class="yb-message-image" id="yb-open-images-galery-<%= message.id %>" data-id="<%= message.id %>">
-								<%= image_tag message.images[0].image.url, alt: message.message %>
-								<% if message.images.count > 1 %>
-									<div class="yb-message-images-count">
-										<p>+<%= message.images.count.to_i - 1 %></p>
-									</div>
-								<% end %>
-								<div id="yb-image-gallery-<%= message.id %>">
-									<% message.images.each do |image| %>
-									<a href="<%= image.image.url %>" title="Borrow Message Image"></a>
+					<div class="yb-message-sent-container">
+						<div class="yb-message-sent">
+							<div class="yb-message-content">
+								<% if message.has_images? %>
+								<div class="yb-message-image" id="yb-open-images-galery-<%= message.id %>" data-id="<%= message.id %>">
+									<%= image_tag message.images[0].image.url, alt: message.message %>
+									<% if message.images.count > 1 %>
+										<div class="yb-message-images-count">
+											<p>+<%= message.images.count.to_i - 1 %></p>
+										</div>
 									<% end %>
+									<div id="yb-image-gallery-<%= message.id %>">
+										<% message.images.each do |image| %>
+										<a href="<%= image.image.url %>" title="Borrow Message Image"></a>
+										<% end %>
+									</div>
 								</div>
+								<% else %>
+								<p class="yb-message-text"><%= raw message.message %></p>
+								<% end %>
+								<p class="yb-message-date" id="yb-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></p>
 							</div>
-							<% else %>
-							<p class="yb-message-text"><%= raw message.message %></p>
-							<% end %>
-							<p class="yb-message-date" id="yb-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></p>
-						</div>
-						<div class="yb-message-user-image">
-							<% if message.sender.image? %>
-								<%= image_tag message.sender.image.url, alt: message.sender.username %>
-							<% else -%>
-								<%= image_tag "/assets/default.jpg", alt: message.sender.username %>
-							<% end -%>
+							<div class="yb-message-user-image">
+								<% if message.sender.image? %>
+									<%= image_tag message.sender.image.url, alt: message.sender.username %>
+								<% else -%>
+									<%= image_tag "/assets/default.jpg", alt: message.sender.username %>
+								<% end -%>
+							</div>
 						</div>
 					</div>
-
 				<% end %>
 				<script type="text/javascript">$("#yb-message-date-<%= message.id %>").setDate();$("#yb-open-images-galery-<%= message.id %>").openImageGallery();$("#yb-image-gallery-<%= message.id %>").imagesGallery();</script>
 			<% end %>
