@@ -196,6 +196,58 @@ class SessionController < ApplicationController
 		end
 	end
 
+	def notifications_all
+		@notifications = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
+		@notifications.each do |notif|
+			if !notif.is_read? then
+				notif.is_read = true
+				notif.save
+			end
+		end
+	end
+
+	def notifications_item
+		@notifications = Array.new
+		notifs = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
+		notifs.each do |notif|
+			if notif.notification["category"] == "item" then @notifications.push(notif) end
+		end
+		@notifications.each do |notif|
+			if !notif.is_read? then
+				notif.is_read = true
+				notif.save
+			end
+		end
+	end
+
+	def notifications_borrow
+		@notifications = Array.new
+		notifs = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
+		notifs.each do |notif|
+			if notif.notification["category"] == "borrow" then @notifications.push(notif) end
+		end
+		@notifications.each do |notif|
+			if !notif.is_read? then
+				notif.is_read = true
+				notif.save
+			end
+		end
+	end
+
+	def notifications_reminder
+		@notifications = Array.new
+		notifs = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
+		notifs.each do |notif|
+			if notif.notification["category"] == "reminder" then @notifications.push(notif) end
+		end
+		@notifications.each do |notif|
+			if !notif.is_read? then
+				notif.is_read = true
+				notif.save
+			end
+		end
+	end
+
 	private def set_data_items_counts
 		items = Item.where(user_id: session[:user_id])
 		@borrowed_count = 0

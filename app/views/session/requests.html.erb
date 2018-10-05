@@ -66,7 +66,7 @@
 		                            <% end %>
 		                        </div>
 		                        <div class="yb-item-about">
-		                            <h3><a href="<%= item_request_path(request.user.username, request.request.uuid, request) %>"><%= request.title %></a></h3>
+		                            <h3><a href="<%= item_request_path(request.user.username, request.uuid, request) %>"><%= request.title %></a></h3>
 		                            <p class="yb-item-category"><a href="<%= category_path(request.category.uuid, request.category) %>"><%= request.category.name %></a> - <a href="<%= subcategory_path(request.category.uuid, request.category, request.subcategory) %>"><%= request.subcategory.name %></a></p>
 		                            <p class="yb-item-date">
 		                                <span>by <a href="<%= user_items_path(request.user.username, request.user) %>"><%= request.user.name %></a></span>
@@ -75,7 +75,7 @@
 		                            </p>
 		                        </div>
 		                        <% if is_logged_in? %>
-			                        <%= form_for(:like, url: item_request_like_path(request), html:{id: "like_request_form_#{request.id}", class: "like-request-form", item_request: request.id, "data-liker": session_user.username, "data-owner": request.user.id}) do |form| %>
+			                        <%= form_for(:like, url: item_request_like_path(request), html:{id: "like_request_form_#{request.id}", class: "like-request-form", item_request: request.id, "data-liker": session_user.username, "data-owner": request.user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_request_url(request.user.username, request.uuid, request)}) do |form| %>
 			                        	<%= form.hidden_field(:item_request_id, value: request.id, id:"item_item_id_#{request.id}") %>
 				                        <% if request.likes.include?(session_user.id) %>
 							                <div class="yb-item-like like-item-request liked" data-item="<%= request.id %>">

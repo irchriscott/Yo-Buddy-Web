@@ -1,0 +1,43 @@
+<section class="yb-header-else-main">
+	<div class="yb-header-else-container">
+		<h3 style="padding:0 !important; margin:0 !important;">Search Results</h3>
+	</div>
+</section>
+<section class="yb-jumbotron" style="flex-direction: column;">
+	<h1 style="margin-top: 60px;">Search Results For</h1>
+	<p>" <%= @query %> "</p>
+</section>
+<section class="yb-session-main" style="width: calc(55% - 30px); margin-bottom: 20px;">
+	<div class="yb-session-container" style="width: 100%; margin-top: -60px;">
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", search_items_path(q: @query) %></li>
+				<li class="active"><%= link_to "Item Requests", search_requests_path(q: @query) %></li>
+				<li><%= link_to "Users", search_users_path(q: @query) %></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-search-results-all">
+				<% if @requests.count > 0 %>
+					<% @requests.each do |request| %>
+						<div class="yb-search-data" data-url="<%= item_request_path(request.user.username, request.uuid, request) %>" data-name="<%= request.title %>">
+			                <div class="yb-search-data-image">
+			                    <img src="<%= request.item_request_image[0].image.url %>">
+			                </div>
+			                <div class="yb-search-data-description">
+			                    <h4><%= request.title %></h4>
+			                    <p class="yb-price"><i class="icon ion-ios-pricetags-outline"></i> <span id="yb-min-price-<%= request.id %>" data-number="<%= request.min_price %>"></span> - <span id="yb-max-price-<%= request.id %>" data-number="<%= request.max_price %>"></span> <%= request.currency %> / <%= request.per %></p>
+			                    <p class="yb-location"><i class="icon ion-ios-location-outline"></i> <%= request.user.town %>, <%= request.user.country_name %> - <%= request.category.name %>, <%= request.subcategory.name %></p>
+			                    <p class="yb-date">By <%= request.user.name %> - <span id="yb-date-<%= request.id %>" data-date="<%= request.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+			                </div>
+			                <script type="text/javascript">$(document).ready(function(){$("#yb-date-<%= request.id %>").setDate(); $("#yb-min-price-<%= request.id %>").setNumber(); $("#yb-max-price-<%= request.id %>").setNumber()})</script>
+			            </div>
+					<% end %>
+					<div style="height: 20px; width: 100%; float: left;"></div>
+				<% else %>
+					<p class="yb-error">NO RESULTS FOUND FOR ITEM REQUESTS</p>
+				<% end %>
+			</div>
+		</div>
+	</div>
+</section>

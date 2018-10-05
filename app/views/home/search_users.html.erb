@@ -1,0 +1,46 @@
+<section class="yb-header-else-main">
+	<div class="yb-header-else-container">
+		<h3 style="padding:0 !important; margin:0 !important;">Search Results</h3>
+	</div>
+</section>
+<section class="yb-jumbotron" style="flex-direction: column;">
+	<h1 style="margin-top: 60px;">Search Results For</h1>
+	<p>" <%= @query %> "</p>
+</section>
+<section class="yb-session-main" style="width: calc(55% - 30px); margin-bottom: 20px;">
+	<div class="yb-session-container" style="width: 100%; margin-top: -60px;">
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "Items", search_items_path(q: @query) %></li>
+				<li><%= link_to "Item Requests", search_requests_path(q: @query) %></li>
+				<li class="active"><%= link_to "Users", search_users_path(q: @query) %></li>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-search-results-all">
+				<% if @users.count > 0 -%>
+					<% @users.each do |user| -%>
+						<div class="yb-search-data" data-url="<%= user_items_path(user.username, user) %>" data-name="<%= user.name %>">
+			                <div class="yb-search-data-image">
+			                    <% if user.image? %>
+						            <%= image_tag user.image.url, alt: user.username %>
+						        <% else %>
+						            <%= image_tag "/assets/default.jpg", alt: user.username %>
+						        <% end %>
+			                </div>
+			                <div class="yb-search-data-description">
+			                    <h4><%= user.name %></h4>
+			                    <p class="yb-location"><i class="icon ion-ios-location-outline"></i> <%= user.town %>, <%= user.country_name %></p>
+			                    <p class="yb-date">@<%= user.username %> - <span id="yb-user-date-<%= user.id %>" data-date="<%= user.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+			                </div>
+			                <script type="text/javascript">$(document).ready(function(){$("#yb-user-date-<%= user.id %>").setDate()})</script>
+			            </div>
+					<% end %>
+					<div style="height: 20px; width: 100%; float: left;"></div>
+				<% else -%>
+					<p class="yb-error" style="padding: 40px;">NO RESULTS FOUND FOR USERS</p>
+				<% end -%>
+			</div>
+		</div>
+	</div>
+</section>

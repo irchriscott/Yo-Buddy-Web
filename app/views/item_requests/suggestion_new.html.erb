@@ -2,9 +2,9 @@
 	<div class="yb-add-item">
 		<h2>Add New Request Suggestion Item</h2>
 		<% if @active == true %>
-			<%= form_for @suggestion, url: item_request_create_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request)} do |form| %>
+			<%= form_for @suggestion, url: item_request_create_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request), "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_request_url(@request.user.username, @request.uuid, @request)} do |form| %>
 				<label>Item Name :</label>
-				<%= form.text_field :name, placeholder: 'Enter Item Name', required: true %>
+				<%= form.text_field :name, placeholder: 'Enter Item Name', required: true, autocomplete: "off" %>
 				<div class="yb-add-item-category">
 					<label>Item Category & Subcategory :</label>
 					<%= form.select(:category_id, required: true, disabled: true) do -%>

@@ -1,0 +1,22 @@
+<section class="yb-header-else-main">
+	<div class="yb-header-else-container">
+		<h3 style="padding:0 !important; margin:0 !important;">Search Results</h3>
+	</div>
+</section>
+<section class="yb-jumbotron" style="flex-direction: column;">
+	<h1 style="margin-top: 60px;">Search Results For</h1>
+	<p>" <%= @query %> "</p>
+</section>
+<section class="yb-session-main" style="width: calc(55% - 30px);">
+	<div class="yb-session-container" style="width: 100%; margin-top: -60px;">
+		<div class="yb-session-menu">
+			<ul>
+				<li class="active"><%= link_to "All", search_path %></li>
+				<li><%= link_to "Items", search_items_path %></li>
+				<li><%= link_to "Item Requests", search_requests_path %></li>
+				<li><%= link_to "Users", search_users_path %></li>
+			</ul>
+		</div>
+		<div class="yb-session-data"></div>
+	</div>
+</section>

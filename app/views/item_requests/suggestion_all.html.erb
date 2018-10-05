@@ -7,7 +7,7 @@
 						<div class="yb-suggestion-menu">
 							<span id="yb-open-suggestion-menu-<%= suggestion.id %>" data-id="<%= suggestion.id %>"><i class="icon ion-android-more-horizontal"></i></span>
 							<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-<%= suggestion.id %>">
-								<ul id="yb-suggestion-status-menu-<%= suggestion.id %>" data-id="<%= suggestion.id %>" data-url="<%= item_request_suggestions_path(@request) %>" data-owner="<%= suggestion.item.user.id %>" data-user="<%= suggestion.item_request.user.username %>">
+								<ul id="yb-suggestion-status-menu-<%= suggestion.id %>" data-id="<%= suggestion.id %>" data-url="<%= item_request_suggestions_path(@request) %>" data-owner="<%= suggestion.item.user.id %>" data-user="<%= suggestion.item_request.user.username %>" data-not-icon="<%= session_user.profile_image %>" data-not-user="<%= session_user.name %>" data-not-url="<%= item_request_url(@request.user.username, @request.uuid, @request) %>">
 									<% if session_user.id == @request.user.id -%>
 									<% if suggestion.status == @sug_status[0] -%>
 									<li><a href="<%= item_request_suggestion_update_status_path(suggestion.item_request, suggestion) %>?status=1" class="yb-suggestion-status" data-status="1"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Accept</span></a></li>

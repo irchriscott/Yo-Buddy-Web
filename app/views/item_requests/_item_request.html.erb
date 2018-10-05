@@ -1,0 +1,56 @@
+<div class="yb-item-main">
+	<div class="yb-item-price">
+		<span><i class="icon ion-ios-pricetags"></i></span>
+		<span><span id="yb-item-price-min-<%= item_request.id %>" data-number="<%= item_request.min_price %>"></span> - <span id="yb-item-price-max-<%= item_request.id %>" data-number="<%= item_request.max_price %>"></span> <%= item_request.currency %> / <%= item_request.per %></span>
+	</div>
+	<div class="yb-item-image">
+		<%= image_tag item_request.item_request_image[0].image.url, alt: item_request.title %>
+		<% if item_request.item_request_image.count > 1 %>
+		    <div class="yb-item-images-count" id="yb-show-request-gallery-<%= item_request.id %>" data-id="<%= item_request.id %>">
+		        <p>+<%= item_request.item_request_image.count.to_i - 1 %></p>
+		    </div>
+		    <div id="yb-image-gallery-<%= item_request.id %>" style="display: none !important;">
+		        <% item_request.item_request_image.each do |image| %>
+		            <a href="<%= image.image.url %>" title="<%= item_request.title %>"></a>
+		        <% end %>
+		    </div>
+		<% end %>
+	</div>
+	<div class="yb-item-description">
+		<div class="yb-item-user-image">
+		    <% if item_request.user.image? %>
+		        <%= image_tag item_request.user.image.url, alt: item_request.user.username %>
+		    <% else %>
+		        <%= image_tag "/assets/default.jpg", alt: item_request.user.username %>
+		    <% end %>
+		</div>
+		<div class="yb-item-about">
+		    <h3><a href="<%= item_request_path(item_request.user.username, item_request.uuid, item_request) %>"><%= item_request.title %></a></h3>
+		    <p class="yb-item-category"><a href="<%= category_path(item_request.category.uuid, item_request.category, activate: item_request.category.id) %>"><%= item_request.category.name %></a> - <a href="<%= subcategory_path(item_request.category.uuid, item_request.category, item_request.subcategory) %>"><%= item_request.subcategory.name %></a></p>
+		    <p class="yb-item-date">
+		        <span>by <a href="<%= user_items_path(item_request.user.username, item_request.user) %>"><%= item_request.user.name %></a></span>
+		        -
+		        <span id="yb-item-datetime-<%= item_request.id %>" data-date="<%= item_request.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
+		    </p>
+		</div>
+		<% if is_logged_in? %>
+			<%= form_for(:like, url: item_request_like_path(item_request), html:{id: "like_request_form_#{item_request.id}", class: "like-request-form", item_request: item_request.id, "data-liker": session_user.username, "data-owner": item_request.user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_request_url(item_request.user.username, item_request.uuid, item_request)}) do |form| %>
+			    <%= form.hidden_field(:item_request_id, value: item_request.id, id:"item_item_id_#{item_request.id}") %>
+				<% if item_request.likes.include?(session_user.id) %>
+					<div class="yb-item-like like-item-request liked" data-item="<%= item_request.id %>">
+						<span class="like-<%= item_request.id %>"><i class="icon ion-ios-heart liked"></i></span>
+					</div>
+				<% else %>
+					<div class="yb-item-like like-item-request" data-item="<%= item_request.id %>">
+						<span class="like-<%= item_request.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+					</div>
+				<% end %>
+			<% end %>
+		<% else %>
+			<div class="yb-item-like" data-item="<%= item_request.id %>">
+				<span class="like-<%= item_request.id %>"><i class="icon ion-ios-heart-outline"></i></span>
+			</div>
+		<% end -%>
+	</div>
+	<script type="text/javascript">$("#yb-item-datetime-<%= item_request.id %>").setDate();$("#yb-item-price-min-<%= item_request.id %>").setNumber();$("#yb-item-price-max-<%= item_request.id %>").setNumber();$("#yb-show-request-gallery-<%= item_request.id %>").openImageGallery(); $("#yb-image-gallery-<%= item_request.id %>").imagesGallery();</script>
+</div>

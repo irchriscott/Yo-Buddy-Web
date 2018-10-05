@@ -292,17 +292,17 @@ class ItemsController < ApplicationController
 
         if @active == true then
             render json: {"type" => "like", "text" => "Item Liked !!!"}
-            # if check_like == nil then
-            #     if @like.save then
-            #         Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
-            #         render json: {"type" => "like", "text" => "Item Liked !!!"}
-            #     else
-            #         render json: {"type" => "error", "error" => @like.errors.full_messages}
-            #     end
-            # else
-            #     check_like.destroy
-            #     render json: {"type" => "dislike", "text" => "Item Disliked !!!"}
-            # end
+            if check_like == nil then
+                if @like.save then
+                    Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
+                    render json: {"type" => "like", "text" => "Item Liked !!!"}
+                else
+                    render json: {"type" => "error", "error" => @like.errors.full_messages}
+                end
+            else
+                check_like.destroy
+                render json: {"type" => "dislike", "text" => "Item Disliked !!!"}
+            end
         else
             render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end

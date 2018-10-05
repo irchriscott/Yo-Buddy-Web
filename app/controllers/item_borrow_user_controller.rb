@@ -86,9 +86,9 @@ class ItemBorrowUserController < ApplicationController
                     if item.user.id != session[:user_id] then
                         if @borrow.save then
                             save_message("new", @borrow)
-                            Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_borrow", ressource_id: item.id, is_read: false}])
+                            Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_borrow", ressource_id: @borrow.id, is_read: false}])
                             BorrowUserMailer.with(borrow: @borrow).create.deliver_now
-                            render json: {"type" => "success", "text" => "Item Borrow Request Sent !!!"}
+                            render json: {"type" => "success", "text" => "Item Borrow Request Sent !!!", "url" => item_borrow_url(@borrow.uuid, @borrow.item, @borrow)}
                         else
                             render json: {"type" => "error", "text" => @borrow.errors}
                         end

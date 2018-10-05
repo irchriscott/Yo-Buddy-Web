@@ -105,7 +105,7 @@ class UserController < ApplicationController
                     follow = UserFollow.new(params[:follow].permit(:following_id))
                     follow.user_id = (is_logged_in?) ? session[:user_id] : params[:follow][:session]
                     follow.save
-                    Notification.create([{user_from_id: user_id, user_to_id: params[:follow][:following_id] , ressource: "user_follow", ressource_id: borrow.id, is_read: false}])
+                    Notification.create([{user_from_id: user_id, user_to_id: params[:follow][:following_id] , ressource: "user_follow", ressource_id: user_id, is_read: false}])
                     render json: {"type" => "follow", "text" => "User Followed !!!"}
                 else
                     check_follow.destroy

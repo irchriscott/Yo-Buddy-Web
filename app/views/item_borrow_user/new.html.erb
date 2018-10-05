@@ -3,7 +3,7 @@
 		<% if @item.is_available? %>
 			<h2>Borrow Item</h2>
 			<% if @active == true %>
-				<%= form_for :item_borrow, url: {action: "create"}, html: {id: "yb-borrow-item", "data-user": @item.user.id} do |form| %>
+				<%= form_for :item_borrow, url: {action: "create"}, html: {id: "yb-borrow-item", "data-user": @item.user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name} do |form| %>
 					<%= form.hidden_field :item_id, value: @item.id %>
 					<div class="yb-add-price">
 						<label>Propose Price :</label>

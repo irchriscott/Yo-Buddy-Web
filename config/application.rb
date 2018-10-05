@@ -25,6 +25,8 @@ module Buddyweb
 		      'Access-Control-Request-Method' => %w{GET POST PUT DELETE PATCH}.join(",")
 		  }
 
+      config.exceptions_app = self.routes
+
 
       config.action_mailer.default_url_options = { host: '127.0.0.1:3000' }
       config.action_mailer.asset_host = '127.0.0.1:3000'

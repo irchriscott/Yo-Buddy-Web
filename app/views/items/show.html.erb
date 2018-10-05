@@ -50,7 +50,7 @@
 							<span><i class="icon ion-person-add"></i></span>
 						<% end %>
 					</div>
-					<%= form_for :follow, url: user_follow_path(@item.user), html:{id: "yb-user-follow-form-#{@item.user.id}", "data-user": session_user.username, "data-id": @item.user.id} do |form| %>
+					<%= form_for :follow, url: user_follow_path(@item.user), html:{id: "yb-user-follow-form-#{@item.user.id}", "data-user": session_user.username, "data-id": @item.user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": user_items_url(session_user.username, session_user.id)} do |form| %>
 						<%= form.hidden_field :following_id, value: @item.user.id %>
 					<% end %>
 					<script type="text/javascript">$("#yb-user-follow-container-<%= @item.user.id %>").followUser(); $("#yb-user-follow-form-<%= @item.user.id %>").followUserEvent();</script>
@@ -72,7 +72,7 @@
 			<ul class="yb-item-data-list">
 				<li>
 					<% if is_logged_in? %>
-						<%= form_for(:like, url: like_path(@item), html:{id: "like_form_#{@item.id}", class: "like-form", item: @item.id, "data-liker": session_user.username, "data-owner": @item.user.id}) do |form| %>
+						<%= form_for(:like, url: like_path(@item), html:{id: "like_form_#{@item.id}", class: "like-form", item: @item.id, "data-liker": session_user.username, "data-owner": @item.user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_show_url(@item.user.username, @item.uuid, @item)}) do |form| %>
 		                    <%= form.hidden_field(:item_id, value: @item.id, id:"item_item_id_#{@item.id}") %>
 							<p class="like-item" data-item="<%= @item.id %>">
 								<% if @item.likes.include?(session_user.id) %>

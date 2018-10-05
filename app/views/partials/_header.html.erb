@@ -58,8 +58,10 @@
 					</div>
 				</div>
 				<div class="yb-header-menu">
-					<span><i class="icon ion-ios-bell-outline"></i></span>
-					<span id="yb-session-notifications" class="yb-header-tag" <% if session_user.notification_count <= 0 %> style="display: none;" <% end -%> ><%= session_user.notification_count %></span>
+					<a href="<%= notifications_all_path %>">
+						<span><i class="icon ion-ios-bell-outline"></i></span>
+					</a>
+					<span id="yb-session-notifications-<%= session_user.id %>" class="yb-header-tag yb-session-notifications-<%= session_user.id %>" <% if session_user.notification_count <= 0 %> style="display: none;" <% end -%> ><%= session_user.notification_count %></span>
 				</div>
 			<% else %>
 				<div class="yb-header-sign-in">

@@ -1,0 +1,55 @@
+<section class="yb-header-else-main">
+	<div class="yb-header-else-container" style="padding: 0 !important; ">
+		<div class="yb-session-menu yb-search-menu" style="width: 55%; margin-left:142px;">
+			<ul>
+				<li><%= link_to "All", notifications_all_path %></li>
+				<li><%= link_to "Items / Requests", notifications_item_path %></li>
+				<li><%= link_to "Borrows", notifications_borrow_path %></li>
+				<li class="active"><%= link_to "Reminders", notifications_reminder_path %></li>
+				<% if session_user.is_private? %>
+					<li><%= link_to "Keys", "#" %></li>
+				<% end %>
+			</ul>
+		</div>
+	</div>
+</section>
+<section class="yb-jumbotron">
+	<h1 style="text-transform: uppercase;">Notifications - Reminders</h1>
+</section>
+<section class="yb-session-main" style="width: calc(55% - 30px); margin-bottom: 20px;">
+	<div class="yb-session-container" style="width: 100%; margin-top: -60px;">
+		<div class="yb-session-menu">
+			<ul>
+				<li><%= link_to "All", notifications_all_path %></li>
+				<li><%= link_to "Items / Requests", notifications_item_path %></li>
+				<li><%= link_to "Borrows", notifications_borrow_path %></li>
+				<li class="active"><%= link_to "Reminders", notifications_reminder_path %></li>
+				<% if session_user.is_private? %>
+					<li><%= link_to "Keys", "#" %></li>
+				<% end %>
+			</ul>
+		</div>
+		<div class="yb-session-data">
+			<div class="yb-search-results-all">
+				<% if @notifications.count > 0 %>
+					<% @notifications.each do |notif| -%>
+						<div class="yb-search-data" data-url="<%= notif.notification['url'] %>" data-name="<%= notif.notification['from'] %>">
+			                <div class="yb-search-data-image">
+						        <%= image_tag notif.notification['image'], alt: notif.notification['from'] %>
+			                </div>
+			                <div class="yb-search-data-description">
+			                    <h4><%= notif.notification['from'] %></h4>
+			                    <p class="yb-location" style="white-space: normal !important;"><i class="icon <%= notif.notification['icon'] %>"></i> <%= notif.notification['message'] %></p>
+			                    <p class="yb-date"><% if !notif.is_read? %><span class="yb-notification-is-not-read"></span> <% end %> @<%= notif.user_from.username %> - <span id="yb-notif-date-<%= notif.id %>" data-date="<%= notif.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+			                </div>
+			                <script type="text/javascript">$(document).ready(function(){$("#yb-notif-date-<%= notif.id %>").setDate()})</script>
+			            </div>
+					<% end -%>
+					<div style="height: 20px; width: 100%; float: left;"></div>
+				<% else -%>
+					<p class="yb-error" style="padding: 40px;">NO NOTIFICATIONS</p>
+				<% end -%>
+			</div>
+		</div>
+	</div>
+</section>

@@ -5,9 +5,16 @@ Rails.application.routes.draw do
 
     mount Sidekiq::Web => '/admin/sidekiq/report'
 
+    get 'error/404', to: 'error#not_found_error', as: 'not_found_error', :via => :all
+    get 'error/500', to: 'error#internal_server_error', as: 'internal_server_error', :via => :all
+
     root 'home#index'
     get 'home/index'
     get 'search/all', to:'home#search', as: 'search'
+    get 'search/items', to: 'home#search_items', as: 'search_items'
+    get 'search/requests', to: 'home#search_requests', as: 'search_requests'
+    get 'search/users', to: 'home#search_users', as: 'search_users'
+    post 'notification/send', to: 'home#notification_getway', as: 'notification_getway'
 
     get '/session', to: 'session#index', as: 'session'
     get '/session/profile', to: 'session#index', as: 'session_profile'
@@ -27,6 +34,10 @@ Rails.application.routes.draw do
     get '/session/followers', to: 'session#followers', as: 'session_followers'
     get '/session/following', to: 'session#following', as: 'session_following'
     get '/session/requests', to: 'session#requests', as: 'session_requests'
+    get '/notifications/all', to: 'session#notifications_all', as: 'notifications_all'
+    get '/notifications/items-requests', to:'session#notifications_item', as: 'notifications_item'
+    get '/notifications/borrow', to: 'session#notifications_borrow', as: 'notifications_borrow'
+    get '/notifications/reminder', to: 'session#notifications_reminder', as: 'notifications_reminder'
 
     get '/session/report/:ressource_id/get', to: 'session#report_new', as: 'report_new'
     post '/session/report/post', to: 'session#report_create', as: 'report_create'

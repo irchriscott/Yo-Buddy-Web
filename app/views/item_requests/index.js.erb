@@ -1,0 +1,6 @@
+$('#yb-item-request-list').append('<%= j render(@requests) %>');
+<% if @requests.next_page %>
+	$('.pagination').replaceWith('<%= j will_paginate(@requests) %>');
+<% else %>
+	$('.pagination').remove();
+<% end %>

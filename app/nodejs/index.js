@@ -1,18 +1,49 @@
-const http = require('http').createServer()
-const io = require('socket.io')(http);
+const express = require('express');
+const webpush = require('web-push');
+const parser = require('body-parser');
+const path = require('path');
+
+//Initialize Values
+
+let likes = [];
+let users = [];
 
 const port = process.env.port || 5000;
 
-let likes = [];
+//Push Notification
 
-http.listen(port, function(){
-	console.log("Running at Port " + port);
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io').listen(server);
+
+app.use(parser.json());
+
+const publicVapidKey = 'BI3v4icYrq4C81vp-KmViHia0hQJ2QB-t4k_z32zyo_cRE-Fcd4EmYHFEPnEvNbbOAXGQQTObSOGiKpmAbqJMLg';
+const privateVapidKey = 'zhAd5Po58hcUg15rtNXdPSKGbQxd3amOiSNrizNCWj8';
+
+webpush.setVapidDetails('mailto:irchristianscott@gmail.com', publicVapidKey, privateVapidKey);
+
+server.listen(port, () => console.log("Running at Port " + port));
+
+app.post('/notification/subscribe', (request, response) => {
+	const subscription = request.body.subscription
+	response.status(201).json({})
+
+	const payload = JSON.stringify(request.body.data);
+	webpush.sendNotification(subscription, payload).catch(error => console.error(error));
 });
+
+//WebSockets
 
 io.on("connection", function(socket){
 
 	socket.on("comment", function(comment){
 		io.emit("getComment", comment)
+	});
+
+	socket.on("connected", function(user){
+		users.push(user);
+		socket.emit("getconnected", users);
 	});
 
 	socket.on("like", function(like){
@@ -51,6 +82,10 @@ io.on("connection", function(socket){
 
 	socket.on("updateSuggestion", function(status){
 		io.emit("getSuggestionUpdate", status);
+	});
+
+	socket.on("notify", function(data){
+		io.emit("getNotify", data);
 	});
 });
 

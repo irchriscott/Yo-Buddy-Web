@@ -28,7 +28,7 @@
 					<a class="yb-edit-user-link" style="background: var(--gray);"><span><i class="icon ion-person-add" style="color: #FFF;"></i></span> Follow</a>
 				<% end %>
 			</div>
-			<%= form_for :follow, url: user_follow_path(@user), html:{id: "yb-user-follow-form-user", "data-user": session_user.username, "data-id": @user.id} do |form| %>
+			<%= form_for :follow, url: user_follow_path(@user), html:{id: "yb-user-follow-form-user", "data-user": session_user.username, "data-id": @user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": user_items_url(session_user.username, session_user.id)} do |form| %>
 				<%= form.hidden_field :following_id, value: @user.id %>
 			<% end %>
 		<% end %>

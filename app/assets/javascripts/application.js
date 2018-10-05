@@ -9,6 +9,62 @@ const socket = io("127.0.0.1:5000");
 let sessionID = null;
 let sessionUsername = null;
 let sessionName = null;
+let notificationURL = '/notification/send';
+const publicVapidKey = 'BI3v4icYrq4C81vp-KmViHia0hQJ2QB-t4k_z32zyo_cRE-Fcd4EmYHFEPnEvNbbOAXGQQTObSOGiKpmAbqJMLg';
+
+//SW
+
+function pushNotification(title, bod, icon, url){
+    if(navigator.serviceWorker){
+        registerSW(title, bod, icon, url).catch((error) => { console.error(error) })
+    }
+}
+
+navigator.serviceWorker.addEventListener('message', function(event){
+    console.log(event.data.message);
+});
+
+async function registerSW(title, bod, icon, url){
+    console.log('Registering Service Worker ...');
+    const register = await navigator.serviceWorker.register('/sw.js', { scope: '*' });
+    console.log('Service Worker Registered !!!');
+
+    const subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+    });
+
+    let body = JSON.stringify({
+            "subscription": subscription,
+            "icon": icon,
+            "title": title,
+            "body": bod,
+            "url": url
+        });
+
+    let notification = await fetch(notificationURL, {
+        method: 'POST',
+        body: body,
+        headers: { 'content-type':'application/json' }
+    }).then(response => response.json());
+}
+
+
+function urlBase64ToUint8Array(base64String){
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+                    .replace(/\-/g, '+')
+                    .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for(let i = 0; i < rawData.length; i++){
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+}
 
 $(function() {
 
@@ -190,6 +246,8 @@ $(function() {
         }
     });
 
+    $(".yb-search-results-all .yb-search-data").click(function(){window.location = $(this).attr("data-url");});
+
     $("#yb-show-session-menu").showMenu();
     $("#item_date").setDate();
     $("#item_price").setNumber();
@@ -289,11 +347,14 @@ $(function() {
 
     $("#new_comment").postItemComment();
 
+    socket.on("getNotify", function(data){
+        if(sessionID == data.user) pushNotification(data.title, data.body, data.icon, data.url)
+    });
+
     socket.on("getNotification", function(owner){
         if(sessionID == owner){
-            var contNot = $("body").find("#yb-session-notifications");
-            contNot.fadeIn();
-            contNot.text(parseInt(contNot.text()) + 1);
+            var notCont = $("body").find(".yb-session-notifications-" + owner);
+            notCont.text(parseInt(notCont.text()) + 1).show();
         }
     });
 
@@ -346,7 +407,6 @@ $(function() {
     });
 
     socket.on("getLike", function(like){
-        console.log(like);
         var container = $("body").find(".like-sum-" + like.item);
         var sum = parseInt(container.attr("data-number"));
         if(like.type == "like"){
@@ -492,6 +552,8 @@ $(function() {
             }
         }
     });
+
+    
 
     $(window).scroll(function(e){
         if($(this).scrollTop() > 5.454545497894287){
@@ -833,6 +895,10 @@ jQuery.fn.followUserEvent = function(){
         var user = $(this).attr("data-user");
         var id = $(this).attr("data-id");
         var data = new FormData($(this)[0]);
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+        var notURL = $(this).attr("data-not-url");
+
         $.ajax({
             type: "POST",
             url: url,
@@ -844,6 +910,7 @@ jQuery.fn.followUserEvent = function(){
                     $("body").find("#yb-user-follow-container-" + id).html('<span><i class="icon ion-person followed"></i></span>');
                     socket.emit("followUser", {"id": id, "user": user, "type": response.type});
                     socket.emit("setNotification", user);
+                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has started following you.", "icon": notIcon, "url": notURL});
                     $("#yb-user-follow-container-user").html('<a class="yb-edit-user-link" style="background: lightgreen;"><span><i class="icon ion-checkmark" style="color: #FFF;"></i></span> Follow</a>');
                     showSuccessMessage("success", response.text);
                 } else if(response.type == "unfollow"){
@@ -890,6 +957,11 @@ jQuery.fn.likeItemEvent = function(){
         var liker = $(this).attr("data-liker");
         var user = $(this).attr("data-owner");
         var data = new FormData($(this)[0]);
+
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+        var notURL = $(this).attr("data-not-url");
+
         jQuery.ajax({
             type: "post",
             url: url,
@@ -901,6 +973,7 @@ jQuery.fn.likeItemEvent = function(){
                     socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user});
                     socket.emit("setNotification", user);
                     form.find(".like-" + item).html("<i class='icon ion-ios-heart liked'></i>");
+                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
                     socket.emit("like", {"item": item, "type": "dislike", "liker": liker, "user": user})
@@ -926,6 +999,10 @@ jQuery.fn.likeItemRequestEvent = function(){
         var liker = $(this).attr("data-liker");
         var user = $(this).attr("data-owner");
         var data = new FormData($(this)[0]);
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+        var notURL = $(this).attr("data-not-url");
+
         jQuery.ajax({
             type: "POST",
             url: url,
@@ -936,6 +1013,7 @@ jQuery.fn.likeItemRequestEvent = function(){
                 if(response.type == "like"){
                     socket.emit("rlike", {"item": item, "type": "like", "liker": liker, "user": user})
                     socket.emit("setNotification", user);
+                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item request.", "icon": notIcon, "url": notURL});
                     form.find(".request-like-" + item).html("<i class='icon ion-ios-heart liked'></i>")
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
@@ -1093,6 +1171,10 @@ jQuery.fn.postItemComment = function(){
         var form = $(this);
         var from = $(this).attr("data-from");
         var user = $(this).attr("data-user");
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+        var notURL = $(this).attr("data-not-url");
+
         $.ajax({
             type:'POST',
             url: url,
@@ -1103,6 +1185,7 @@ jQuery.fn.postItemComment = function(){
                 if(response.type == "success"){
                     socket.emit("comment", {"url": comments, "item": item, "from": from });
                     socket.emit("setNotification", user);
+                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a comment on your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage("success", response.text);
                     $(".mfp-close").click();
                 } else {
@@ -1227,6 +1310,8 @@ jQuery.fn.borrowItemUser = function(){
         var form = new FormData($(this)[0]);
         var url = $(this).attr("action");
         var user = $(this).attr("data-user");
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
 
         for (instance in CKEDITOR.instances) {
             CKEDITOR.instances[instance].updateElement();
@@ -1242,6 +1327,7 @@ jQuery.fn.borrowItemUser = function(){
                 if(response.type == "success"){
                     showSuccessMessage("success", response.text);
                     socket.emit("setNotification", user);
+                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a borrow request for your item.", "icon": notIcon, "url": response.url});
                     $(".mfp-close").click();
                 } else if(response.type == "info") {
                     showInfoMessage("info", response.text);
@@ -1452,6 +1538,9 @@ jQuery.fn.suggestItemRequest = function(){
         var url = $(this).attr("data-url");
         var from = $(this).attr("data-from");
         var data = new FormData($(this)[0]);
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+        var notURL = $(this).attr("data-not-url");
 
         $.ajax({
             type: "POST",
@@ -1471,7 +1560,7 @@ jQuery.fn.suggestItemRequest = function(){
                     }
                     socket.emit("suggestion", suggestion);
                     socket.emit("setNotification", owner);
-                    console.log(suggestion);
+                    socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has posted a suggestion on your item request.", "icon": notIcon, "url": notURL});
                     $(".mfp-close").click();
                 } else {
                     showErrorMessage("error", response.text);
@@ -1490,7 +1579,11 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
     let url = _this.attr("data-url");
     let owner = _this.attr("data-owner");
     let user = _this.attr("data-user");
-    let status = ["accepted", "rejected", "removed"]
+    let status = ["accepted", "rejected", "removed"];
+
+    var notIcon = $(this).attr("data-not-icon");
+    var notUser = $(this).attr("data-not-user");
+    var notURL = $(this).attr("data-not-url");
 
     _this.find("a").click(function(e){
         e.preventDefault();
@@ -1524,6 +1617,7 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                         "about":"suggestion"
                                     });
                                     socket.emit("setNotification", owner);
+                                    socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
                                     showSuccessMessage("success", response.text);
                                 } else if (response.type == "check" && parseInt(_status) == 1){
                                     iziToast.question({
@@ -1553,6 +1647,7 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                                                 "about":"suggestion-status"
                                                             });
                                                             socket.emit("setNotification", owner);
+                                                            socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
                                                             showSuccessMessage("success", response.text);
                                                             showSuccessMessage("borrow", response.borrow);
                                                         } else{
@@ -1725,14 +1820,10 @@ jQuery.fn.searchAdminUser = function(){
         if(userInput.val() == null || userInput.val() == ""){
             e.preventDefault();
             showErrorMessage("error", "Please Select A User !!!")
-        } else {
-            from.submit();
-        } 
+        } else { from.submit() } 
     });
 
-    textInput.focus(function(){
-        container.show();
-    });
+    textInput.focus(function(){ container.show() });
 
     textInput.keyup(function(){
 
@@ -1769,9 +1860,7 @@ jQuery.fn.searchAdminUser = function(){
         container.hide();
     });
 
-    close.click(function(e){
-        reset();
-    });
+    close.click(function(e){ reset() });
 
     function reset(){
         list.empty();

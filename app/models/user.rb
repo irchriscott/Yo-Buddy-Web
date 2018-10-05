@@ -72,11 +72,15 @@ class User < ApplicationRecord
     end
 
     def notifications
-        return Notification.where(user_to_id: self.id).order(created_at: "DESC")
+        return Notification.where(user_to_id: self.id).where(is_read: false).order(created_at: :desc)
     end
 
     def notification_count
         return self.notifications.count
+    end
+
+    def profile_image
+        return (self.image?) ? "http://127.0.0.1:3000/#{self.image.url}" : "http://127.0.0.1:3000/assets/default.jpg"
     end
 
     def json

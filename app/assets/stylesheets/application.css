@@ -355,6 +355,7 @@ table tbody tr td img{
 .yb-header-else-main .yb-header-else-container{
     text-align: center;
     padding: 12px 0;
+    width: 100% !important;
 }
 
 .yb-header-else .yb-header-else-container .yb-header-user,
@@ -883,7 +884,8 @@ table tbody tr td img{
 
 .yb-session-main .yb-session-container,
 .yb-header-else .yb-header-else-container .yb-session-menu,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu,
+.yb-header-else-main .yb-header-else-container{
     float: left;
     height: auto;
     width: calc(75% - 20px);
@@ -898,14 +900,16 @@ table tbody tr td img{
 
 .yb-session-main .yb-session-container .yb-session-menu ul,
 .yb-header-else .yb-header-else-container .yb-session-menu ul,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu ul{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul,
+.yb-header-else-main .yb-header-else-container .yb-session-menu ul{
     padding: 0;
     margin:0;
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul li,
 .yb-header-else .yb-header-else-container .yb-session-menu ul li,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li,
+.yb-header-else-main .yb-header-else-container .yb-session-menu ul li{
     display: inline-block;
     margin-right: 30px;
     padding: 12px 0;
@@ -913,26 +917,30 @@ table tbody tr td img{
 
 .yb-session-main .yb-session-container .yb-session-menu ul li a,
 .yb-header-else .yb-header-else-container .yb-session-menu ul li a,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li a{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li a,
+.yb-header-else-main .yb-header-else-container .yb-session-menu ul li a{
     font-size: 14px;
     text-transform: uppercase;
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul .active,
 .yb-header-else .yb-header-else-container .yb-session-menu ul .active,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu ul .active{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul .active,
+.yb-header-else-main .yb-header-else-container .yb-session-menu ul .active{
     border-bottom: 2px solid var(--primaryColor);
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul .active a,
 .yb-header-else .yb-header-else-container .yb-session-menu ul .active a,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu ul .active a{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul .active a,
+.yb-header-else-main .yb-header-else-container .yb-session-menu ul .active a{
     color: var(--primaryColor);
 }
 
 .yb-session-main .yb-session-container .yb-session-menu ul li a span,
 .yb-header-else .yb-header-else-container .yb-session-menu ul li a span,
-.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li a span{
+.yb-header-admin-else .yb-header-else-container .yb-session-menu ul li a span,
+.yb-header-else-main .yb-header-else-container .yb-session-menu ul li a span{
     display: inline-block;
     background: var(--veryLightGray);
     margin-left: 8px;
@@ -2935,80 +2943,75 @@ table tbody tr td img{
 }
 
 .yb-item-suggestions ul{
-    display: inline-block;
+    display: block;
     position: relative;
     width: 100%;
     background: #fff;
-    -moz-column-width: 12em;
-    -webkit-column-width: 12em;
-    -ms-column-width:12em;
-    column-width: 12em;
-    -moz-column-gap: 1em;
-    -webkit-column-gap:1em;
-    -ms-column-gap:1em;
-    column-gap: 1em;
-    white-space: normal;
-    margin-top: 15px;
 }
 
 .yb-item-suggestions ul li{
     background: #FFF;
     height: auto;
-    margin-bottom: 15px;
-    z-index: 120;
+    padding-bottom: 10px;
+    padding-top: 10px;
     position: relative;
-    display: inline-block !important;
-    box-shadow: 0px 0px 6px 1px var(--lightGray);
-    margin-top: 5px;
+    display: block;
     width: 100%;
+    float: left;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    cursor: pointer;
 }
 
 .yb-item-suggestions ul li .yb-image{
-    width: 100%;
+    float: left;
+    width: 120px;
+    margin-right: 15px;
 }
 
 .yb-item-suggestions ul li .yb-image img{
     width: 100%;
+    border-radius: 2px;
 }
 
 .yb-item-suggestions ul li .yb-about{
-    position: absolute;
-    background: linear-gradient(rgba(0,0,0,.0), rgba(0,0,0,.2), rgba(0,0,0,.4), rgba(0,0,0,.6), rgba(0,0,0,.8));
-    color: #FFF;
-    padding: 5px 10px;
-    width: calc(100% - 20px);
-    margin-top: -78px;
+    display: block;
+    position: relative;
+    float: left;
 }
 
 .yb-item-suggestions ul li .yb-about *{
-    color: #FFF;
     margin: 0;
 }
 
 .yb-item-suggestions ul li .yb-about h3{
-    font-size: 17px;
+    font-size: 18px;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--darkGray);
+}
+
+.yb-item-suggestions ul li .yb-about .yb-price{
+    font-size: 16px;
 }
 
 .yb-item-suggestions ul li .yb-about p{
-    color: var(--veryLightGray);
+    color: var(--gray);
     font-size: 14px;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.yb-item-suggestions ul li span{
+.yb-item-suggestions ul li .yb-select{
     position: absolute;
     right: 0;
     margin-top: 5px;
     margin-right: 8px;
 }
 
-.yb-item-suggestions ul li span i{
-    font-size: 20px;
+.yb-item-suggestions ul li .yb-select i{
+    font-size: 30px;
     font-weight: bold;
     color: var(--primaryColor);
 }
@@ -3627,7 +3630,8 @@ table tbody tr td img{
     overflow-x: hidden;
 }
 
-.yb-search-container .yb-search-result .yb-search-data{
+.yb-search-container .yb-search-result .yb-search-data,
+.yb-search-results-all .yb-search-data{
     display: block;
     position: relative;
     border-bottom: 1px solid rgba(0,0,0,.1);
@@ -3638,52 +3642,76 @@ table tbody tr td img{
     width: calc(100% - 2rem);
 }
 
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-image{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-image,
+.yb-search-results-all .yb-search-data .yb-search-data-image{
     float: left;
     width: 70px;
     margin-right: 1rem;
 }
 
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-image img{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-image img,
+.yb-search-results-all .yb-search-data .yb-search-data-image img{
     width: 100%;
     border-radius: 4px;
 }
 
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description,
+.yb-search-results-all .yb-search-data .yb-search-data-description{
     display: block;
     position: relative;
     margin-left: calc(70px + 1rem);
 }
 
 .yb-search-container .yb-search-result .yb-search-data .yb-search-data-description h4,
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description h3{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description h3,
+.yb-search-results-all .yb-search-data .yb-search-data-description h3,
+.yb-search-results-all .yb-search-data .yb-search-data-description h4{
     margin-top: 0px;
     font-size: 18px;
     margin-bottom: 0px;
 }
 
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description p{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description p,
+.yb-search-results-all .yb-search-data .yb-search-data-description p{
     margin-bottom: 0;
     margin-top: 0px;
 }
 
 .yb-search-container .yb-search-result .yb-search-data .yb-search-data-description .yb-location,
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description .yb-price{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description .yb-price,
+.yb-search-results-all .yb-search-data .yb-search-data-description .yb-price,
+.yb-search-results-all .yb-search-data .yb-search-data-description .yb-location,
+.yb-search-results-all .yb-search-data .yb-search-data-description .yb-price span{
     font-size: 14px;
     color: var(--gray);
 }
 
-.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description .yb-date{
+.yb-search-container .yb-search-result .yb-search-data .yb-search-data-description .yb-date,
+.yb-search-results-all .yb-search-data .yb-search-data-description .yb-date,
+.yb-search-results-all .yb-search-data .yb-search-data-description .yb-date span{
     font-size: 12px;
     color: var(--lightGray);
 }
 
-.yb-search-container .yb-search-result .yb-search-data.active{
+.yb-search-container .yb-search-result .yb-search-data.active,
+.yb-search-results-all .yb-search-data:hover{
     background: var(--primaryColor);
 }
 
-.yb-search-container .yb-search-result .yb-search-data.active *{
+.yb-search-container .yb-search-result .yb-search-data.active *,
+.yb-search-results-all .yb-search-data:hover *{
     color: #FFF !important;
+}
+
+.yb-search-results-all .yb-search-data{
+    overflow: hidden;
+}
+
+.yb-notification-is-not-read{
+    display: inline-block;
+    padding: 4px;
+    background: green;
+    border-radius: 50%;
 }
 
 /* FOOTER */
@@ -3791,6 +3819,9 @@ table tbody tr td img{
     .yb-single-item-main .yb-single-images ul li img{
         width: 40px;
     }
+    .yb-session-main{
+        width: calc(100% - 30px) !important;
+    }
     .yb-session-main .yb-session-info-about{
         display: block;
         width: 100%;
@@ -3889,6 +3920,16 @@ table tbody tr td img{
         line-height: 35px;
         margin-top: -25px;
     }
+    .yb-search-menu{
+        margin-left: -15px !important;
+    }
 }
 
-@media only screen and (min-width: 768px) and (max-width: 991px) {}
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    body{
+        zoom:90%;
+    }
+    h1,h2,h3,h4{
+        font-weight: 600;
+    }
+}

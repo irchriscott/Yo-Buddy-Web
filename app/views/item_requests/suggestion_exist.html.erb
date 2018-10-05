@@ -7,14 +7,15 @@
 					<ul>
 						<% @items.each do |item| %>
 							<li id="yb-suggestion-<%= item.id %>" data-id="<%= item.id %>">
-								<span><i class="icon ion-android-checkbox-outline-blank"></i></span>
+								<span class="yb-select"><i class="icon ion-android-checkbox-outline-blank"></i></span>
 								<div class="yb-image"><%= image_tag item.item_image[0].image.url, alt: item.name %></div>
 								<div class="yb-about">
 									<h3><%= item.name %></h3>
-									<p><%= item.category.name %> - <%= item.subcategory.name %></p>
-									<p><%= item.available %> Items</p>
+									<p class="yb-price"><i class="icon ion-ios-pricetags-outline"></i> <span data-number="<%= item.price %>" id="yb-suggestion-item-<%= item.id %>"></span> <%= item.currency %> / <%= item.per %></p>
+									<p class="yb-category"><%= item.category.name %> - <%= item.subcategory.name %></p>
+									<p class="yb-available"><strong>Available : </strong> <%= item.available %> Items</p>
 								</div>
-								<script type="text/javascript">$("#yb-suggestion-<%= item.id %>").selectItem();</script>
+								<script type="text/javascript">$("#yb-suggestion-<%= item.id %>").selectItem(); $("#yb-suggestion-item-<%= item.id %>").setNumber();</script>
 							</li>
 						<% end %>
 					</ul>
@@ -26,7 +27,7 @@
 				<div class="yb-modal-container" style="width: 30%; margin-top: calc((100vh - 274px) / 2)">
 					<div class="yb-add-item">
 						<h2>Request Suggestion Preferences</h2>
-						<%= form_for :suggestion, url: item_request_create_exist_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request)} do |form| %>
+						<%= form_for :suggestion, url: item_request_create_exist_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request), "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_request_url(@request.user.username, @request.uuid, @request)} do |form| %>
 							<%= form.hidden_field :item_id, value: "0" %>
 							<label>Price :</label>
 							<%= form.number_field :price, required:true, placeholder: "Enter Price", min: "1" %>
@@ -54,7 +55,7 @@
 					</div>
 				</div>
 			</div>
-			<div style="display: block; position: relative;">
+			<div style="display: block; position: relative; float: left;">
 				<button type="button" id="yb-open-add-suggestion-about" style="background: var(--primaryColor)">Suggest</button>
 				<button type="button" id="yb-close-add-suggestion" class="yb-btn-cancel">Cancel</button>
 			</div>

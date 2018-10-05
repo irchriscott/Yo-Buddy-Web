@@ -10,6 +10,9 @@
   "author": "Ir Christian Scott",
   "license": "MIT",
   "dependencies": {
-    "socket.io": "^2.1.0"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "socket.io": "^2.1.0",
+    "web-push": "^3.3.3"
   }
 }

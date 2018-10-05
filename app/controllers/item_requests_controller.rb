@@ -11,7 +11,7 @@ class ItemRequestsController < ApplicationController
     before_action :check_active
 
     def index
-        @requests = ItemRequest.where(status: @status[0]).order(to_date: :asc)
+        @requests = ItemRequest.where(status: @status[0]).order(to_date: :asc).paginate(page: params[:page], per_page: 10)
     end
 
     def show
@@ -65,11 +65,11 @@ class ItemRequestsController < ApplicationController
                 if from_date == 2 then
                     flash[:danger] = "Time Already Passed !!!"
                     format.html{ redirect_to session_requests_path }
-                    format.json{render json: {"type" => "error", "text" => "Time Already Passed !!!"}}
+                    format.json{ render json: {"type" => "error", "text" => "Time Already Passed !!!"} }
                 elsif from_date == 1 then
                     flash[:danger] = "Date Should not be Less Than Tomorrow !!!"
                     format.html{ redirect_to session_requests_path }
-                    format.json{render json: {"type" => "error", "text" => "Date Should not be Less Than Tomorrow !!!"}}
+                    format.json{ render json: {"type" => "error", "text" => "Date Should not be Less Than Tomorrow !!!"} }
                 else
                     @request.from_date = from_date
                     @request.to_date = set_time_end(params[:item_request], from_date)
@@ -143,6 +143,12 @@ class ItemRequestsController < ApplicationController
                                             end
                                         end
                                     end
+                                    @request.item_request_suggestion.where("status = :status OR status = :status_else", {status: @sug_status[0], status: @sug_status[2]}).each do |suggestion|
+                                        suggestion.status = @sug_status[3]
+                                        suggestion.save
+                                        Notification.create([{user_from_id: session[:user_id], user_to_id: suggestion.item.user.id , ressource: "update_item_request_content", ressource_id: @request.id, is_read: false}])
+                                        ItemRequestMailer.with(suggestion: suggestion, request: @request).update_request.deliver_now
+                                    end
                                     flash[:success] = "Item Request Updated Successfully !!!"
                                     format.html{ redirect_to item_request_path(@request) }
                                     format.json{ render json: {"type" => "success", "text" => "Item Request Added Successfully !!!"} }
@@ -194,6 +200,8 @@ class ItemRequestsController < ApplicationController
                     @request.item_request_suggestion.each do |suggestion|
                         suggestion.status = @sug_status[3]
                         suggestion.save
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: suggestion.item.user.id , ressource: "update_item_request_suggest_status_#{@sug_status[3]}", ressource_id: @request.id, is_read: false}])
+                        ItemRequestMailer.with(suggestion: suggestion, request: @request).update_suggestion_status.deliver_now
                     end
                     flash[:success] = "Item Request Reset !!!"
                 else
@@ -205,7 +213,7 @@ class ItemRequestsController < ApplicationController
         else
             flash[:danger] = "Your Private Account Is Not Active !!!"
         end
-        redirect_to item_request_path(@request)
+        redirect_to item_request_path(@request.user.username, @request.uuid, @request)
     end
 
     def destroy
@@ -281,6 +289,7 @@ class ItemRequestsController < ApplicationController
                         @suggestion.status = @sug_status[0]
                         if @suggestion.save then
                             Notification.create([{user_from_id: session[:user_id], user_to_id: @request.user.id , ressource: "item_request_suggest", ressource_id: @request.id, is_read: false}])
+                            ItemRequestMailer.with(suggestion: @suggestion, request: @request).suggest.deliver_now
                             render json: {"type" => "success", "text" => "Item Request Suggestion Added Successfully !!!"}
                         else
                             render json: {"type" => "error", "text" => @suggestion.errors.full_messages}
@@ -327,6 +336,7 @@ class ItemRequestsController < ApplicationController
                                 @suggestion.status = @sug_status[0]
                                 if @suggestion.save then
                                     Notification.create([{user_from_id: session[:user_id], user_to_id: @request.user.id , ressource: "item_request_suggest", ressource_id: @request.id, is_read: false}])
+                                    ItemRequestMailer.with(suggestion: @suggestion, request: @request).suggest.deliver_now
                                     render json: {"type" => "success", "text" => "Item Request Suggestion Added Successfully !!!"}
                                 else
                                     render json: {"type" => "error", "text" => @suggestion.errors.full_messages}
@@ -369,7 +379,8 @@ class ItemRequestsController < ApplicationController
             if session_user.id == @suggestion.item.user.id then
                 if @suggestion.update(params[:item_request_suggestion].permit(:price, :currency, :per, :status)) then
                     Notification.create([{user_from_id: session[:user_id], user_to_id: @request.user.id , ressource: "update_item_request_suggest_content", ressource_id: @request.id, is_read: false}])
-                    render json: {"type" => "success", "text" => "Item Request Updated Successfully !!!"}
+                    ItemRequestMailer.with(suggestion: @suggestion, request: @request).update_suggestion.deliver_now
+                    render json: {"type" => "success", "text" => "Item Request Suggestion Updated Successfully !!!"}
                 else
                     render json: {"type" => "error", "text" => @suggestion.errors.full_messages}
                 end
@@ -397,7 +408,8 @@ class ItemRequestsController < ApplicationController
                                 @suggestion.status = @sug_status[status]
                                 @suggestion.save
                                 accept_suggestion(@suggestion, @request.count)
-                                Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
+                                Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_status_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
+                                ItemRequestMailer.with(suggestion: @suggestion, request: @request).update_suggestion_status.deliver_now
                                 render json: {"type" => "success", "text" => "Item Suggestion Status Updated To #{@sug_status[status].capitalize} !!!", "borrow" => "Item Borrow User Request Sent !!!"}
                             else
                                 if type == "check" then
@@ -406,7 +418,8 @@ class ItemRequestsController < ApplicationController
                                     @suggestion.status = @sug_status[status]
                                     @suggestion.save
                                     accept_suggestion(@suggestion, rests)
-                                    Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
+                                    Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_status_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
+                                    ItemRequestMailer.with(suggestion: @suggestion, request: @request).update_suggestion_status.deliver_now
                                     render json: {"type" => "success", "text" => "Item Suggestion Status Updated To #{@sug_status[status].capitalize} !!!"}
                                 else
                                     render json: {"type" => "error", "text" => "Unknown Update Type !!!"}
@@ -418,6 +431,8 @@ class ItemRequestsController < ApplicationController
                     else
                         @suggestion.status = @sug_status[status]
                         @suggestion.save
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: @suggestion.item.user.id , ressource: "update_item_request_suggest_status_#{@sug_status[status]}", ressource_id: @request.id, is_read: false}])
+                        ItemRequestMailer.with(suggestion: @suggestion, request: @request).update_suggestion_status.deliver_now
                         render json: {"type" => "success", "text" => "Item Suggestion Status Updated To #{@sug_status[status].capitalize} !!!"}
                     end
                 else

@@ -1,14 +1,18 @@
+require 'net/http'
+require 'uri'
+require 'json'
+
 class HomeController < ApplicationController
+
+	before_action :set_search_results, except: [:index, :notification_getway]
+	skip_before_action :verify_authenticity_token, only: [:notification_getway]
+
 	def index
 		@items = Item.all
 	end
 
 	def search
 		respond_to do |format|
-
-			@users = User.where("name LIKE :query OR username LIKE :query", {query: "%#{params[:q]}%"}).order(name: :asc)
-			@items = Item.where("name LIKE :query", {query: "%#{params[:q]}%"}).order(created_at: :desc)
-			@requests = ItemRequest.where("title LIKE :query", {query: "%#{params[:q]}%"}).order(created_at: :desc)
 
 			@results = Array.new
 
@@ -33,8 +37,36 @@ class HomeController < ApplicationController
 				@results.push(data)
 			end
 
-			format.html { }
-			format.json { render json: {"query" => params[:q] , "results" => @results.shuffle } }
+			format.html { redirect_to search_items_path(q: @query) }
+			format.json { render json: {"query" => @query , "results" => @results.shuffle } }
 		end
+	end
+
+	def search_items
+	end
+
+	def search_requests
+	end
+
+	def search_users
+	end
+
+	def notification_getway
+		uri = URI.parse("http://127.0.0.1:5000/notification/subscribe")
+
+		headers = {"content-type" => "application/json"}
+		http = Net::HTTP.new(uri.host, uri.port)
+		request = Net::HTTP::Post.new(uri.request_uri, headers)
+		request.body = {"subscription" => params[:subscription], "data" => {"title" => params[:title], "body" => params[:body], "icon" => params[:icon], "url" => params[:url]}}.to_json
+
+		response = http.request(request)
+		render json: {"type" => "success", "text" => "Notification Sent"}
+	end
+
+	private def set_search_results
+		@query = params[:q]
+		@users = User.where("name LIKE :query OR username LIKE :query", {query: "%#{@query}%"}).order(name: :asc)
+		@items = Item.where("name LIKE :query", {query: "%#{@query}%"}).order(created_at: :desc)
+		@requests = ItemRequest.where("title LIKE :query", {query: "%#{@query}%"}).order(created_at: :desc)
 	end
 end

@@ -1,5 +1,5 @@
 <div class="yb-item-comment-form">
-	<%= form_for([@item, @item.comment.build], html:{'data-item': @item.id, 'data-url': item_comments_path(@item), 'data-from': "add", 'data-user': @item.user.id}) do |form| %>
+	<%= form_for([@item, @item.comment.build], html:{'data-item': @item.id, 'data-url': item_comments_path(@item), 'data-from': "add", 'data-user': @item.user.id, "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_show_url(@item.user.username, @item.uuid, @item)}) do |form| %>
 		<%= form.hidden_field :user_id, value: session_user.id %>
 		<%= form.hidden_field :is_deleted, value: false %>
 		<% if session_user.image? %>
