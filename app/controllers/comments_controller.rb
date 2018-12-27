@@ -2,8 +2,10 @@ class CommentsController < ApplicationController
     
     include ApplicationHelper
 
-    before_action :check_session, only: [:create, :edit, :update, :destroy]
+    before_action :check_session, only: [:edit]
+    before_action :check_token, only: [:create, :update, :destroy]
     before_action :check_active
+    skip_before_action :verify_authenticity_token, only: [:create, :update, :destroy]
 
     def index
         @item = Item.find(params[:item_id])

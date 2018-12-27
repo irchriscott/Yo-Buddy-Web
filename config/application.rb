@@ -20,6 +20,9 @@ module Buddyweb
    	 	# Application configuration should go into files in config/initializers
     	# -- all .rb files in that directory are automatically loaded.
 
+      config.web_console.whitelisted_ips = ['10.0.5.159', '10.0.2.2', '127.0.0.1']
+      config.web_console.whiny_requests = true
+
     	config.action_dispatch.default_headers = {
 		      'Access-Control-Allow-Origin' => '*',
 		      'Access-Control-Request-Method' => %w{GET POST PUT DELETE PATCH}.join(",")

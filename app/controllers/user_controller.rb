@@ -172,7 +172,7 @@ class UserController < ApplicationController
     def update_from_api
         token = params[:token]
         begin
-            user = User.find_by(token: token).first
+            user = User.find_by(token: token)
             if user then
                 render json: user.json
             else

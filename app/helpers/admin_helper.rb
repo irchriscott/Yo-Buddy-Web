@@ -124,8 +124,6 @@ module AdminHelper
 	def check_scan_data(data)
 		datas = data.split("-")
 		user = User.where(username: datas[2]).first
-
-		puts datas.length
 		
 		if datas.length == 4 then
 			if user then
@@ -210,8 +208,11 @@ module AdminHelper
 	end
 
 	def save_message(status, borrow)
-		borrow.status = status
-        borrow.save
+		
+		if !Array["new", "data"].include?(status) then
+            borrow.status = status
+            borrow.save
+        end
         
         message = BorrowMessage.new
         message.borrow_item_user_id = borrow.id
@@ -219,6 +220,7 @@ module AdminHelper
         message.receiver_id = 0
         message.message = status
         message.status = "unread"
+        message.has_images = false
         message.is_deleted = false
         message.save
     end

@@ -25,7 +25,7 @@
 		<div class="yb-item-data-menu">
 			<ul id="yb-user-else-menu" data-id="<%= @activate %>">
 				<li data-id="borrowed">
-					<a href="<%=  session_borrowed_path %>">Borrowed</a>
+					<a href="<%=  session_borrowed_path %>">Lending</a>
 					<span><%= @borrowed_count %></span>
 				</li>
 				<li data-id="borrowing">
@@ -51,8 +51,8 @@
 <div class="yb-session-add-item">
 	<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-add-menu">
 		<ul>
-			<li><a href="<%= new_item_path %>" id="yb-add-item-new"><span class="item-icon"><i class="icon ion-ios-cart"></i></span><span class="item-text">Item</span></a></li>
-			<li><a href="<%= new_item_request_path %>" id="yb-add-item-request-new"><span class="item-icon"><i class="icon ion-forward"></i></span><span class="item-text">Request</span></a></li>
+			<li><a href="<%= new_item_path %>?type=ajax" id="yb-add-item-new"><span class="item-icon"><i class="icon ion-ios-cart"></i></span><span class="item-text">Item</span></a></li>
+			<li><a href="<%= new_item_request_path %>?type=ajax" id="yb-add-item-request-new"><span class="item-icon"><i class="icon ion-forward"></i></span><span class="item-text">Request</span></a></li>
 		</ul>
 	</div>
 	<button id="yb-open-session-add-menu" data-id="add-menu">

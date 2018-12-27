@@ -47,7 +47,8 @@ class ItemRequestsController < ApplicationController
 
     def new
         @request = ItemRequest.new
-        render layout: false
+        @type = params[:type]
+        if @type == "ajax" then render layout: false end
     end
 
     def create
@@ -75,15 +76,21 @@ class ItemRequestsController < ApplicationController
                     @request.to_date = set_time_end(params[:item_request], from_date)
                     if @request.save then
                         images = params[:item_request][:images]
-                        for image in images
-                            @image = ItemRequestImage.new
-                            @image.item_request_id = @request.id
-                            @image.image = image
-                            if @image.save then
-                            else
-                                flash[:danger] =  @image.errors.full_messages
-                                format.json{ render json: {"type" => "error", "text" => @image.errors.full_messages} }
+                        if images.count > 0 then
+                            for image in images
+                                @image = ItemRequestImage.new
+                                @image.item_request_id = @request.id
+                                @image.image = image
+                                if @image.save then
+                                else
+                                    flash[:danger] =  @image.errors.full_messages
+                                    format.json{ render json: {"type" => "error", "text" => @image.errors.full_messages} }
+                                end
                             end
+                        else
+                            flash[:danger] = "Images cannot be null !!!"
+                            format.html{ redirect_to session_requests_path }
+                            format.json{ render json: {"type" => "error", "text" => "Images cannot be null !!!"} }
                         end
                         flash[:success] = "Item Request Added Successfully !!!"
                         format.html{ redirect_to session_requests_path }
@@ -451,7 +458,7 @@ class ItemRequestsController < ApplicationController
     end
 
     private def item_request_params
-        params[:item_request].permit(:title, :category_id, :subcategory_id, :min_price, :max_price, :currency, :per, :numbers, :description, :count)
+        params[:item_request].permit(:title, :category_id, :subcategory_id, :min_price, :max_price, :currency, :per, :numbers, :description, :count, :reasons)
     end
 
     private def item_request_suggestion_params

@@ -1,6 +1,6 @@
-<div class="yb-modal-container">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>Add New Item</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>Add New Item</h2>
 		<% if @active == true %>
 			<%= form_for @item, url: item_create_path + "?source=#{@source}", html: {id: "yb-create-item"} do |form| %>
 				<label>Item Name :</label>
@@ -35,6 +35,8 @@
 				</div>
 				<label>Quantity :</label>
 				<%= form.number_field :count, required:true, value:"1", min:"1", style:"width:calc(100% - 22px)", placeholder: "Enter Quantity", autocomplete: "off" %>
+				<label>Sale Value (Currency For Price):</label>
+				<%= form.number_field :sale_value, required:true, min:"0", style:"width:calc(100% - 22px)", placeholder: "Enter Sale Value", autocomplete: "off" %>
 				<label>Description :</label>
 				<%= form.text_area :description, id: "yb-item-description", required: true %>
 				<%= form.file_field :image, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
@@ -42,7 +44,9 @@
 				<div class="yb-item-images-preview" id="yb-images-preview"></div>
 				<div style="display: block; position: relative;">
 					<button type="submit">Submit</button>
+					<% if @type == "ajax" %>
 					<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+					<% end %>
 				</div>
 			<% end %>
 			<script type="text/javascript">

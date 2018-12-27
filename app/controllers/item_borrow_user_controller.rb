@@ -5,11 +5,13 @@ class ItemBorrowUserController < ApplicationController
     include ItemBorrowUserHelper
     include ApplicationHelper
 
+    before_action :check_token
     before_action :check_session
     before_action :set_item_data
     before_action :set_data_items_counts, only: [:index, :show]
     before_action :check_owner_borrow, only: [:show, :edit, :update, :update_status, :destroy]
     before_action :check_active
+    skip_before_action :verify_authenticity_token, only: [:create, :update]
 
     def index
         @borrowers = @item.borrow_item_user.all.order(created_at: :desc)
@@ -48,9 +50,10 @@ class ItemBorrowUserController < ApplicationController
     end
 
     def new
+        @type = params[:type]
         @borrow = BorrowItemUser.new
         @last_borrow = @item.borrow_item_user.last
-        render layout: false
+        if @type == "ajax" then render layout: false end
     end
 
     def create
@@ -286,7 +289,7 @@ class ItemBorrowUserController < ApplicationController
     end
 
     private def borrow_params
-        params.require(:item_borrow).permit(:item_id, :price, :currency, :per, :numbers, :conditions, :count)
+        params.require(:item_borrow).permit(:item_id, :price, :currency, :per, :numbers, :conditions, :count, :reasons)
     end
 
     private def update_params

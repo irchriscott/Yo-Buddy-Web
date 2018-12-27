@@ -11,5 +11,7 @@
 <p><strong>To : </strong> <%= @borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
 <p><strong>Status : </strong> <span style="text-transform: capitalize;"><%= @borrow.status %></span></p>
 <p><strong>Request Date : </strong> <span id="yb-request-date" data-date="<%= @borrow.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"><%= @borrow.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></span></p>
+<p><strong>Reasons : </strong></p>
+<div class="yb-description"><%= @borrow.reasons %></div>
 <p><strong>Conditions : </strong></p>
 <div class="yb-description"><%= raw @borrow.conditions %></div>

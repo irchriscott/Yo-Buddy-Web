@@ -1,6 +1,6 @@
-<div class="yb-modal-container">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>Add New Item Request</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>Add New Item Request</h2>
 		<% if @active == true %>
 			<%= form_for @request, url: create_item_request_path, html: {id: "yb-create-item-request"} do |form| %>
 				<label>Title :</label>
@@ -40,6 +40,8 @@
 				</div>
 				<label>Quantity :</label>
 				<%= form.number_field :count, required:true, value:"1", min:"1", style:"width:calc(100% - 22px)", placeholder: "Enter Quantity", autocomplete: "off" %>
+				<label>Reasons :</label>
+					<%= form.text_area :reasons, required: true, style: "height:80px", placeholder: "Enter Reasons" %>
 				<label>Description :</label>
 				<%= form.text_area :description, id: "yb-item-request-description", required: true, autocomplete: "off" %>
 				<%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
@@ -47,7 +49,9 @@
 				<div class="yb-item-images-preview" id="yb-images-preview"></div>
 				<div style="display: block; position: relative;">
 					<button type="submit">Submit</button>
+					<% if @type == "ajax" %>
 					<button type="button" id="yb-close-add-request" class="yb-btn-cancel">Cancel</button>
+					<% end %>
 				</div>
 			<% end %>
 			<script type="text/javascript">CKEDITOR.replace( 'yb-item-request-description' );</script>

@@ -2,8 +2,10 @@ class BorrowMessagesController < ApplicationController
 
 	include ApplicationHelper
 
+	before_action :check_token
 	before_action :set_data
 	before_action :check_active
+	skip_before_action :verify_authenticity_token, only: [:create, :send_images]
 
 	def index
 		@messages = @borrow.borrow_message.all.order(created_at: :asc)
@@ -37,7 +39,7 @@ class BorrowMessagesController < ApplicationController
 				render json: {"type" => "error", "text" => @message.errors.full_messages}
 			end
 		else
-			render json: {"type" => "success", "text" => "Your Private Account Is Npot Active !!!"}
+			render json: {"type" => "error", "text" => "Your Private Account Is Npot Active !!!"}
 		end
 	end
 

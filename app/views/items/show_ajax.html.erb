@@ -1,35 +1,5 @@
-<section class="yb-header-else-main">
-	<div class="yb-header-else-container">
-		<h3 style="padding:0 !important; margin:0 !important;"><%= @item.name %></h3>
-	</div>
-</section>
-<section class="yb-jumbotron" style="flex-direction: column;">
-	<h1 style="margin-top: 60px;"><%= @item.name %></h1>
-	<p><span><i class="icon ion-ios-pricetags-outline"></i></span> <span data-number="<%= @item.price %>" id="yb-number-else"><%= @item.price %></span> <%= @item.currency %> / <%= @item.per %> <span style="margin-left: 30px;"><i class="icon ion-ios-location-outline"></i> <%= @item.user.town %>,  <%= @item.user.country_name %></span></p>
-</section>
-<section class="yb-single-item" style="margin-top: 30px;">
+<div class="yb-modal-container" style="width: 60%;">
 	<div class="yb-single-item-main">
-		<div class="yb-single-item-imgs">
-			<div class="yb-single-images">
-				<ul>
-					<% @item.item_image.each do |image| %>
-						<li <% if @item.item_image[0] == image %>class="activated"<% end %>>
-							<a href="<%= image.image.url %>" data-image-id="<%= image.id %>">
-								<%= image_tag image.image.url, alt: @item.name %>
-							</a>
-						</li>
-					<% end -%>
-				</ul>
-			</div>
-			<div class="yb-item-images-gallery" id="yb-item-images-gallery">
-				<% @item.item_image.each do |image| %>
-					<a href="<%= image.image.url %>" data-image-id="<%= image.id %>"></a>
-				<% end -%>
-			</div>
-			<div class="yb-single-image" data-image-id="<%= @item.item_image[0].id %>">
-				<%= image_tag @item.item_image[0].image.url, alt: @item.name, id: "item_image_main"%>
-			</div>
-		</div>
 		<div class="yb-single-info">
 			<div class="yb-single-user-img">
 				<% if @item.user.image? %>
@@ -120,24 +90,25 @@
 						<% end -%>
 						<% end -%>
 						<li><a href="<%= item_available_path(@item.user.username, @item.uuid, @item) %>" id="yb-item-check-available"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Available</span></a></li>
-						<li><a href="<%= borrow_item_path(@item.user.username, @item.uuid, @item) %>?type=ajax" id="yb-new-item-borrow-user-path"><span class="item-icon"><i class="icon ion-plus"></i></span><span class="item-text">Borrow</span></a></li>
+						<li><a href="<%= borrow_item_path(@item.user.username, @item.uuid, @item) %>" id="yb-new-item-borrow-user-path"><span class="item-icon"><i class="icon ion-plus"></i></span><span class="item-text">Borrow</span></a></li>
 						<li><a id="yb-favourite-item"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourite</span></a></li>
 						<li><a href="<%= report_new_path(@item.id) %>?ressource=item" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
-		<div class="yb-item-comments">
-			<% if is_logged_in? %>
-				<%= render "comments/form" %>
-			<% end -%>
-			<div class="yb-item-comments-list" data-item="<%= @item.id %>" data-url="<%= item_comments_path(@item) %>" id="yb-item-comments">
-				<span class="yb-loading-spinner"><img src="/assets/loading.gif" /></span>
-			</div>
-			<script type="text/javascript">$(document).ready(function(){setLoadData("yb-item-comments", "<%= item_comments_path(@item) %>")})</script>
-		</div>
 	</div>
-	<div class="yb-items-similar">
-		
-	</div>
-</section>
+			
+	<script type="text/javascript">
+		$("#yb-show-session-menu").showMenu();
+	    $("#item_date").setDate();
+	    $("#item_price").setNumber();
+	    $("#number_likes").setNumber();
+	    $("#number_comments").setNumber();
+	    $("#number_borrow").setNumber();
+	    $("#yb-item-menu-item").showMenu();
+	    $(".like-item").likeItem();
+	    $(".like-form").likeItemEvent();
+	    $("#yb-favourite-item-form").favoutiteItem();
+	</script>
+</div>

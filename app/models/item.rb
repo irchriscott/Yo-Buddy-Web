@@ -1,4 +1,7 @@
 class Item < ApplicationRecord
+
+    include ApplicationHelper
+
   	belongs_to :category
   	belongs_to :subcategory 
   	belongs_to :user
@@ -27,6 +30,10 @@ class Item < ApplicationRecord
           @favourites.append(favourite.user.id)
         end
         return @favourites
+    end
+
+    def price_to_s
+        return number_to_s(self.price)
     end
 
     def available
@@ -63,4 +70,5 @@ class Item < ApplicationRecord
             "created_at" => self.created_at,
         }
     end
+
 end

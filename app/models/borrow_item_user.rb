@@ -1,5 +1,7 @@
 class BorrowItemUser < ApplicationRecord
 
+	include ApplicationHelper
+
 	belongs_to :item
 	belongs_to :user
 	
@@ -36,6 +38,22 @@ class BorrowItemUser < ApplicationRecord
 		else
 			return "green"
 		end
+	end
+
+	def price_to_s
+		return number_to_s(self.price)
+	end
+
+	def penalties_to_s
+		return number_to_s(self.penalties)
+	end
+
+	def total_to_s
+		return number_to_s(self.price * self.numbers * self.count)
+	end
+
+	def borrow_total_to_s
+		return number_to_s(self.borrow_total)
 	end
 
 	def borrow_total

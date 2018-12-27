@@ -1,24 +1,55 @@
 <section class="yb-home-main" id="yb-home-main">
-	<div class="yb-home-container">
+</section>
+<section class="yb-home-container">
+	<div class="yb-h-d">
 		<div class="yb-description">
 			<h3>Welcome to</h3>
-            <h1>Yo Buddy !</h1>
-            <hr>
-                    
-            <hr>
+			<h1>Yo Buddy !</h1>
+			<hr>
+			<hr>
 		</div>
-		<br/>
-		<div class="yb-some-items">
-			<h2>Featured Items</h2>
-			<div class="yb-some-items-container">
-				<div class="yb-item-previous">
-					<span><i class="icon ion-ios-arrow-back"></i></span>
+		<br>
+		<div class="yb-s-i">
+			<div class="yb-some-items">
+				<h2>Featured Items</h2>
+				<div class="yb-some-items-container">
+					<div class="yb-item-previous">
+						<span><i class="icon ion-ios-arrow-back"></i></span>
+					</div>
+					<div class="yb-item-next">
+						<span><i class="icon ion-ios-arrow-forward"></i></span>
+					</div>
+					<div class="yb-some-items-list">
+						<% if @items.count > 0 %>
+							<ul>
+								<% @items.each do |item| %>
+									<li>
+										<div class="yb-some-item">
+											<div class="yb-item-image">
+												<a href="<%= item_show_ajax_path(item.user.username, item.uuid, item) %>" id="yb-show-item-ajax-<%= item.id %>">
+													<%= image_tag item.item_image[0].image.url, alt: item.name %>
+												</a>
+											</div>
+											<div class="yb-item-bottom">
+												<h4><%= item.name %></h4>
+												<p><%= item.price_to_s %> <%= item.currency %> / <%= item.per %></p>
+											</div>
+										</div>
+										<script type="text/javascript">$("#yb-show-item-ajax-<%= item.id %>").magnificPopup({type:'ajax'});</script>
+									</li>
+								<% end %>
+							</ul>
+						<% end %>
+					</div>
 				</div>
-				<div class="yb-item-next">
-					<span><i class="icon ion-ios-arrow-forward"></i></span>
-				</div>
-				<div class="yb-some-item"></div>
 			</div>
 		</div>
 	</div>
 </section>
+
+<style type="text/css">
+	.yb-header-container{
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+</style>

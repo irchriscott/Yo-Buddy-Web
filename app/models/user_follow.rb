@@ -2,6 +2,6 @@ class UserFollow < ApplicationRecord
   belongs_to :user
 
   def following
-  	return User.find(following_id)
+  	return User.find(self.following_id)
   end
 end

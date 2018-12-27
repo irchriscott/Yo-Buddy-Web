@@ -111,6 +111,7 @@ class BorrowUserMailerWorker
         message.receiver_id = 0
         message.message = status
         message.status = "unread"
+        message.has_images = false
         message.is_deleted = false
         message.save
     end

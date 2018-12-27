@@ -155,6 +155,10 @@
                             <p><strong>Total : </strong><%= @borrow.borrow_total %> <%= @borrow.currency %></p>
                             <p><strong>From : </strong> <%= @borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
                             <p><strong>To : </strong> <%= @borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
+                            <p><strong>Reasons : </strong></p>
+                            <div class="yb-conditions">
+                                <%= @borrow.reasons %>
+                            </div>
                             <p><strong>Conditions : </strong></p>
                             <div class="yb-conditions">
                                 <%= raw @borrow.conditions %>

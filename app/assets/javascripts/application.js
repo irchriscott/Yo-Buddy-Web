@@ -20,10 +20,6 @@ function pushNotification(title, bod, icon, url){
     }
 }
 
-navigator.serviceWorker.addEventListener('message', function(event){
-    console.log(event.data.message);
-});
-
 async function registerSW(title, bod, icon, url){
     console.log('Registering Service Worker ...');
     const register = await navigator.serviceWorker.register('/sw.js', { scope: '*' });
@@ -352,8 +348,9 @@ $(function() {
     });
 
     socket.on("getNotification", function(owner){
-        if(sessionID == owner){
-            var notCont = $("body").find(".yb-session-notifications-" + owner);
+        var user = (typeof owner == 'string') ? owner : owner.user;
+        if(sessionID == user){
+            var notCont = $("body").find(".yb-session-notifications-" + user );
             notCont.text(parseInt(notCont.text()) + 1).show();
         }
     });
@@ -481,7 +478,7 @@ $(function() {
                 var item = form.attr("data-item");
                 var borrow = form.attr("data-borrow");
                 if(item == message.item && borrow == message.borrow){
-                    setLoadData("yb-borrow-messages-container", message.url);
+                    setLoadData("yb-borrow-messages-container", checkJsonURL(message.url));
                     updateMessageScroll();
                 } else {
                     iziToast.info({
@@ -553,8 +550,6 @@ $(function() {
         }
     });
 
-    
-
     $(window).scroll(function(e){
         if($(this).scrollTop() > 5.454545497894287){
             $(".yb-header-else").show();
@@ -624,6 +619,11 @@ $(function() {
 
 function capitalize(text){
     return text.replace(text.charAt(0), text.charAt(0).toUpperCase())
+}
+
+function checkJsonURL(url){
+    if (url.endsWith(".json")) { return url.replace('.json', ''); }
+    else { return url; }
 }
 
 function setLoadData(container, url){
@@ -826,6 +826,13 @@ function makeNumber(number){
     return (number >= 1000) ? numeral(number).format('0.0 a') : numeral(number).format('0 a');
 }
 
+function addScript(url) {
+    var script = document.createElement('script');
+    script.type = 'application/javascript';
+    script.src = url;
+    document.head.appendChild(script);
+}
+
 jQuery.fn.setDate = function(){
     setInterval(() => {
         var time = $(this).attr("data-date");
@@ -962,6 +969,8 @@ jQuery.fn.likeItemEvent = function(){
         var notUser = $(this).attr("data-not-user");
         var notURL = $(this).attr("data-not-url");
 
+        var itemURL = $(this).attr("data-url");
+
         jQuery.ajax({
             type: "post",
             url: url,
@@ -970,13 +979,13 @@ jQuery.fn.likeItemEvent = function(){
             contentType: false,
             success: function(response){
                 if(response.type == "like"){
-                    socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user});
+                    socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user, "about": "like_item", "url": itemURL});
                     socket.emit("setNotification", user);
                     form.find(".like-" + item).html("<i class='icon ion-ios-heart liked'></i>");
                     socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
-                    socket.emit("like", {"item": item, "type": "dislike", "liker": liker, "user": user})
+                    socket.emit("like", {"item": item, "type": "dislike", "liker": liker, "user": user, "about": "like_item", "url": itemURL})
                     form.find(".like-" + item).html("<i class='icon ion-ios-heart-outline'></i>")
                     showSuccessMessage(randomString(8), response.text)
                 } else {
@@ -1168,9 +1177,11 @@ jQuery.fn.postItemComment = function(){
         var url = $(this).attr("action");
         var comments = $(this).attr("data-url");
         var item = $(this).attr("data-item");
-        var form = $(this);
         var from = $(this).attr("data-from");
         var user = $(this).attr("data-user");
+        var commenter = $(this).attr("data-commenter");
+        var itemURL = $(this).attr("data-item-url");
+
         var notIcon = $(this).attr("data-not-icon");
         var notUser = $(this).attr("data-not-user");
         var notURL = $(this).attr("data-not-url");
@@ -1183,7 +1194,7 @@ jQuery.fn.postItemComment = function(){
             contentType: false,
             success: function(response){
                 if(response.type == "success"){
-                    socket.emit("comment", {"url": comments, "item": item, "from": from });
+                    socket.emit("comment", {"url": comments, "item": item, "from": from, "user": user, "commenter": commenter, "itemurl": itemURL, "about": "comment_item"});
                     socket.emit("setNotification", user);
                     socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a comment on your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage("success", response.text);
@@ -1460,14 +1471,17 @@ jQuery.fn.messageText = function(){
     var sender = _this.attr("data-sender");
     var path = _this.attr("data-path");
     _this.find("textarea").keyup(function(e){
-        var value = $(this).val();
+        var value = $(this).val( $(this).val().replace( /\r?\n/gi, '' ) );
         if (value != ""){
             _this.find("button").removeAttr("disabled").children("i").addClass("yb-btn-color");
         } else {
             _this.find("button").attr("disabled", "disabled").children("i").removeClass("yb-btn-color");
         }
         emitTypeTextSocket(value, _this);
-        if (e.keyCode === 13) _this.find("button[type=submit]").click();
+        if (e.keyCode === 13){
+            e.preventDefault();
+            _this.find("button[type=submit]").click();
+        }
     });
     _this.find("input[type=file]").change(function(){
         var value = $(this).val();
@@ -1501,7 +1515,8 @@ jQuery.fn.messageText = function(){
                     "message": response.text,
                     "url": url,
                     "path": path,
-                    "type": "message"
+                    "type": "message",
+                    "about": "borrow_message"
                 }
                 socket.emit("messageSent", message);
                 _this.children("textarea").val("");
@@ -2136,7 +2151,7 @@ ConvertItemPrice.prototype.month = function(){
 ConvertItemPrice.prototype.year = function(){
     switch(this.to){
         case this.per[0]:
-            this.price / (12 * 30 * 24)
+            return this.price / (12 * 30 * 24)
         case this.per[1]:
             return this.price / (12 * 30)
         case this.per[2]:

@@ -1,4 +1,7 @@
 class ItemRequest < ApplicationRecord
+
+    include ApplicationHelper
+
     belongs_to :user
     belongs_to :category
     belongs_to :subcategory
@@ -14,6 +17,14 @@ class ItemRequest < ApplicationRecord
   		      @likes.append(user.user.id)
         end
         return @likes
+    end
+
+    def max_price_to_s
+        return number_to_s(self.max_price)
+    end
+
+    def min_price_to_s
+        return number_to_s(self.min_price)
     end
 
     def check_expiration

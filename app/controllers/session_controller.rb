@@ -1,5 +1,6 @@
 class SessionController < ApplicationController
 
+	before_action :check_token
 	before_action :set_session
 	before_action :set_data_items_counts
 	

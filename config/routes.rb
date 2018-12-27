@@ -5,8 +5,8 @@ Rails.application.routes.draw do
 
     mount Sidekiq::Web => '/admin/sidekiq/report'
 
-    get 'error/404', to: 'error#not_found_error', as: 'not_found_error', :via => :all
-    get 'error/500', to: 'error#internal_server_error', as: 'internal_server_error', :via => :all
+    get '/404', to: 'error#not_found_error', as: 'not_found_error', via: :all
+    get '/500', to: 'error#internal_server_error', as: 'internal_server_error', via: :all
 
     root 'home#index'
     get 'home/index'
@@ -27,7 +27,7 @@ Rails.application.routes.draw do
     patch '/session/update/address', to: 'session#update_address', as: 'session_update_address'
     patch '/session/update/contact', to: 'session#update_contact', as: 'session_update_contact'
 
-    get '/session/borrowed', to: 'session#borrowed', as: 'session_borrowed'
+    get '/session/lending', to: 'session#borrowed', as: 'session_borrowed'
     get '/session/borrowing', to: 'session#borrowing', as: 'session_borrowing'
     get '/session/favourites', to: 'session#favourites', as: 'session_favourites'
     get '/session/likes', to: 'session#likes', as: 'session_likes'
@@ -50,16 +50,23 @@ Rails.application.routes.draw do
         end
     end
 
+    post '/item/:item_id/comment/create', to: 'comments#create', as: 'create_item_comment'
+    patch '/item/:item_id/comment/:id/update', to: 'comments#update', as: 'update_item_comment'
+    delete '/item/:item_id/comment/:id/delete', to: 'comments#destroy', as: 'delete_item_comment'
+    post '/items/:item_id/item_borrow_user/:item_borrow_user_id/borrow_messages/send', to: 'borrow_messages#create', as: 'send_message'
+
     post '/item/create', to: 'items#create', as: 'item_create'
     post '/item/:id/update', to:'items#update', as: 'item_update'
 
     get '/item/:username/enc-dt-:uuid-:id', to: 'items#show', as: 'item_show'
+    get '/item/:username/enc-dt-:uuid-:id/ajax', to: 'items#show_ajax', as: 'item_show_ajax'
     get '/item/:username/enc-dt-:uuid-:id/edit', to: 'items#edit', as: 'item_edit'
     get '/item/:username/enc-dt-:uuid-:item_id/borrow', to: 'item_borrow_user#new', as: 'borrow_item'
     get '/item/:username/enc-dt-:uuid-:id/available', to: 'items#available', as: 'item_available'
 
     get '/item/:username/enc-dt-:uuid-:item_id/borrows', to: 'item_borrow_user#index', as: 'item_borrows'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow', to: 'item_borrow_user#show', as: 'item_borrow'
+    post '/item/enc-dt-:uuid-:item_id/borrow/create', to: 'item_borrow_user#create', as: 'create_item_borrow'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow/description', to: 'item_borrow_user#description', as: 'item_borrow_description'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow/description/download.pdf', to: 'item_borrow_user#download_borrow_data', as: 'item_borrow_description_download'
 
@@ -105,7 +112,7 @@ Rails.application.routes.draw do
     get '/user/:username-:id/likes', to: 'user#likes', as: 'user_likes'
     get '/user/:username-:id/followers', to: 'user#followers', as: 'user_followers'
     get '/user/:username-:id/following', to: 'user#following', as: 'user_following'
-    get '/user/:username-:id/borrowed', to: 'user#borrowed', as: 'user_borrows'
+    get '/user/:username-:id/lending', to: 'user#borrowed', as: 'user_borrows'
     get '/user/:username-:id/borrowing', to: 'user#borrowing', as: 'user_borrowing'
     get '/user/:username-:id/requests', to: 'user#requests', as: 'user_requests'
     post '/user/:id/follow', to: 'user#follow_user', as: 'user_follow'

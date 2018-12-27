@@ -8,7 +8,7 @@ class HomeController < ApplicationController
 	skip_before_action :verify_authenticity_token, only: [:notification_getway]
 
 	def index
-		@items = Item.all
+		@items = Item.all.shuffle
 	end
 
 	def search

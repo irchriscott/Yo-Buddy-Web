@@ -227,6 +227,7 @@ module ItemBorrowUserHelper
         message.receiver_id = 0
         message.message = status
         message.status = "unread"
+        message.has_images = false
         message.is_deleted = false
         message.save
     end
@@ -357,12 +358,12 @@ module ItemBorrowUserHelper
                     </body>
                 </html>"
     end
-end
 
-def get_qr_user(borrow, qr_borrower, qr_owner)
-    if session_user.id == borrow.user.id then
-        return raw qr_borrower.as_html
-    else
-        return raw qr_owner.as_html
+    def get_qr_user(borrow, qr_borrower, qr_owner)
+        if session_user.id == borrow.user.id then
+            return raw qr_borrower.as_html
+        else
+            return raw qr_owner.as_html
+        end
     end
 end

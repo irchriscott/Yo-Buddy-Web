@@ -40,6 +40,19 @@ module ApplicationHelper
 	    end
   	end
 
+  	def number_to_s(num)
+  		types = ["Integer", "Fixnum", "Float", "Bignum"]
+  		if types.include?(num.class.to_s) then
+  			if num > 1000000000000 then return "#{(num / 1000000000000).round(2)} Tn" end
+  			if num > 1000000000 then return "#{(num / 1000000000).round(2)} Bn" end
+  			if num > 1000000 then return "#{(num / 1000000).round(2)} M" end
+  			if num > 1000 then return "#{(num / 1000).round(2)} K" end
+  			return num
+  		else
+  			return num
+  		end
+  	end
+
 	def can_add_item(user, count)
 		@user = User.find(user)
   		if @user.is_private? then

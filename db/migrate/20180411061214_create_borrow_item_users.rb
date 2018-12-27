@@ -7,6 +7,7 @@ class CreateBorrowItemUsers < ActiveRecord::Migration[5.1]
       t.string :currency
       t.string :per
       t.string :conditions
+      t.string :reasons
       t.string :status
       t.integer :numbers
       t.integer :count

@@ -6,6 +6,7 @@ class CreateItemRequests < ActiveRecord::Migration[5.1]
       t.references :subcategory, foreign_key: true
       t.string :title
       t.string :description
+      t.string :reasons
       t.datetime :from_date
       t.datetime :to_date
       t.float :min_price

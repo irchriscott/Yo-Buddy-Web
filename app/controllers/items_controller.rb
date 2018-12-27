@@ -5,8 +5,8 @@ class ItemsController < ApplicationController
 
     before_action :check_session, only: [:new, :edit]
     before_action :set_item_data_item, only: [:new, :edit, :create, :update, :show]
-    before_action :check_token, only:[:like_item, :like_item_destroy, :create, :destroy, :update, :delete_image_item]
-    skip_before_action :verify_authenticity_token
+    before_action :check_token, only:[:like_item, :like_item_destroy, :create, :destroy, :update, :delete_image_item, :favourite_item]
+    skip_before_action :verify_authenticity_token, only: [:like_item, :like_item_destroy, :create, :destroy, :update, :delete_image_item, :favourite_item]
     before_action :check_active
 
     def index
@@ -17,10 +17,17 @@ class ItemsController < ApplicationController
         @item = Item.find(params[:id])
     end
 
+    def show_ajax
+        @item = Item.find(params[:id])
+        @others = Item.where("id != :id", {id: @item.id}).where(category_id: @item.category.id).limit(10).shuffle
+        render layout: false
+    end
+
     def new
         @source = params[:source]
+        @type = params[:type]
         @item = Item.new
-        render layout: false
+        if @type == "ajax" then render layout: false end
     end
 
     def create
@@ -42,16 +49,23 @@ class ItemsController < ApplicationController
 
                 if @item.save then
                     images = params[:item][:image]
-                    for image in images
-                        @image = ItemImage.new
-                        @image.item_id = @item.id
-                        @image.image = image
-                        if @image.save then
-                        else
-                            flash[:danger] = @image.errors.full_messages
-                            format.json{ render json: {"type" => "error", "text" => @image.errors.full_messages} }
-                        end
-                    end
+                    if images.count > 0 then
+	                    for image in images
+	                        @image = ItemImage.new
+	                        @image.item_id = @item.id
+	                        @image.image = image
+	                        if @image.save then
+	                        else
+	                            flash[:danger] = @image.errors.full_messages
+	                            format.json{ render json: {"type" => "error", "text" => @image.errors.full_messages} }
+	                        end
+	                    end
+	                else
+	                	@item.destroy
+	                	params[:source] == "admin" ? format.html { redirect_to admin_u_items_path } : format.html { redirect_to session_items_path }
+	                    format.json { render json: {"type" => "error", "text" => "Images cannot be null !!!"}, status: :unprocessable_entity }
+	                    flash[:danger] = "Images cannot be null !!!"
+	                end
 
                     if session_user.is_private? then
                         AdminItem.create([item_id: @item.id, borrow_id: 0, status: "Returned", is_available: true])
@@ -291,7 +305,6 @@ class ItemsController < ApplicationController
         check_like = ItemLike.where(user_id: user_id, item_id: params[:like][:item_id]).first
 
         if @active == true then
-            render json: {"type" => "like", "text" => "Item Liked !!!"}
             if check_like == nil then
                 if @like.save then
                     Notification.create([{user_from_id: session[:user_id], user_to_id: item.user.id, ressource: "item_like", ressource_id: item.id, is_read: false}])
@@ -369,6 +382,6 @@ class ItemsController < ApplicationController
     end
 
     private def item_params
-        params.require(:item).permit(:name, :category_id, :subcategory_id, :price, :currency, :per, :description, :count)
+        params.require(:item).permit(:name, :category_id, :subcategory_id, :price, :currency, :per, :description, :count, :sale_value)
     end
 end
