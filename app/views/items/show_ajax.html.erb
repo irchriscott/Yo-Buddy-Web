@@ -1,4 +1,4 @@
-<div class="yb-modal-container" style="width: 60%;">
+<div class="yb-modal-container" style="width: 700px; overflow: visible;">
 	<div class="yb-single-item-main">
 		<div class="yb-single-info">
 			<div class="yb-single-user-img">
@@ -9,7 +9,7 @@
 		        <% end %>
 			</div>
 			<div class="yb-single-info-item">
-				<h3><%= @item.name %></h3>
+				<h3><a href="<%= item_show_path(@item.user.username, @item.uuid, @item) %>"><%= @item.name %></a></h3>
 				<p class="yb-single-category"><%= link_to @item.category.name, category_path(@item.category.uuid, @item.category, activate: @item.category.id) %> - <%= link_to @item.subcategory.name, subcategory_path(@item.category.uuid, @item.category, @item.subcategory) %></p>
 				<p class="yb-single-user-date">by <%= link_to @item.user.name, user_items_path(@item.user.username, @item.user) %> - <span id="item_date" data-date="<%= @item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
 				<% if is_logged_in? %>
@@ -28,9 +28,26 @@
 			</div>
 		</div>
 		<div class="yb-single-price">
-			<span><i class="icon ion-ios-pricetags"></i></span>
+			<span><i class="icon ion-ios-pricetags"></i></span> 
 			<span id="item_price" data-number="<%= @item.price %>"></span>
 			<span><%= @item.currency %></span> / <span><%= @item.per %></span>
+		</div>
+		<hr style="display: block;">
+		<div class="yb-single-item-imgs">
+			<div class="yb-single-images">
+				<ul>
+					<% @item.item_image.each do |image| %>
+						<li <% if @item.item_image[0] == image %>class="activated"<% end %>>
+							<a href="<%= image.image.url %>" data-image-id="<%= image.id %>">
+								<%= image_tag image.image.url, alt: @item.name %>
+							</a>
+						</li>
+					<% end -%>
+				</ul>
+			</div>
+			<div class="yb-single-image" data-image-id="<%= @item.item_image[0].id %>">
+				<%= image_tag @item.item_image[0].image.url, alt: @item.name, id: "item_image_main"%>
+			</div>
 		</div>
 		<div class="yb-single-quantity">
 			<p><span><strong>Quantity : </strong><%= @item.count %> Items</span> - <span><strong>Available Now : </strong><%= @item.available %> Items</span></p>
@@ -81,7 +98,7 @@
 			</ul>
 			<div class="yb-item-menu-container">
 				<span class="yb-item-menu" id="yb-item-menu-item" data-id="menu-item"><i class="icon ion-chevron-down"></i></span>
-				<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-menu-item">
+				<div class="yb-item-menu-list yb-menu-list" id="yb-menu-items-menu-item" style="margin-bottom: 10px;">
 					<ul>
 						<% if is_logged_in? %>
 						<% if session_user.id == @item.user.id %>
@@ -94,6 +111,40 @@
 						<li><a id="yb-favourite-item"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourite</span></a></li>
 						<li><a href="<%= report_new_path(@item.id) %>?ressource=item" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
 					</ul>
+				</div>
+			</div>
+		</div>
+		<h3 style="text-align: center; font-size: 16px;">Similar Items</h3>
+		<hr style="display: block;">
+		<div class="yb-some-items-container" id="yb-similar-items" style="margin: auto; height: 130px;">
+			<div class="yb-item-previous-else yb-btn-prev">
+				<span><i class="icon ion-ios-arrow-back"></i></span>
+			</div>
+			<div class="yb-item-next-else yb-btn-next">
+				<span><i class="icon ion-ios-arrow-forward"></i></span>
+			</div>
+			<div style="width: auto; overflow:hidden; display: block;position: relative;">
+				<div class="yb-some-items-list" style="height: 130px;">
+					<% if @others.count > 0 %>
+						<ul style="height: 130px;">
+							<% @others.each do |item| %>
+								<li>
+									<div class="yb-some-item">
+										<div class="yb-item-image">
+											<a href="<%= item_show_ajax_path(item.user.username, item.uuid, item) %>" id="yb-show-item-ajax-<%= item.id %>">
+												<%= image_tag item.item_image[0].image.url, alt: item.name %>
+											</a>
+										</div>
+										<div class="yb-item-bottom">
+											<h4><%= item.name %></h4>
+											<p><%= item.price_to_s %> <%= item.currency %> / <%= item.per %></p>
+										</div>
+									</div>
+									<script type="text/javascript">$("#yb-show-item-ajax-<%= item.id %>").magnificPopup({type:'ajax'});</script>
+								</li>
+							<% end %>
+						</ul>
+					<% end %>
 				</div>
 			</div>
 		</div>
@@ -110,5 +161,14 @@
 	    $(".like-item").likeItem();
 	    $(".like-form").likeItemEvent();
 	    $("#yb-favourite-item-form").favoutiteItem();
+	    $("#yb-similar-items").scrollDivClick();
+	    $(".yb-single-images ul li a").click(function(e){
+	        e.preventDefault();
+	        var image = $(this).attr("href");
+	        var id = $(this).attr("data-image-id");
+	        $(this).parent("li").addClass("activated").siblings().removeClass("activated");
+	        $("#item_image_main").attr("src", image);
+	        $("#item_image_main").parent(".yb-single-image").attr("data-image-id", id);
+	    });
 	</script>
 </div>

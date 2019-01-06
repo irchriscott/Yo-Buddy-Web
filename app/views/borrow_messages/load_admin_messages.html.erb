@@ -1,0 +1,18 @@
+<% if @messages.count > 0 %>
+	<% @messages.each do |message| %>
+		<% if message.sender_id == 0 %>
+			<div class="yb-admin-msg">
+				<p><strong>Yo Buddy : </strong> <%= message.message %></p>
+				<span id="yb-msg-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
+			</div>
+		<% else %>
+			<div class="yb-admin-msg">
+				<p><strong><%= message.sender.name %> : </strong> <%= message.message %></p>
+				<span id="yb-msg-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
+			</div>
+		<% end -%>
+		<script type="text/javascript">$("#yb-msg-date-<%= message.id %>").setDate();</script>
+	<% end -%>
+<% else %>
+	<p class="yb-error">NO MESSAGES HERE</p>
+<% end -%>

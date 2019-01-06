@@ -2,13 +2,14 @@ class BorrowMessagesController < ApplicationController
 
 	include ApplicationHelper
 
-	before_action :check_token
-	before_action :set_data
-	before_action :check_active
+	before_action :check_token, except: [:admin_messages, :load_admin_messages, :send_admin_message]
+	before_action :set_data, except: [:admin_messages, :load_admin_messages, :send_admin_message]
+	before_action :check_active, except: [:admin_messages, :load_admin_messages, :send_admin_message]
+	before_action :check_privacy, only: [:admin_messages, :load_admin_messages, :send_admin_message]
 	skip_before_action :verify_authenticity_token, only: [:create, :send_images]
 
 	def index
-		@messages = @borrow.borrow_message.all.order(created_at: :asc)
+		@messages = @borrow.borrow_message.where("status != :status", {status: "yb"}).order(created_at: :asc)
 		render layout: false
 	end
 
@@ -50,14 +51,19 @@ class BorrowMessagesController < ApplicationController
 		if @active == true then
 			if @message.save then
 				images = params[:message][:images]
-				for image in images
-					@image_message = BorrowMessageImage.new
-					@image_message.borrow_message_id = @message.id
-					@image_message.image = image
-					if @image_message.save then
-					else
-						render json: {"type" => "error", "text" => @image_message.errors.full_messages}
+				if images.count > 0 then
+					for image in images
+						@image_message = BorrowMessageImage.new
+						@image_message.borrow_message_id = @message.id
+						@image_message.image = image
+						if @image_message.save then
+						else
+							render json: {"type" => "error", "text" => @image_message.errors.full_messages}
+						end
 					end
+				else
+					@message.destroy
+					render json: {"type" => "error", "text" => "Images cannot be null"}
 				end
 				render json: {"type" => "success", "text" => "Has sent Images !!!"}
 			else
@@ -70,6 +76,30 @@ class BorrowMessagesController < ApplicationController
 
 	def destroy
 	end
+
+	def admin_messages
+		@sender = session[:admin] != nil ? 0 : @borrow.user.id
+		@receiver = session[:admin] != nil ? @borrow.user.id : 0 
+		@with = session[:admin] != nil ? @borrow.user.username.capitalize! : "Yo Buddy" 
+        render layout: false
+    end
+
+    def send_admin_message
+    	@message = @borrow.borrow_message.create({
+    		"sender_id" => params[:admin_message][:sender_id],
+    		"receiver_id" => params[:admin_message][:receiver_id],
+    		"message" => params[:admin_message][:message],
+    		"has_images" => false,
+    		"status" => "yb",
+    		"is_deleted" => false
+    	})
+    	render json:{"type" => "success", "text" => params[:admin_message][:message]}
+    end
+
+    def load_admin_messages
+        @messages = @borrow.borrow_message.where("receiver_id = 0 OR sender_id = 0").where("receiver_id = :borrower OR sender_id = :borrower", {borrower: @borrow.user.id}).order(created_at: :asc)
+        render layout: false
+    end
 
 	private def message_params
 		params.require(:message).permit(:message, :receiver_id, :is_deleted, :status)

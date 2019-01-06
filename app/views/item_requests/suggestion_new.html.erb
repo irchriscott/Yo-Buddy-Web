@@ -1,6 +1,6 @@
-<div class="yb-modal-container">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>Add New Request Suggestion Item</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>Add New Request Suggestion Item</h2>
 		<% if @active == true %>
 			<%= form_for @suggestion, url: item_request_create_suggestion_path(@request), html: {id: "yb-create-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request), "data-not-icon": session_user.profile_image, "data-not-user": session_user.name, "data-not-url": item_request_url(@request.user.username, @request.uuid, @request)} do |form| %>
 				<label>Item Name :</label>
@@ -51,13 +51,17 @@
 				<div class="yb-item-images-preview" id="yb-images-preview"></div>
 				<div style="display: block; position: relative;">
 					<button type="submit">Submit</button>
+					<% if @type == "ajax" %>
 					<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+					<% end %>
 				</div>
 			<% end %>
 			<script type="text/javascript">CKEDITOR.replace( 'yb-item-description' );</script>
 		<% else %>
 			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		<% end %>
 	</div>
 	<script type="text/javascript">

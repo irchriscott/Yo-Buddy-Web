@@ -36,6 +36,10 @@ class Item < ApplicationRecord
         return number_to_s(self.price)
     end
 
+    def time_ago
+        return time_ago_in_words(self.created_at)
+    end
+
     def available
         counts = 0
         borrows = self.borrow_item_user.where("status = :status OR status = :status_else", {status: "accepted", status_else: "rendered"})

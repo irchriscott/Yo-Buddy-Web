@@ -1,6 +1,6 @@
-<div class="yb-modal-container" style="width: 30%;">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>Update Request Suggestion</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>Update Request Suggestion</h2>
 		<% if @active == true %>
 			<%= form_for @suggestion, url: item_request_suggestion_update_path(@request, @suggestion), html: {id: "yb-update-request-suggestion-item", "data-owner": @request.user.id, "data-request": @request.id, "data-user": session_user.username, "data-url": item_request_suggestions_path(@request), method: "patch", "data-from": "update"} do |form| %>
 				<label>Price :</label>
@@ -24,12 +24,16 @@
 				<%= form.hidden_field :status, value: @sug_status[0] %>
 				<div style="display: block; position: relative; margin-top: 10px;">
 					<button type="submit">Submit</button>
+					<% if @type == "ajax" %>
 					<button type="button" id="yb-close-update-suggestion-about" class="yb-btn-cancel">Cancel</button>
+					<% end %>
 				</div>
 			<% end %>
 		<% else %>
 			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-update-suggestion-about" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		<% end %>
 		<style type="text/css">input{width: calc(100% - 22px);} select{width: 100%;}</style>
 		<script type="text/javascript">$("#yb-close-update-suggestion-about").closePopup(); $("#yb-update-request-suggestion-item").suggestItemRequest();</script>

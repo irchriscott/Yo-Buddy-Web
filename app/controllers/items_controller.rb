@@ -11,10 +11,13 @@ class ItemsController < ApplicationController
 
     def index
         @items = Item.all.order(created_at: :desc).paginate(page: params[:page], per_page: 10)
+        @title = "YB - Items"
     end
 
     def show
         @item = Item.find(params[:id])
+        @title = "YB - Item #{@item.name}"
+        @others = Item.where("id != :id", {id: @item.id}).where(category_id: @item.category.id).limit(5).shuffle
     end
 
     def show_ajax
@@ -27,6 +30,7 @@ class ItemsController < ApplicationController
         @source = params[:source]
         @type = params[:type]
         @item = Item.new
+        @title = "YB - New Item"
         if @type == "ajax" then render layout: false end
     end
 
@@ -91,7 +95,9 @@ class ItemsController < ApplicationController
     def edit
         @item = Item.find(params[:id])
         @source = params[:source]
-        if @item.user.id == session[:user_id] then
+        @type = params[:type]
+        @title = "YB - Edit Item #{@item.name}"
+        if @item.user.id == session[:user_id] and @type == "ajax" then
             render layout: false
         end
     end
@@ -151,7 +157,8 @@ class ItemsController < ApplicationController
         @item = Item.find(params[:id])
         now = Time.new.localtime
         @borrows = @item.borrow_item_user.where("status = :status OR status = :status_else", {status: "accepted", status_else: "rendered"}).order(from_date: :asc)
-        
+        @title = "YB - Availability of #{@item.name}"
+
         if @borrows.count > 0 then
             if @borrows[0].from_date.localtime > now then
                 date = Hash.new 
@@ -250,7 +257,8 @@ class ItemsController < ApplicationController
             end
         end
 
-        render layout: false
+        @type = params[:type]
+        if @type == "ajax" then render layout: false end
     end
 
     def delete_image_item

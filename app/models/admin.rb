@@ -1,5 +1,7 @@
 class Admin < ApplicationRecord
-  
+    
+    has_many :borrow_item_user
+
     mount_uploader :image, ImageUploader
     
     validates :name,  presence: true, length: { maximum: 50 }

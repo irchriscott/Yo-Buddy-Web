@@ -17,10 +17,6 @@ class BorrowUserMailerWorker
 					borrow.status = "failed"
 					borrow.save
 					save_message "failed", borrow
-                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                    BorrowUserMailer.with(borrow: borrow).status(borrow.user.email).deliver_now
-                    BorrowUserMailer.with(borrow: borrow).status(borrow.item.user.email).deliver_now
 				end
 			elsif borrow.status == "accepted" then
 				received = borrow.borrow_item_admin.where(status: "received").last
@@ -33,20 +29,12 @@ class BorrowUserMailerWorker
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
 								end
 							else
 								if now > check_date(received.created_at.localtime, 0, 1, 0) then
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                                 end
 							end
 						elsif borrow.per == pers[1] then
@@ -55,20 +43,12 @@ class BorrowUserMailerWorker
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                                 end
 							else
 								if now > check_date(received.created_at.localtime, 1, 0, 0) then
 									borrow.status = "failed"
 									borrow.save
 									save_message "failed", borrow
-                                    Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-								    Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
-                                    BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                                 end
 							end
 						elsif borrow.per == pers[2] then
@@ -76,20 +56,12 @@ class BorrowUserMailerWorker
 								borrow.status = "failed"
 								borrow.save
 								save_message "failed", borrow
-                                Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
-                                BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
                             end
 						else
 							if now > check_date(received.created_at.localtime, 3, 0, 0) then
 								borrow.status = "failed"
 								borrow.save
 								save_message "failed", borrow
-                                Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
-                                BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
-                                BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
 							end
 						end
 					end
@@ -104,6 +76,11 @@ class BorrowUserMailerWorker
     private def save_message(status, borrow)
     	borrow.status = status
         borrow.save
+
+        Notification.create([{user_from_id: borrow.user.id, user_to_id: borrow.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+        Notification.create([{user_from_id: borrow.item.user.id, user_to_id: borrow.item.user.id , ressource: "self_update_item_borrow_failed", ressource_id: borrow.id, is_read: false}])
+        BorrowUserMailer.with(borrow: borrow).failed(borrow.user.email).deliver_now
+        BorrowUserMailer.with(borrow: borrow).failed(borrow.item.user.email).deliver_now
         
         message = BorrowMessage.new
         message.borrow_item_user_id = borrow.id

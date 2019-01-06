@@ -18,7 +18,7 @@
 									<% end -%>
 									<% elsif session_user.id == suggestion.item.user.id -%>
 									<% if suggestion.status != @sug_status[1] -%>
-									<li><a href="<%= item_request_suggestion_edit_path(suggestion.item_request, suggestion) %>" id="yb-request-suggestion-update-<%= suggestion.id %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
+									<li><a href="<%= item_request_suggestion_edit_path(suggestion.item_request, suggestion) %>?type=ajax" id="yb-request-suggestion-update-<%= suggestion.id %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
 									<li><a href="#" id="#"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
 									<% end -%>
 									<% end -%>

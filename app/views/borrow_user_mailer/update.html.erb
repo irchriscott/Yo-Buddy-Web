@@ -2,10 +2,13 @@
 <html>
     <head>
         <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css?family=Nunito:300,400" rel="stylesheet">
         <style type="text/css">
             *{
                 margin: 0;
                 padding: 0;
+                font-family: Poppins, Nunito, sans-serif !important;
             }
             a{
                 text-decoration: none;
@@ -21,7 +24,7 @@
             }
 
             section{
-                width: 60%;
+                width: 70%;
                 margin: 50px auto;
                 background: red;
                 border:2px solid #cc8400;
@@ -61,7 +64,7 @@
             }
 
             .yb-borrow .yb-image{
-                width: 200px;
+                width: 270px;
                 /*float: left;*/
                 margin-right: 25px;
                 background: rgba(0,0,0, .4);
@@ -132,8 +135,8 @@
             }
         </style>
     </head>
-    <body style="font-family: Avenir,'Avenir Next','Helvetica Neue','Segoe UI',Helvetica,Arial,sans-serif !important; background: #DDDD !important;padding: 50px !important;display: block;position: relative;width: 100%;">
-        <section style="width: 60%;margin: 50px auto;background: red;border:2px solid #cc8400;background: white;padding: 40px !important;">
+    <body>
+        <section>
             <div class="yb-header"><h1>Yo Buddy !</h1></div>
             <div class="yb-content">
                 <p class="yb-message">Borrow Item Content No <strong><%= @borrow.code %></strong> has been updated</p>
@@ -145,10 +148,10 @@
                         </div>
                         <div class="yb-description">
                             <h3 style="margin-bottom: 15px;"><a href="<%= item_show_url(@borrow.item.user.username, @borrow.item.uuid, @borrow.item) %>"><%= @borrow.item.name %></a></h3>
-                            <p><strong>Single Price : </strong><%= @borrow.price %> <%= @borrow.currency %> / <%= @borrow.per %></p>
+                            <p><strong>Single Price : </strong><%= @borrow.price_to_s %> <%= @borrow.currency %> / <%= @borrow.per %></p>
                             <p><strong>Number : </strong><%= @borrow.updated_numbers %> <% if @borrow.updated_numbers == 1 %><%= @borrow.per %>  <% else %> <%= "#{@borrow.per}s" %><% end %></p>
                             <p><strong>Quantity : </strong><%= @borrow.count %> Items</p>
-                            <p><strong>Total : </strong><%= @borrow.borrow_total %> <%= @borrow.currency %></p>
+                            <p><strong>Total : </strong><%= @borrow.borrow_total_to_s %> <%= @borrow.currency %></p>
                             <p><strong>From : </strong> <%= @borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
                             <p><strong>To : </strong> <%= @borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
                             <p><strong>Conditions : </strong></p>

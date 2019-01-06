@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  borrow_item_admins: one
+  file: MyString
+  extension: MyString
+
+two:
+  borrow_item_admins: two
+  file: MyString
+  extension: MyString

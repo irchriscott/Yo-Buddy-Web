@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180731140923) do
+ActiveRecord::Schema.define(version: 20190102030502) do
 
   create_table "addresses", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.float "longitude", limit: 24
@@ -85,11 +85,22 @@ ActiveRecord::Schema.define(version: 20180731140923) do
     t.index ["borrow_item_user_id"], name: "index_borrow_item_accounts_on_borrow_item_user_id"
   end
 
+  create_table "borrow_item_admin_files", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "borrow_item_admin_id"
+    t.string "file"
+    t.string "extension"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["borrow_item_admin_id"], name: "index_borrow_item_admin_files_on_borrow_item_admin_id"
+  end
+
   create_table "borrow_item_admins", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.bigint "borrow_item_user_id"
     t.bigint "admin_id"
     t.string "status"
     t.string "state"
+    t.float "coast", limit: 24, null: false
+    t.string "currency", null: false
     t.string "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -115,6 +126,7 @@ ActiveRecord::Schema.define(version: 20180731140923) do
     t.string "currency"
     t.string "per"
     t.string "conditions"
+    t.text "reasons"
     t.string "status"
     t.integer "numbers"
     t.integer "count"
@@ -153,8 +165,9 @@ ActiveRecord::Schema.define(version: 20180731140923) do
 
   create_table "categories", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
     t.string "name"
+    t.string "icon", limit: 100
     t.string "uuid"
-    t.string "description"
+    t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -231,7 +244,8 @@ ActiveRecord::Schema.define(version: 20180731140923) do
     t.bigint "category_id"
     t.bigint "subcategory_id"
     t.string "title"
-    t.string "description"
+    t.text "description"
+    t.text "reasons"
     t.datetime "from_date"
     t.datetime "to_date"
     t.float "min_price", limit: 24
@@ -255,13 +269,14 @@ ActiveRecord::Schema.define(version: 20180731140923) do
     t.float "price", limit: 24
     t.string "per"
     t.string "currency"
-    t.string "description"
+    t.text "description"
     t.string "status"
     t.integer "count"
     t.boolean "is_available"
     t.boolean "is_deleted"
     t.boolean "is_temp"
     t.string "uuid"
+    t.float "sale_value", limit: 24
     t.bigint "category_id"
     t.bigint "subcategory_id"
     t.bigint "user_id"
@@ -270,6 +285,15 @@ ActiveRecord::Schema.define(version: 20180731140923) do
     t.index ["category_id"], name: "index_items_on_category_id"
     t.index ["subcategory_id"], name: "index_items_on_subcategory_id"
     t.index ["user_id"], name: "index_items_on_user_id"
+  end
+
+  create_table "list_borrow_item_files", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
+    t.bigint "list_borrow_item_id"
+    t.string "file"
+    t.string "extension"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_borrow_item_id"], name: "index_list_borrow_item_files_on_list_borrow_item_id"
   end
 
   create_table "list_borrow_items", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1" do |t|
@@ -400,6 +424,7 @@ ActiveRecord::Schema.define(version: 20180731140923) do
   add_foreign_key "admin_user_keypays", "yb_keys"
   add_foreign_key "admin_users", "users"
   add_foreign_key "borrow_item_accounts", "borrow_item_users"
+  add_foreign_key "borrow_item_admin_files", "borrow_item_admins"
   add_foreign_key "borrow_item_admins", "admins"
   add_foreign_key "borrow_item_admins", "borrow_item_users"
   add_foreign_key "borrow_item_follow_ups", "admins"
@@ -426,6 +451,7 @@ ActiveRecord::Schema.define(version: 20180731140923) do
   add_foreign_key "items", "categories"
   add_foreign_key "items", "subcategories"
   add_foreign_key "items", "users"
+  add_foreign_key "list_borrow_item_files", "list_borrow_items"
   add_foreign_key "list_borrow_items", "borrow_item_users"
   add_foreign_key "reports", "users"
   add_foreign_key "subcategories", "categories"

@@ -4,6 +4,7 @@ class BorrowItemUser < ApplicationRecord
 
 	belongs_to :item
 	belongs_to :user
+	belongs_to :admin
 	
 	has_many :borrow_item_admin
 	has_many :borrow_message
@@ -11,13 +12,13 @@ class BorrowItemUser < ApplicationRecord
 	has_many :list_borrow_item
 	has_many :borrow_item_account
 
-	validates :numbers, length: {minimum: 1}
-	validates :count, length: {minimum: 1}
+	validates :numbers, length: { minimum: 1 }
+	validates :count, length: { minimum: 1 }
 	validates :uuid, uniqueness: true
 
-	before_save {self.is_deleted = false}
+	before_save { self.is_deleted = false }
 
-	$pers = Array["Hour", "Day", "Week", "Month", "Year"]
+	$pers = ApplicationHelper::PERS
 	$statuses = Array["accepted", "rendered", "returned", "succeeded"]
 
 	def check_expiration
@@ -28,11 +29,7 @@ class BorrowItemUser < ApplicationRecord
 		now = Time.now
 
 		if self.status == "pending" or self.status == "rejected" then
-			if now > from and now < to then
-				return "orange"
-			else
-				return "lightgreen"
-			end	
+			return (now > from and now < to) ? "orange" : "lightgreen"
 		elsif self.status == "failed" then
 			return "red"
 		else
@@ -60,6 +57,10 @@ class BorrowItemUser < ApplicationRecord
 		return (self.price * self.updated_numbers * self.count) + self.penalties
 	end
 
+	def follow_ups_admin
+		return self.borrow_item_admin.where(status: "report").order(created_at: :asc)
+	end
+
 	def _code
 		message = self.borrow_message.where("message = :message", {message: "accepted"}).first
 		return (message) ? self.created_at.to_i + message.created_at.to_i - self.updated_at.to_i : Time.new.to_i
@@ -67,6 +68,21 @@ class BorrowItemUser < ApplicationRecord
 
 	def code
 		return self._code + self.id
+	end
+
+	def was_received
+		received = self.borrow_item_admin.where(status: "received").last
+		return (received != nil) ? true : false
+	end
+
+	def was_rendered
+		rendered = self.borrow_item_admin.where(status: "rendered").last
+		return (rendered != nil) ? true : false
+	end
+
+	def was_returned
+		returned = self.borrow_item_admin.where(status: "returned").last
+		return (returned != nil) ? true : false
 	end
 
 	def updated_numbers

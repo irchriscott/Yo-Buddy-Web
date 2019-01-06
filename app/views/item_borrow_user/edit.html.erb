@@ -3,7 +3,7 @@
 		<% if @item_borrow.status != "failed" %>
 			<h2>Edit Borrow Item</h2>
 			<% if @active == true then %>
-				<%= form_for :item_borrow, url: item_item_borrow_user_path(@item, @item_borrow) + ".json", method: :patch , html: {id: "yb-borrow-item", 'data-borrow': @item_borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @item_borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_item_borrow_user_path(@item, @item_borrow),  } do |form| %>
+				<%= form_for :item_borrow, url: item_item_borrow_user_path(@item, @item_borrow) + ".json", method: :patch , html: {id: "yb-borrow-item", 'data-borrow': @item_borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @item_borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_borrow_path(@item_borrow.uuid, @item, @item_borrow),  } do |form| %>
 					<div class="yb-add-price">
 						<label>Propose Price :</label>
 						<%= form.hidden_field :item_id, value: @item.id %>
@@ -36,7 +36,9 @@
 					</div>
 					<label>Conditions :</label>
 					<%= form.text_area :conditions, required: true %>
-					
+					<div class="yb-progress-bar-container" style="display: none;">
+						<div class="yb-progress-bar" id="yb-borrow-progress-bar" data-value="20" data-max="100"></div>
+					</div>
 					<div style="display: block; position: relative;">
 						<button type="submit" id="yb-submit-borrow">Submit</button>
 						<button type="button" id="yb-close-borrow-item" class="yb-btn-cancel">Cancel</button>

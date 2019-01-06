@@ -10,6 +10,9 @@
 				<%= form.file_field :images, multiple: true, required: true, accept: "image/jpeg, image/png, image/jpg" %>
 				<span class="yb-upload-img">Add Item Images</span>
 				<div class="yb-item-images-preview" id="yb-images-preview"></div>
+				<div class="yb-progress-bar-container" style="display: none;">
+					<div class="yb-progress-bar" id="yb-message-progress-bar" data-value="20" data-max="100"></div>
+				</div>
 				<div style="display: block; position: relative;">
 					<button type="submit" id="yb-send-borrow-message-images">Send</button>
 					<button type="button" id="yb-close-send-message-images-item" class="yb-btn-cancel">Cancel</button>
@@ -22,7 +25,7 @@
 	</div>
 	<script type="text/javascript">
 		$("#message_images").change(function(e){
-	        multipleImagesPreview(this, "#yb-images-preview");
+	        multipleImagesPreview(this, $("#yb-images-preview"));
 	    });
 	</script>
 </div>

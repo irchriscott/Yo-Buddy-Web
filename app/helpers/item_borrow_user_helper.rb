@@ -1,10 +1,11 @@
 module ItemBorrowUserHelper
 	
 	include UserHelper
+    include ApplicationHelper
     include ActionView::Helpers::OutputSafetyHelper
 
 	def check_borrows
-		pers = Array["Hour", "Day", "Week", "Month", "Year"]
+		pers = ApplicationHelper::PERS
 		now = Time.now
 		BorrowItemUser.all.each do |borrow|
 			from = borrow.from_date.localtime
@@ -111,17 +112,13 @@ module ItemBorrowUserHelper
         @categories = Category.all
         @subcategories = Subcategory.all
 
-        @currencies = Array.new
+        @currencies = ApplicationHelper::CURRENCIES
 
-        @currencies.append({"currency" => "UGX", "name" => "Uganda Shilling"})
-        @currencies.append({"currency" => "FRC", "name" => "Franc Congolais"})
-        @currencies.append({"currency" => "USD", "name" => "United State Dollars"})
-
-        @per = Array["Hour", "Day", "Week", "Month", "Year"]
+        @per = ApplicationHelper::PERS
 
         @item = Item.find(params[:item_id])
 
-        @status = Array["pending", "accepted", "rejected", "rendered", "returned", "succeeded", "failed"]
+        @status = ApplicationHelper::BORROW_STATUSES
     end
 
     def check_owner_borrow
@@ -232,15 +229,28 @@ module ItemBorrowUserHelper
         message.save
     end
 
-    def to_be_rendered(*args)
+    def to_be_received(*args)
         return (args.length > 1) ? BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.id = ?", args[0]).where(status: "accepted").where("DATE(from_date) = ?", args[2]).order(created_at: :desc) : BorrowItemUser.joins("INNER JOIN items ON borrow_item_users.item_id = items.id INNER JOIN users ON items.user_id = users.id").where("users.is_private = ?", false).where(status: "accepted").where("DATE(from_date) = ?", Time.now.to_date).order(created_at: :desc)
+    end
+
+    def to_be_rendered(*args)
+        borrows = Array.new
+        BorrowItemUser.all.each do |borrow|
+            if borrow.was_received && borrow.from_date.localtime.to_date == args[0] then
+                if args.length == 1 then
+                    borrows.push(borrow) if !borrow.item.user.is_private?
+                else
+                    borrows.push(borrow) if borrow.item.user.id == args[1]
+                end 
+            end
+        end
+        return borrows
     end
 
     def to_be_returned(*args)
         borrows = Array.new
         BorrowItemUser.all.each do |borrow|
-            rendered = borrow.borrow_item_admin.where(status: "rendered").last
-            if rendered != nil && borrow.to_date.localtime.to_date == args[0] then
+            if borrow.was_rendered && borrow.to_date.localtime.to_date == args[0] then
                 if args.length == 1 then
                     borrows.push(borrow) if !borrow.item.user.is_private?
                 else
@@ -254,8 +264,7 @@ module ItemBorrowUserHelper
     def late_to_be_received(*args)
         borrows = Array.new
         BorrowItemUser.all.each do |borrow|
-            received = borrow.borrow_item_admin.where(status: "received").last
-            if received == nil && borrow.from_date.localtime.to_date < args[0] then
+            if !borrow.was_received && borrow.from_date.localtime.to_date < args[0] then
                 if args.length == 1 then
                     borrows.push(borrow) if !borrow.item.user.is_private?
                 else
@@ -269,9 +278,7 @@ module ItemBorrowUserHelper
     def late_to_be_rendered(*args)
         borrows = Array.new
         BorrowItemUser.all.each do |borrow|
-            rendered = borrow.borrow_item_admin.where(status: "rendered").last
-            received = borrow.borrow_item_admin.where(status: "received").last
-            if received != nil && rendered == nil && borrow.from_date.localtime.to_date < args[0] then
+            if borrow.was_received && !borrow.was_rendered && borrow.from_date.localtime.to_date < args[0] then
                 if args.length == 1 then
                     borrows.push(borrow) if !borrow.item.user.is_private?
                 else
@@ -285,10 +292,7 @@ module ItemBorrowUserHelper
     def late_to_be_returned(*args)
         borrows = Array.new
         BorrowItemUser.all.each do |borrow|
-            rendered = borrow.borrow_item_admin.where(status: "rendered").last
-            received = borrow.borrow_item_admin.where(status: "received").last
-            returned = borrow.borrow_item_admin.where(status: "returned").last
-            if received != nil && rendered != nil && returned == nil && check_date(borrow.to_date.localtime, 0, 4, 0) < args[0] then
+            if borrow.was_received && borrow.was_rendered && !borrow.was_returned && check_date(borrow.to_date.localtime, 0, 4, 0) < args[0] then
                 if args.length == 1 then
                     borrows.push(borrow) if !borrow.item.user.is_private?
                 else
@@ -360,10 +364,6 @@ module ItemBorrowUserHelper
     end
 
     def get_qr_user(borrow, qr_borrower, qr_owner)
-        if session_user.id == borrow.user.id then
-            return raw qr_borrower.as_html
-        else
-            return raw qr_owner.as_html
-        end
+        return (session_user.id == borrow.user.id) ? (raw qr_borrower.as_html) : (raw qr_owner.as_html)
     end
 end

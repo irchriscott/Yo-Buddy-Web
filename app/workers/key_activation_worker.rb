@@ -90,7 +90,7 @@ class KeyActivationWorker
 	    	when 121..250 then
 	    		return "platinum"
 	    	else
-	    		return "altimate"
+	    		return "ultimate"
 	    end
   	end
 end

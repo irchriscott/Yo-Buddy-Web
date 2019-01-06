@@ -1,5 +1,15 @@
-<section class="yb-home-main" id="yb-home-main">
-</section>
+<style type="text/css">
+	.yb-header-container{
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+
+	.yb-header-container-color{
+		background: var(--primaryColor) !important;
+    	box-shadow: -21.213px 21.213px 30px 0px rgba(158, 158, 158, 0.3) !important;
+	}
+</style>
+<section class="yb-home-main" id="yb-home-main"></section>
 <section class="yb-home-container">
 	<div class="yb-h-d">
 		<div class="yb-description">
@@ -12,44 +22,152 @@
 		<div class="yb-s-i">
 			<div class="yb-some-items">
 				<h2>Featured Items</h2>
-				<div class="yb-some-items-container">
-					<div class="yb-item-previous">
+				<div class="yb-some-items-container" id="yb-home-featured-items">
+					<div class="yb-item-previous yb-btn-prev">
 						<span><i class="icon ion-ios-arrow-back"></i></span>
 					</div>
-					<div class="yb-item-next">
+					<div class="yb-item-next yb-btn-next">
 						<span><i class="icon ion-ios-arrow-forward"></i></span>
 					</div>
-					<div class="yb-some-items-list">
-						<% if @items.count > 0 %>
-							<ul>
-								<% @items.each do |item| %>
-									<li>
-										<div class="yb-some-item">
-											<div class="yb-item-image">
-												<a href="<%= item_show_ajax_path(item.user.username, item.uuid, item) %>" id="yb-show-item-ajax-<%= item.id %>">
-													<%= image_tag item.item_image[0].image.url, alt: item.name %>
-												</a>
+					<div style="width: auto; overflow:hidden; display: block;position: relative;">
+						<div class="yb-some-items-list">
+							<% if @items.count > 0 %>
+								<ul>
+									<% @items.each do |item| %>
+										<li>
+											<div class="yb-some-item">
+												<div class="yb-item-image">
+													<a href="<%= item_show_ajax_path(item.user.username, item.uuid, item) %>" id="yb-show-item-ajax-<%= item.id %>">
+														<%= image_tag item.item_image[0].image.url, alt: item.name %>
+													</a>
+												</div>
+												<div class="yb-item-bottom">
+													<h4><%= item.name %></h4>
+													<p><%= item.price_to_s %> <%= item.currency %> / <%= item.per %></p>
+												</div>
 											</div>
-											<div class="yb-item-bottom">
-												<h4><%= item.name %></h4>
-												<p><%= item.price_to_s %> <%= item.currency %> / <%= item.per %></p>
-											</div>
-										</div>
-										<script type="text/javascript">$("#yb-show-item-ajax-<%= item.id %>").magnificPopup({type:'ajax'});</script>
-									</li>
-								<% end %>
-							</ul>
-						<% end %>
+											<script type="text/javascript">$("#yb-show-item-ajax-<%= item.id %>").magnificPopup({type:'ajax'});</script>
+										</li>
+									<% end %>
+								</ul>
+							<% end %>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="yb-scroll-down">
+			<span id="yb-scroll-down"><i class="icon ion-ios-arrow-down"></i></span>
+		</div>
+	</div>
+</section>
+<section class="yb-items-categories-container" id="yb-items-categories-container">
+	
+	<div class="yb-objectives-home">
+		<img src="assets/yobuddy.png">
+		<h3>Aim &amp; Solutions</h3>
+		<hr style="display: block;">
+		<div class="yb-objectives">
+			<div class="yb-objective-cnt">
+				<span><i class="icon ion-ios-cart"></i></span>
+				<h2><a href="<%= new_item_path %>">Add Item</a></h2>
+				<p>Add any item that people can borrow or rent and be returned after usage time. People will view and be interested and get in touch with you.</p>
+				<a class="yb-btn-primary" href="#">Learn More <i class="icon ion-ios-arrow-thin-right"></i></a>
+			</div>
+			<div class="yb-objective-cnt">
+				<span><i class="icon ion-forward"></i></span>
+				<h2><a href="<%= new_item_request_path %>">Add Request</a></h2>
+				<p>If you are in need of an item that you want to borrow and missed it in the platform, you add an request for it and people will suggest some items.</p>
+				<a class="yb-btn-primary" href="#">Learn More <i class="icon ion-ios-arrow-thin-right"></i></a>
+			</div>
+			<div class="yb-objective-cnt">
+				<span><i class="icon ion-ios-cart"></i></span>
+				<h2><a href="<%= items_path %>">Borrow Item</a></h2>
+				<p>After you have found an item you want to borrow, send a request to the owner and get in touch as you agree on your terms and conditons and price.</p>
+				<a class="yb-btn-primary" href="#">Learn More <i class="icon ion-ios-arrow-thin-right"></i></a>
+			</div>
+		</div>
+	</div>
+
+	<div class="yb-items-category">
+		<h3>Recommended Items</h3>
+		<hr style="display: block;">
+		<div class="yb-categories-home-all">
+			<% @categories.each do |category| %>
+				<div class="yb-category-home">
+					<p class="yb-category-title"><span><i class="fas">&#x<%= category.icon %>;</i></span> <span><%= category.name %></span></p>
+					<% if is_logged_in? %>
+						<div class="yb-user-follow-category-single" id="yb-user-follow-category-container-<%= category.id %>" data-id="<%= category.id %>">
+							<% if category.followers.include?(session_user.id) %>
+								<p class="bg-followed"><i class="icon ion-ios-heart"></i> Follow</p>
+							<% else %>
+								<p><i class="icon ion-ios-heart-outline"></i> Follow</p>
+							<% end %>
+						</div>
+						<%= form_for :follow, url: category_follow_path(category), html:{id: "yb-user-follow-category-form-#{category.id}", "data-id": category.id} do |form| %>
+							<%= form.hidden_field :category_id, value: category.id %>
+						<% end %>
+					<% end %>
+					<div class="yb-some-items-container" id="yb-home-category-items-<%= category.id %>">
+						<div class="yb-item-previous yb-btn-prev">
+							<span><i class="icon ion-ios-arrow-back"></i></span>
+						</div>
+						<div class="yb-item-next yb-btn-next">
+							<span><i class="icon ion-ios-arrow-forward"></i></span>
+						</div>
+						<div style="width: auto; overflow:hidden; display: block;position: relative;">
+							<div class="yb-some-items-list">
+								<% if category.item.count > 0 %>
+									<ul>
+										<% category.item.each do |item| %>
+											<li>
+												<div class="yb-some-item">
+													<div class="yb-item-image">
+														<a href="<%= item_show_ajax_path(item.user.username, item.uuid, item) %>" id="yb-show-item-cat-ajax-<%= item.id %>">
+															<%= image_tag item.item_image[0].image.url, alt: item.name %>
+														</a>
+													</div>
+													<div class="yb-item-bottom">
+														<h4><%= item.name %></h4>
+														<p><%= item.price_to_s %> <%= item.currency %> / <%= item.per %></p>
+													</div>
+												</div>
+												<script type="text/javascript">$("#yb-show-item-cat-ajax-<%= item.id %>").magnificPopup({type:'ajax'});</script>
+											</li>
+										<% end %>
+									</ul>
+								<% end %>
+							</div>
+						</div>
+					</div>
+					<br>
+					<hr style="display: block; width: 35%;">
+				</div>
+				<script type="text/javascript">
+					$("#yb-home-category-items-<%= category.id %>").scrollDivClick();
+					$("#yb-user-follow-category-container-<%= category.id %>").followCategory();
+					$("#yb-user-follow-category-form-<%= category.id %>").followCategoryEvent();
+				</script>
+			<% end %>
+		</div>
 	</div>
 </section>
 
-<style type="text/css">
-	.yb-header-container{
-		background: transparent !important;
-		box-shadow: none !important;
-	}
-</style>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var opactity = 0;
+		var end = 100;
+		$(window).scroll(function(e){
+			var offset = $(this).scrollTop();
+			if(offset >= end){
+				opactity = 1;
+				var background = "rgba(204,132,0, "+ opactity +") !important";
+				$(".yb-header-container").addClass("yb-header-container-color").attr("style", "background:" + background);
+			} else {
+				var opactity = offset / end;
+				var background = "rgba(204,132,0, "+ opactity +") !important";
+				$(".yb-header-container").removeClass("yb-header-container-color").attr("style", "background:" + background);
+			}
+		});
+	});
+</script>

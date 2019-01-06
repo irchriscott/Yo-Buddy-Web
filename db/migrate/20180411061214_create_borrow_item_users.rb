@@ -3,6 +3,7 @@ class CreateBorrowItemUsers < ActiveRecord::Migration[5.1]
     create_table :borrow_item_users do |t|
       t.references :item, foreign_key: true
       t.references :user, foreign_key: true
+      t.references :admin, foreign_key: true
       t.float :price
       t.string :currency
       t.string :per

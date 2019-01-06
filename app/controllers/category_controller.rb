@@ -2,6 +2,7 @@ class CategoryController < ApplicationController
   	
   	def index
   		  @categories = Category.all.order(name: :asc)
+        @title = "YB - Categories"
   	end
 
   	def show
@@ -9,6 +10,7 @@ class CategoryController < ApplicationController
   		  @subcategories = @category.subcategory.all.order(name: :asc)
   		  @active = params[:activate]
   		  @categories = Category.all.order(name: :asc)
+        @title = "YB - #{@category.name}"
   	end
 
   	def follow

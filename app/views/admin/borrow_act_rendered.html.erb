@@ -4,6 +4,7 @@
 			<%= raw @act %>
 		</div>
 		<div style="display: block; position: relative;">
+			<button type="submit" id="yb-download-borrow-act" data-url="<%= admin_borrow_act_rendered_download_path(@borrow.item, @borrow) %>">Download</button>
 			<button type="submit" id="yb-print-borrow-act">Print</button>
 			<button type="button" id="yb-close-see-act" class="yb-btn-cancel">Close</button>
 		</div>
@@ -13,5 +14,9 @@
 		$("#yb-print-borrow-act").click(function(){
 			printDocument("yb-borrow-act-content");
 		});
+		$("#yb-download-borrow-act").click(function(e){
+	        e.preventDefault();
+	        window.location = $(this).attr("data-url");
+	    });
 	</script>
 </div>

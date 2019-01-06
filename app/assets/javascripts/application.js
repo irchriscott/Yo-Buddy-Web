@@ -188,7 +188,7 @@ $(function() {
         previewImage(this, "profile_image");
     });
 
-    $("#yb-open-borrow-item-description, #yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else, #yb-admin-key-new").magnificPopup({type:'ajax'});
+    $("#yb-open-borrow-item-description, #yb-open-admin-messages, #yb-open-borrow-item-review, #yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else, #yb-admin-key-new").magnificPopup({type:'ajax'});
 
     $("#admin-add-admin-user, #yb-admin-open-add-message, #admin-add-admin, #yb-borrow-get-qr-code, #yb-add-item-admin, #yb-view-item-admin, #yb-admin-open-scan-qr-code, #yb-open-send-message-images").magnificPopup({
         type: 'inline',
@@ -278,6 +278,7 @@ $(function() {
     $(".yb-update-borrow-status-link").updateBorrowItemUserStatus();
     $("#yb-item-images-gallery").imagesGallery();
     $("#yb-live-search").ybLiveSeacrh();
+    $("#yb-home-featured-items").scrollDivClick();
 
     $("#search_borrow_category").change(function(){
         filterSubcategories($(this), $("#search_borrow_subcategory"));
@@ -393,9 +394,9 @@ $(function() {
         if(session == suggestion.owner){
             iziToast.info({
                 id: suggestion.owner,
-                timeout: 5000,
+                timeout: 80000,
                 title: suggestion.user,
-                message: (suggestion.from != "update") ? "Has Suggested On Your Item Request !!!" : "Has Updated His Suggestion On Your Item Request !!!",
+                message: (suggestion.from != "update") ? "<a href='" + checkJsonURL(suggestion.path) + "'>Has Suggested On Your Item Request !!!</a>" : "<a href='" + checkJsonURL(suggestion.path) + "'>Has Updated His Suggestion On Your Item Request !!!</a>",
                 position: 'bottomLeft',
                 transitionIn: 'bounceInLeft',
                 close: false,
@@ -417,9 +418,9 @@ $(function() {
         if(session == like.user){
             iziToast.info({
                 id: like.user,
-                timeout: 5000,
+                timeout: 80000,
                 title: like.liker,
-                message: "Has Liked Your Item !!!",
+                message: "<a href='" + checkJsonURL(like.path) + "'>Has Liked Your Item !!!</a>",
                 position: 'bottomLeft',
                 transitionIn: 'bounceInLeft',
                 close: false,
@@ -441,9 +442,9 @@ $(function() {
         if(session == like.user){
             iziToast.info({
                 id: like.user,
-                timeout: 5000,
+                timeout: 80000,
                 title: like.liker,
-                message: "Has Liked Your Item Request !!!",
+                message: "<a href='" + checkJsonURL(like.path) + "'>Has Liked Your Item Request !!!</a>",
                 position: 'bottomLeft',
                 transitionIn: 'bounceInLeft',
                 close: false,
@@ -483,9 +484,9 @@ $(function() {
                 } else {
                     iziToast.info({
                         id: message.borrow,
-                        timeout: 8000,
+                        timeout: 80000,
                         title: message.sender,
-                        message: message.message,
+                        message: "<a href='" + message.path + "'>" + message.message + "</a>",
                         position: 'bottomLeft',
                         transitionIn: 'bounceInLeft',
                         close: false,
@@ -494,9 +495,9 @@ $(function() {
                 if (message.type == "status"){
                     iziToast.info({
                         id: message.borrow,
-                        timeout: 8000,
+                        timeout: 80000,
                         title: message.sender,
-                        message: message.message,
+                        message: "<a href='" + message.path + "'>" + message.message + "</a>",
                         position: 'bottomLeft',
                         transitionIn: 'bounceInLeft',
                         close: false,
@@ -505,9 +506,9 @@ $(function() {
             } else {
                 iziToast.info({
                     id: message.borrow,
-                    timeout: 8000,
+                    timeout: 80000,
                     title: message.sender,
-                    message: message.message,
+                    message: "<a href='" + message.path + "'>" + message.message + "</a>",
                     position: 'bottomLeft',
                     transitionIn: 'bounceInLeft',
                     close: false,
@@ -537,9 +538,9 @@ $(function() {
                 case "suggestion-status":
                     iziToast.info({
                         id: data.about,
-                        timeout: 5000,
+                        timeout: 80000,
                         title: data.user,
-                        message: " Has updated your suggestion status to " + data.status + " !!!",
+                        message: "<a href='" + data.path + "'>Has updated your suggestion status to " + data.status + " !!!</a>",
                         position: 'bottomLeft',
                         transitionIn: 'bounceInLeft',
                         close: false,
@@ -547,6 +548,28 @@ $(function() {
                 default:
                     console.log("notification fired")
             }
+        }
+    });
+
+    socket.on("getAdminMessage", function(message){
+        var session = $("#session_user_id").val();
+        var admin = $("#session_admin_id").val();
+
+        if(session == message.receiver || admin == message.receiver){
+            setLoadData("yb-admin-messages-list", checkJsonURL(message.url)); 
+            let message_list = $("#yb-admin-messages-list");
+            message_list.scrollTop = message_list.scrollHeight;
+            $("#yb-admin-messages-list").animate({ scrollTop: 100000000}, 1000);
+
+            iziToast.info({
+                id: message.id,
+                timeout: 80000,
+                title: message.sender,
+                message: "<a href='" + message.path + "'>" + message.message + "</a>",
+                position: 'bottomLeft',
+                transitionIn: 'bounceInLeft',
+                close: false,
+            });
         }
     });
 
@@ -615,6 +638,36 @@ $(function() {
             }
         }
     });
+
+    $("#yb-scroll-down").click(function(){
+        $("html, body").animate({ scrollTop: $('#yb-items-categories-container').offset().top - 55 }, 1000);
+    });
+
+    if($('.pagination').length && $('#yb-item-list').length){
+        $(window).scroll(function(){
+            var url = $('.pagination .next_page').attr('href')
+            if (url && $(window).scrollTop() > $(document).height() - $(window).height() - 50){
+                $(".yb-items-loader").show();
+                $.getScript(url).done(function(){
+                    $(".yb-items-loader").hide();
+                }).fail(function(jqxhr, settings, exception){
+                    $(".yb-items-loader").html("<p class='yb-error'>Error : Couldnt Load</p>")
+                });
+            }
+        });
+        $(window).scroll()
+    }
+
+    if($('.pagination').length && $('#yb-item-request-list').length){
+        $(window).scroll(function(){
+            var url = $('.pagination .next_page').attr('href')
+            if (url && $(window).scrollTop() > $(document).height() - $(window).height() - 250){
+                $('.pagination').text("Loading more items...")
+                $.getScript(url)
+            }
+        });
+        $(window).scroll()
+    }
 });
 
 function capitalize(text){
@@ -915,7 +968,7 @@ jQuery.fn.followUserEvent = function(){
             success: function(response){
                 if(response.type == "follow"){
                     $("body").find("#yb-user-follow-container-" + id).html('<span><i class="icon ion-person followed"></i></span>');
-                    socket.emit("followUser", {"id": id, "user": user, "type": response.type});
+                    socket.emit("followUser", {"id": id, "user": user, "type": response.type, "path": notURL});
                     socket.emit("setNotification", user);
                     socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has started following you.", "icon": notIcon, "url": notURL});
                     $("#yb-user-follow-container-user").html('<a class="yb-edit-user-link" style="background: lightgreen;"><span><i class="icon ion-checkmark" style="color: #FFF;"></i></span> Follow</a>');
@@ -923,7 +976,7 @@ jQuery.fn.followUserEvent = function(){
                 } else if(response.type == "unfollow"){
                     $("body").find("#yb-user-follow-container-" + id).html('<span><i class="icon ion-person-add"></i></span>');
                     $("#yb-user-follow-container-user").html('<a class="yb-edit-user-link" style="background: var(--gray);"><span><i class="icon ion-person-add" style="color: #FFF;"></i></span> Follow</a>');
-                    socket.emit("followUser", {"id": id, "user": user, "type": response.type});
+                    socket.emit("followUser", {"id": id, "user": user, "type": response.type, "path": notURL});
                     showSuccessMessage("success", response.text);
                 } else {
                     showErrorMessage("error", response.text);
@@ -979,7 +1032,7 @@ jQuery.fn.likeItemEvent = function(){
             contentType: false,
             success: function(response){
                 if(response.type == "like"){
-                    socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user, "about": "like_item", "url": itemURL});
+                    socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user, "about": "like_item", "url": itemURL, "path": notURL});
                     socket.emit("setNotification", user);
                     form.find(".like-" + item).html("<i class='icon ion-ios-heart liked'></i>");
                     socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item.", "icon": notIcon, "url": notURL});
@@ -1020,7 +1073,7 @@ jQuery.fn.likeItemRequestEvent = function(){
             contentType: false,
             success: function(response){
                 if(response.type == "like"){
-                    socket.emit("rlike", {"item": item, "type": "like", "liker": liker, "user": user})
+                    socket.emit("rlike", {"item": item, "type": "like", "liker": liker, "user": user, "path": notURL})
                     socket.emit("setNotification", user);
                     socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item request.", "icon": notIcon, "url": notURL});
                     form.find(".request-like-" + item).html("<i class='icon ion-ios-heart liked'></i>")
@@ -1194,7 +1247,7 @@ jQuery.fn.postItemComment = function(){
             contentType: false,
             success: function(response){
                 if(response.type == "success"){
-                    socket.emit("comment", {"url": comments, "item": item, "from": from, "user": user, "commenter": commenter, "itemurl": itemURL, "about": "comment_item"});
+                    socket.emit("comment", {"url": comments, "item": item, "from": from, "user": user, "commenter": commenter, "itemurl": itemURL, "about": "comment_item", "path": notURL});
                     socket.emit("setNotification", user);
                     socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a comment on your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage("success", response.text);
@@ -1318,6 +1371,7 @@ jQuery.fn.deleteItemImage = function(){
 jQuery.fn.borrowItemUser = function(){
     $(this).submit(function(e){
         e.preventDefault();
+        var _this = $(this);
         var form = new FormData($(this)[0]);
         var url = $(this).attr("action");
         var user = $(this).attr("data-user");
@@ -1329,12 +1383,27 @@ jQuery.fn.borrowItemUser = function(){
         }
 
         $.ajax({
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                _this.find(".yb-progress-bar-container").show();
+                _this.find("#yb-submit-borrow").attr("disabled", "disabled").css('background', '#CCC');
+                xhr.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        var percent = Math.round((e.loaded / e.total) * 100);
+                        _this.find("#yb-borrow-progress-bar").attr("data-value", percent).css('width', percent + '%').text(percent + '%');
+                    }
+                });
+                return xhr;
+            },
             type:"POST",
             url: url,
             data: form,
             processData: false,
             contentType: false,
             success: function(response){
+                _this.find(".yb-progress-bar-container").hide();
+                _this.find("#yb-submit-borrow").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                _this.find("#yb-borrow-progress-bar").attr("data-value", 0).css('width', 0 + '%').text('');
                 if(response.type == "success"){
                     showSuccessMessage("success", response.text);
                     socket.emit("setNotification", user);
@@ -1348,6 +1417,9 @@ jQuery.fn.borrowItemUser = function(){
             },
             error: function(xhr, t, e){
                 showErrorMessage("error", e);
+                _this.find(".yb-progress-bar-container").hide();
+                _this.find("#yb-submit-borrow").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                _this.find("#yb-borrow-progress-bar").attr("data-value", 0).css('width', 0 + '%').text('');
             }
         });
     });
@@ -1374,12 +1446,27 @@ jQuery.fn.updateBorrowItemUser = function(){
         }
 
         $.ajax({
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                _this.find(".yb-progress-bar-container").show();
+                _this.find("#yb-submit-borrow").attr("disabled", "disabled").css('background', '#CCC');
+                xhr.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        var percent = Math.round((e.loaded / e.total) * 100);
+                        _this.find("#yb-borrow-progress-bar").attr("data-value", percent).css('width', percent + '%').text(percent + '%');
+                    }
+                });
+                return xhr;
+            },
             type:"POST",
             url: action,
             data: form,
             processData: false,
             contentType: false,
             success: function(response){
+                _this.find(".yb-progress-bar-container").hide();
+                _this.find("#yb-submit-borrow").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                _this.find("#yb-borrow-progress-bar").attr("data-value", 0).css('width', 0 + '%').text('');
                 if(response.type == "success"){
                     showSuccessMessage("success", response.text);
                     socket.emit("setNotification", receiver);
@@ -1403,6 +1490,9 @@ jQuery.fn.updateBorrowItemUser = function(){
             },
             error: function(xhr, t, e){
                 showErrorMessage("error", e);
+                _this.find(".yb-progress-bar-container").hide();
+                _this.find("#yb-submit-borrow").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                _this.find("#yb-borrow-progress-bar").attr("data-value", 0).css('width', 0 + '%').text('');
             }
         });
     });
@@ -1470,6 +1560,7 @@ jQuery.fn.messageText = function(){
     var receiver = _this.attr("data-receiver");
     var sender = _this.attr("data-sender");
     var path = _this.attr("data-path");
+
     _this.find("textarea").keyup(function(e){
         var value = $(this).val( $(this).val().replace( /\r?\n/gi, '' ) );
         if (value != ""){
@@ -1501,12 +1592,27 @@ jQuery.fn.messageText = function(){
         var data = new FormData(_this[0]);
         var action = _this.attr("action");
         $.ajax({
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                _this.find(".yb-progress-bar-container").show();
+                _this.find("#yb-send-borrow-message-images").attr("disabled", "disabled").css('background', '#DDD');
+                xhr.upload.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        var percent = Math.round((e.loaded / e.total) * 100);
+                        _this.find("#yb-message-progress-bar").attr("data-value", percent).css('width', percent + '%').text(percent + '%');
+                    }
+                });
+                return xhr;
+            },
             type: "POST",
             url: action,
             data: data,
             processData: false,
             contentType: false,
             success: function(response){
+                _this.find(".yb-progress-bar-container").hide();
+                _this.find("#yb-send-borrow-message-images").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                _this.find("#yb-message-progress-bar").attr("data-value", 0).css('width', 0 + '%').text('');
                 var message = {
                     "item": item,
                     "borrow": borrow,
@@ -1517,7 +1623,7 @@ jQuery.fn.messageText = function(){
                     "path": path,
                     "type": "message",
                     "about": "borrow_message"
-                }
+                };
                 socket.emit("messageSent", message);
                 _this.children("textarea").val("");
                 _this.children("input[type=file]").val(null);
@@ -1541,6 +1647,51 @@ function emitTypeTextSocket(message, data){
         "message": message,
     }
     socket.emit("textType", data);
+}
+
+jQuery.fn.adminTextMessage =  function(){
+
+    var _this = $(this);
+    var sender = _this.attr("data-sender");
+    var receiver = _this.attr("data-receiver");
+    var url = _this.attr("data-url");
+    var id = _this.attr("data-id");
+    var path = _this.attr("data-path");
+
+    _this.submit(function(e){
+        e.preventDefault();
+
+        var data = new FormData(_this[0]);
+        var action = _this.attr("action");
+
+        jQuery.ajax({
+            type: 'POST',
+            url: action,
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function(response){
+                if(response.type == "success"){
+                    var message = {
+                        "sender": sender,
+                        "receiver": receiver,
+                        "borrow": id,
+                        "url": url,
+                        "message": response.text
+                    }
+                    socket.emit("adminMessageSent", message);
+                    _this.children("textarea").val("");
+                    setLoadData("yb-admin-messages-list", url);
+                    let message_list = $("#yb-admin-messages-list");
+                    message_list.scrollTop = message_list.scrollHeight;
+                    $("#yb-admin-messages-list").animate({ scrollTop: 100000000}, 1000);
+                }
+            },
+            error: function(xhr, t, e){
+                showErrorMessage("error", e);
+            }
+        })
+    });
 }
 
 jQuery.fn.suggestItemRequest = function(){
@@ -1571,7 +1722,8 @@ jQuery.fn.suggestItemRequest = function(){
                         "request": request,
                         "user": user,
                         "url": url,
-                        "from": from
+                        "from": from,
+                        "path": notURL
                     }
                     socket.emit("suggestion", suggestion);
                     socket.emit("setNotification", owner);
@@ -1629,7 +1781,8 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                         "user":user,
                                         "url":url,
                                         "status":status[parseInt(_status) - 1].toUpperCase(),
-                                        "about":"suggestion"
+                                        "about":"suggestion",
+                                        "path": notURL
                                     });
                                     socket.emit("setNotification", owner);
                                     socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
@@ -1659,7 +1812,8 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                                                 "user":user,
                                                                 "url":url,
                                                                 "status":status[parseInt(_status)].toUpperCase(),
-                                                                "about":"suggestion-status"
+                                                                "about":"suggestion-status",
+                                                                "path": notURL
                                                             });
                                                             socket.emit("setNotification", owner);
                                                             socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
@@ -1884,6 +2038,63 @@ jQuery.fn.searchAdminUser = function(){
         userInput.val("");
         textInput.val("");
     }
+}
+
+jQuery.fn.scrollDivClick = function(){
+    
+    var _this = $(this);
+    var next = _this.find(".yb-btn-next");
+    var prev = _this.find(".yb-btn-prev");
+    var outerWidth = _this.width();
+    var container = _this.find(".yb-some-items-list");
+    var itemList = container.find("li").length;
+
+    var innerWidth = 0;
+    var slideTime = 300;
+    var slideCount = 0;
+    let maxCount = 1;
+
+    container.find("li").each(function(){
+        innerWidth += $(this).width() + 3;
+    });
+
+    var slideWidth = innerWidth - outerWidth;
+
+    if (slideWidth >= 1300) {
+        maxCount = 7;
+    } else if(slideWidth >= 1100){
+        maxCount = 6;
+    } else if(slideWidth >= 900){
+        maxCount = 5;
+    } else if(slideWidth >= 700){
+        maxCount = 4;
+    } else if(slideWidth >= 500){
+        maxCount = 3;
+    } else if(slideWidth >= 300){
+        maxCount = 2;
+    }
+
+    var mesure = slideWidth / maxCount + 1;
+
+    prev.click(function(){
+        if (slideCount > 0) {
+            container.animate({
+                marginLeft: '+=' + mesure + 'px'
+            }, slideTime);
+            slideCount--;
+            slideWidth = slideWidth + mesure;
+        }
+    });
+
+    next.click(function(){
+        if (slideWidth > 0) {
+            container.animate({
+                marginLeft: '-=' + mesure + 'px'
+            }, slideTime);
+            slideCount++;
+            slideWidth = slideWidth - mesure;
+        }
+    });
 }
 
 jQuery.fn.ybLiveSeacrh = function(){

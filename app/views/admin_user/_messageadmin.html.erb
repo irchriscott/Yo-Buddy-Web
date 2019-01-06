@@ -14,8 +14,19 @@
 					<%= content_tag :option, state, value: state %>
 				<% end %>
 			<% end %>
+			<div class="yb-add-price">
+				<label>Cost :</label>
+				<%= form.number_field :cost, min: '0', placeholder: 'Enter Cost', required: true, autocomplete: "off", value: '0' %>
+				<%= form.select(:currency, {required: true}) do -%>
+					<% @currencies.each do |currency| %>
+						<%= content_tag(:option, currency["name"], value: currency["currency"]) %>
+					<% end %>
+				<% end %>
+			</div>
 			<label>Comment : </label>
 			<%= form.text_area :comment, required:true, placeholder: "Enter Comment" %>
+			<%= form.file_field :file, multiple: true, accept: ".jpeg, .png, .jpg, .pdf, .doc, .docx" %>
+			<span class="yb-upload-img">Add Additional Files</span>
 			<div style="display: block; position: relative;">
 				<button type="submit">Submit</button>
 				<button type="button" id="yb-close-add-message" class="yb-btn-cancel">Cancel</button>

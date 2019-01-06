@@ -1,6 +1,6 @@
-<div class="yb-modal-container">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>Edit Item</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>Edit Item</h2>
 		<% if @active == true %>
 			<%= form_for :item, url: item_path(@item) + "?source=#{@source}", method: :patch, html: {id: "yb-edit-item"} do |form| %>
 				<label>Item Name :</label>
@@ -73,13 +73,17 @@
 				<div class="yb-item-images-preview" id="yb-images-preview"></div>
 				<div style="display: block; position: relative;">
 					<button type="submit">Submit</button>
+					<% if @type == "ajax" %>
 					<button type="button" id="yb-close-edit-item" class="yb-btn-cancel">Cancel</button>
+					<% end %>
 				</div>
 			<% end %>
 			<script type="text/javascript">CKEDITOR.replace( 'yb-item-description' );</script>
 		<% else %>
 			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-edit-item" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		<% end %>
 	</div>
 	<script type="text/javascript">

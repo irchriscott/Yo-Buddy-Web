@@ -1,4 +1,4 @@
-<%= form_for :message, url: item_item_borrow_user_borrow_messages_path(@item, @borrow), html: {'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_item_borrow_user_path(@item, @borrow), id: 'yb-borrow-message-form' } do |form| %>
+<%= form_for :message, url: item_item_borrow_user_borrow_messages_path(@item, @borrow), html: {'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_borrow_path(@borrow.uuid, @item, @borrow), id: 'yb-borrow-message-form' } do |form| %>
 	<div class="yb-image">
 		<% if session_user.image? %>
 			<%= image_tag session_user.image.url, alt: session_user.username %>

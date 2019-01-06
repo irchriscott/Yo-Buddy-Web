@@ -115,11 +115,11 @@
 					<ul>
 						<% if is_logged_in? %>
 						<% if session_user.id == @item.user.id %>
-						<li><a href="<%= item_edit_path(@item.user.username, @item.uuid, @item) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+						<li><a href="<%= item_edit_path(@item.user.username, @item.uuid, @item) %>?type=ajax" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
 						<li><a href="#"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
 						<% end -%>
 						<% end -%>
-						<li><a href="<%= item_available_path(@item.user.username, @item.uuid, @item) %>" id="yb-item-check-available"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Available</span></a></li>
+						<li><a href="<%= item_available_path(@item.user.username, @item.uuid, @item) %>?type=ajax" id="yb-item-check-available"><span class="item-icon"><i class="icon ion-clipboard"></i></span><span class="item-text">Available</span></a></li>
 						<li><a href="<%= borrow_item_path(@item.user.username, @item.uuid, @item) %>?type=ajax" id="yb-new-item-borrow-user-path"><span class="item-icon"><i class="icon ion-plus"></i></span><span class="item-text">Borrow</span></a></li>
 						<li><a id="yb-favourite-item"><span class="item-icon"><i class="icon ion-ios-star-outline"></i></span><span class="item-text">Favourite</span></a></li>
 						<li><a href="<%= report_new_path(@item.id) %>?ressource=item" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
@@ -138,6 +138,34 @@
 		</div>
 	</div>
 	<div class="yb-items-similar">
-		
+		<h2>Similar Items</h2>
+		<div class="yb-similars-list">
+			<% if @others.count > 0 %>
+				<% @others.each do |item| %>
+					<div class="yb-sm-item">
+						<div class="yb-image">
+							<a href="<%= item_show_path(item.user.username, item.uuid, item) %>">
+								<%= image_tag item.item_image[0].image.url, alt: item.name %>
+							</a>
+						</div>
+						<div class="yb-details">
+							<div class="yb-user-image">
+								<% if item.user.image? %>
+						            <%= image_tag item.user.image.url, alt: item.user.username %>
+						        <% else %>
+						            <%= image_tag "/assets/default.jpg", alt: item.user.username %>
+						        <% end %>
+							</div>
+							<div class="yb-item-description">
+								<h4><a href="<%= item_show_path(item.user.username, item.uuid, item) %>"><%= item.name %></a></h4>
+								<p class="yb-category"><%= item.category.name %> - <%= item.subcategory.name %></p>
+								<p class="yb-user"><span>by <%= item.user.name %></span> - <span id="yb-itm-date-<%= item.id %>" data-date="<%= item.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+							</div>
+							<script type="text/javascript">$("#yb-itm-date-<%= item.id %>").setDate();</script>
+						</div>
+					</div>
+				<% end %>
+			<% end %>
+		</div>
 	</div>
 </section>

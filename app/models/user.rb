@@ -1,6 +1,8 @@
 require 'securerandom'
 
 class User < ApplicationRecord
+
+    include ApplicationHelper
 	
     has_many :item 
     has_many :usercategory
@@ -80,7 +82,7 @@ class User < ApplicationRecord
     end
 
     def profile_image
-        return (self.image?) ? "http://127.0.0.1:3000/#{self.image.url}" : "http://127.0.0.1:3000/assets/default.jpg"
+        return (self.image?) ? "#{ApplicationHelper::APP_URL}/#{self.image.url}" : "#{ApplicationHelper::APP_URL}/assets/default.jpg"
     end
 
     def json

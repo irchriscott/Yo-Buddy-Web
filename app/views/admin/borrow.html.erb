@@ -53,7 +53,13 @@
 			<h3>USER - USER ADMIN MESSAGES</h3>
 			<% @user_messages.each do |message| %>
 				<div class="yb-admin-message">
-					<p><span class="yb-admin-message-date" id="admin-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"><%= message.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></span> : <span class="yb-admin-message-text"><%= raw message.admin_message %></span></p>
+					<p><span class="yb-admin-message-date" id="admin-message-date-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"><%= message.created_at.localtime.strftime("%a %d %b, %Y at %H:%M") %></span> : <span class="yb-admin-message-text">
+						<% if message.admin_message == "new" -%>
+							Borrow Item Initialized
+						<% else %>
+							<%= raw message.admin_message %>
+						<% end %>
+					</span></p>
 				</div>
 			<% end %>
 			<h3 style="margin-top: 25px;">BORROW ITEM ADMIN</h3>
@@ -75,6 +81,7 @@
 				<button style="background: var(--primaryColor);" id="yb-admin-open-add-message" href="#yb-admin-add-message">ADD REPORT</button>
 				<button style="background: green;">REPORTS</button>
 				<button style="background: var(--gray);">FOLLOW UPS</button>
+				<button style="background: lightgreen;" href="<%= admin_messages_path(@borrow.uuid, @item, @borrow) %>" id="yb-open-admin-messages">MESSAGES</button>
 			</div>
 		</div>
 	</div>
@@ -91,3 +98,31 @@
 	</div>
 </section>
 <%= render "admin/borrowmodals" %>
+<% if @active_status != nil and  @active_status != "" %>
+	<script type="text/javascript">
+		const socket = io("127.0.0.1:5000");
+		$(document).ready(function(){
+			if("<%= @active_status %>" != null && "<%= @active_status %>" != ""){
+				emitStatusMessage("<%= @borrow.item.user.id %>", "<%= @borrow.item.user.profile_image %>");
+				emitStatusMessage("<%= @borrow.user.id %>", "<%= @borrow.user.profile_image %>");
+			}
+		});
+
+		function emitStatusMessage(receiver, icon){
+			var message = {
+	           	"item": "<%= @borrow.item.id %>",
+	            "borrow": "<%= @borrow.id %>",
+	            "receiver": receiver,
+	            "sender": "Yo Buddy",
+	            "message": "Item of the borrow or the borrow was <b><%= @active_status.capitalize! %></b> !!!",
+	            "url": "<%= item_item_borrow_user_borrow_messages_path(@item, @borrow) %>",
+	            "path": "<%= item_item_borrow_user_path(@item, @borrow) %>",
+	            "type": "message",
+	            "about": "borrow_message"
+	        }
+	        socket.emit("messageSent", message);
+	        socket.emit("setNotification", receiver);
+	        socket.emit("notify", {"user": receiver, "title": "From Yo Buddy", "body": "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!", "icon": icon, "url": "<%= item_borrow_url(@borrow.uuid, @item, @borrow) %>"});
+		}
+	</script>
+<% end %>

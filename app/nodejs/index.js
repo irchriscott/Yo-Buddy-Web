@@ -68,6 +68,10 @@ io.on("connection", function(socket){
 		io.emit("getMessage", message);
 	});
 
+	socket.on("adminMessageSent", function(message){
+		io.emit("getAdminMessage", message);
+	});
+
 	socket.on("followUser", function(user){
 		io.emit("getFollower", user);
 	});

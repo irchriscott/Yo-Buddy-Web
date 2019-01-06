@@ -1,0 +1,39 @@
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
+	<div class="yb-add-item">
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>BORROW REVIEW</h2>
+		<table style="margin-top: 15px;">
+			<thead>
+				<tr>
+					<th style="text-align: left;">MESSAGE</th>
+					<th style="text-align: left;">DATE</th>
+				</tr>
+				<tbody>
+					<% @reviews.each do |message| %>
+						<tr>
+							<td style="text-align: left;">
+								<% if message.admin_message == "new" %>
+									<% if message.borrow_item_user.user.id == session_user.id %>
+										Borrow Request Sent
+									<% else %>
+										Borrow Request Received
+									<% end %>
+								<% else %>
+									<%= message.admin_message %>
+								<% end %>
+							</td>
+							<td style="text-align: left;"><%= message.created_at.localtime.strftime("%A, %d %B %Y at %H:%M") %></td>
+						</tr>
+					<% end %>
+				</tbody>
+			</thead>
+		</table>
+		<div style="display: block; position: relative;">
+			<% if @type == "ajax" %>
+			<button type="button" id="yb-close-available-dates" class="yb-btn-cancel">Cancel</button>
+			<% end %>
+		</div>
+		<script type="text/javascript">
+			$(".yb-btn-cancel").closePopup();
+		</script>
+	</div>
+</div>

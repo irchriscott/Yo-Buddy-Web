@@ -54,7 +54,9 @@
 			</script>
 		<% else %>
 			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		<% end %>
 	</div>
 	<script type="text/javascript">

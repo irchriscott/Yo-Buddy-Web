@@ -6,7 +6,7 @@ module YobuddyData
 	PACKAGE_GOLD = "gold"
 	PACKAGE_DIAMOND = "diamond"
 	PACKAGE_PLATINUM = "platinum"
-	PACKAGE_ALTIMATE = "altimate"
+	PACKAGE_ULTIMATE = "ultimate"
 
 	MAX_USERS_SILVER = 1
 	MAX_USERS_GOLD = 3
@@ -18,13 +18,13 @@ module YobuddyData
 	MAX_ITEMS_DIAMOND = 120
 	MAX_ITEMS_PLATINUM = 250
 
-	PRICE_SILVER = 30000
-	PRICE_GOLD = 50000
-	PRICE_DIAMOND = 100000
-	PRICE_PLATINUM = 150000
-	PRICE_ALTIMATE = 300000
+	PRICE_SILVER = 9.99
+	PRICE_GOLD = 14.99
+	PRICE_DIAMOND = 24.99
+	PRICE_PLATINUM = 34.55
+	PRICE_ULTIMATE = 74.55
 
-	ALTIMATE = nil
+	ULTIMATE = nil
 	
 	def YobuddyData.get_yb_packages
 		packages = Array.new
@@ -33,7 +33,7 @@ module YobuddyData
 		packages.append({"package" => PACKAGE_GOLD, "items" => MAX_ITEMS_GOLD, "users" => MAX_USERS_GOLD, "price" => PRICE_GOLD})
 		packages.append({"package" => PACKAGE_DIAMOND, "items" => MAX_ITEMS_DIAMOND, "users" => MAX_USERS_DIAMOND, "price" => PRICE_DIAMOND})
 		packages.append({"package" => PACKAGE_PLATINUM, "items" => MAX_ITEMS_PLATINUM, "users" => MAX_USERS_PLATINUM, "price" => PRICE_PLATINUM})
-		packages.append({"package" => PACKAGE_ALTIMATE, "items" => ALTIMATE, "users" => ALTIMATE, "price" => PRICE_ALTIMATE})
+		packages.append({"package" => PACKAGE_ULTIMATE, "items" => ULTIMATE, "users" => ULTIMATE, "price" => PRICE_ULTIMATE})
 		
 		return packages
 	end

@@ -8,7 +8,21 @@ class HomeController < ApplicationController
 	skip_before_action :verify_authenticity_token, only: [:notification_getway]
 
 	def index
+		max_categories = 3
 		@items = Item.all.shuffle
+		@title = "Yo Buddy !"
+		if is_logged_in? then
+			@categories = Array.new
+			followed = Usercategory.where(user_id: session[:user_id]).order("RAND()").limit(max_categories)
+			followed.each { |f| @categories.push f.category }
+			if followed.count < max_categories then
+				remain = max_categories - followed.count
+				others =  Category.where.not(id: followed.map(&:id)).order("RAND()").limit(remain)
+				others.each { |category| @categories.push category }
+			end
+		else
+			@categories =  Category.order("RAND()").limit(max_categories)
+		end
 	end
 
 	def search

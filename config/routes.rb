@@ -66,14 +66,20 @@ Rails.application.routes.draw do
 
     get '/item/:username/enc-dt-:uuid-:item_id/borrows', to: 'item_borrow_user#index', as: 'item_borrows'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow', to: 'item_borrow_user#show', as: 'item_borrow'
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow/review', to: 'item_borrow_user#borrow_review', as: 'borrow_review'
     post '/item/enc-dt-:uuid-:item_id/borrow/create', to: 'item_borrow_user#create', as: 'create_item_borrow'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow/description', to: 'item_borrow_user#description', as: 'item_borrow_description'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow/description/download.pdf', to: 'item_borrow_user#download_borrow_data', as: 'item_borrow_description_download'
 
+
+    get '/items/enc-dt-:uuid-:item_id-:item_borrow_user_id/messages/admin', to: 'borrow_messages#admin_messages', as: 'admin_messages'
+    get '/items/enc-dt-:uuid-:item_id-:item_borrow_user_id/messages/admin/load', to: 'borrow_messages#load_admin_messages', as: 'load_admin_messages'
     post '/items/:item_id/borrow_item_user/:item_borrow_user_id/borrow_messages/images/send', to: 'borrow_messages#send_images', as: 'message_send_images'
+    post '/items/:item_id/borrow_item_user/:item_borrow_user_id/borrow_messages/admin/send', to: 'borrow_messages#send_admin_message', as: 'message_send_admin'
 
     get '/items/requests/all', to: 'item_requests#index', as: 'item_requests'
     get '/items/request/:username/enc-dt-:uuid-:id', to: 'item_requests#show', as: 'item_request'
+    get '/items/request/:username/enc-dt-:uuid-:id/ajax', to: 'item_requests#show_ajax', as: 'item_request_ajax'
     post '/items/request/:id/like', to: 'item_requests#like', as: 'item_request_like'
     get '/item/requests/new', to: 'item_requests#new', as: 'new_item_request'
     post '/item/requests/create', to: 'item_requests#create', as: 'create_item_request'
@@ -155,6 +161,8 @@ Rails.application.routes.draw do
     post '/admin/u/item/:item_id/borrow/:id/item/add', to: 'admin_user#add_item', as: 'admin_u_add_item'
     get '/admin/u/item/:item_id/borrow/:id/act/received', to: 'admin_user#borrow_act_received', as: 'admin_u_borrow_act_received'
     get '/admin/u/item/:item_id/borrow/:id/act/rendered', to: 'admin_user#borrow_act_rendered', as: 'admin_u_borrow_act_rendered'
+    get '/admin/u/item/borrow/enc-dt-:uuid-:item_id-:id/act/received/download.pdf', to: 'admin_user#download_borrow_act_received', as: 'admin_u_borrow_act_received_download'
+    get '/admin/u/item/borrow/enc-dt-:uuid-:item_id-:id/act/rendered/download.pdf', to: 'admin_user#download_borrow_act_rendered', as: 'admin_u_borrow_act_rendered_download'
 
     get '/admin/u/borrows/scan/get', to: 'admin_user#scan_borrow', as: 'admin_u_scan_borrow'
     post '/admin/u/borrows/scan/post', to: 'admin_user#scan_borrow_post', as: 'admin_u_scan_borrow_post'
@@ -196,6 +204,8 @@ Rails.application.routes.draw do
     post '/admin/item/:item_id/borrow/:id/item/add', to: 'admin#add_item', as: 'admin_add_item'
     get '/admin/item/:item_id/borrow/:id/act/received', to: 'admin#borrow_act_received', as: 'admin_borrow_act_received'
     get '/admin/item/:item_id/borrow/:id/act/rendered', to: 'admin#borrow_act_rendered', as: 'admin_borrow_act_rendered'
+    get '/admin/item/:item_id/borrow/:id/act/received/download.pdf', to: 'admin#download_borrow_act_received', as: 'admin_borrow_act_received_download'
+    get '/admin/item/:item_id/borrow/:id/act/rendered/download.pdf', to: 'admin#download_borrow_act_rendered', as: 'admin_borrow_act_rendered_download'
     
     get '/admin/categories', to: 'admin#categories', as: 'admin_categories'
     get '/admin/categories/new', to: 'admin#new_category', as: 'admin_new_category'

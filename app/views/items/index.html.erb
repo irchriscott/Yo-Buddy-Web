@@ -16,6 +16,9 @@
 	        </div>
 	        <%= will_paginate @items %>
 		</div>
+		<div class="yb-items-loader">
+		   	<%= image_tag '/assets/loading.gif', alt: 'Loading' %>
+		</div>
 	<% else %>
         <p class="yb-error">NO POSTED ITEM</p>
     <% end %>

@@ -1,4 +1,4 @@
-<div class="yb-modal-container" style="width:45%;">
+<div class="yb-modal-container">
 	<div class="yb-add-item">
 		<h2>BORROW ITEM LIST</h2>
 		<table style="margin-top: 20px;">
@@ -8,13 +8,13 @@
 					<th>Name</th>
 					<th>Description</th>
 					<th>QR Code</th>
-					<th>Is Authenticated</th>
+					<th>Is Returned</th>
 				</tr>
 				<tbody>
 					<% if @borrow_items.count > 0 %>
-						<% @borrow_items.each do |item| %>
+						<% @borrow_items.each_with_index do |item, i| %>
 							<tr>
-								<td><%= item.id %></td>
+								<td><%= i + 1 %></td>
 								<td><%= item.name %></td>
 								<td><%= item.description %></td>
 								<td><button type="submit" id="yb-admin-print-qr-item-<%= item.id %>">Print</button></td>

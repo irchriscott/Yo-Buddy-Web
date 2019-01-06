@@ -25,11 +25,24 @@ module UserHelper
 		token = params[:token]
 		if !is_logged_in? then
 			if token == nil or token == "" then
-				render json:{"type" => "error", "text" => "Unauthorized"}
+				respond_to do |format|
+					format.json { render json:{"type" => "error", "text" => "Unauthorized"} }
+					format.html{
+						flash[:error] = "Login Required !!!"
+						redirect_to new_user_path
+					}
+				end
 			else
 				user = User.find_by(token: token)
 				if user == nil then
-					render json:{"type" => "error", "text" => "Wrong token"}
+					respond_to do |format|
+						format.json { render json:{"type" => "error", "text" => "Wrong token"} }
+						format.html{
+							flash[:error] = "Login Required !!!"
+							redirect_to new_user_path
+						}
+						
+					end
 				else
 					login user
 				end

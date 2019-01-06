@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  list_borrow_items: one
+  file: MyString
+  extension: MyString
+
+two:
+  list_borrow_items: two
+  file: MyString
+  extension: MyString

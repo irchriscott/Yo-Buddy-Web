@@ -2,15 +2,19 @@ require 'securerandom'
 
 class UserController < ApplicationController
 
+    include ApplicationHelper
+
     before_action :set_user, only: [:show, :likes, :followers, :following, :get_borrowed, :borrowed, :get_borrowing, :borrowing, :requests]
     skip_before_action :verify_authenticity_token
     before_action :check_token, only: [:follow_user]
 
     def index
         @users = User.all.order(name: :asc)
+        @title = "YB - Users"
     end
 
     def new
+        @title = "YB - Sign Up & Sign In"
         if !session[:user_id] then
             @user = User.new
             if params[:layout] == "false" then
@@ -60,7 +64,8 @@ class UserController < ApplicationController
     end
 
     def show
-        @items = @user.item.all.order(created_at: :desc)
+        @items = @user.item.all.order(created_at: :desc).paginate(page: params[:page], per_page: 5)
+        @title = "YB - #{@user.name}'s Items"
         if is_logged_in? then
             if @user.id == session[:user_id] then
                 redirect_to session_items_path
@@ -70,29 +75,35 @@ class UserController < ApplicationController
 
     def likes
         @likes = @user.item_like.all.order(created_at: :desc)
+        @title = "YB - #{@user.name}'s Likes"
     end
     
     def followers
         @followers = UserFollow.where(following_id: @user.id)
+        @title = "YB - #{@user.name}'s Followers"
     end
 
     def following
         @following = UserFollow.where(user_id: @user.id)
+        @title = "YB - #{@user.name}'s Following"
     end
 
     def requests
-        @requests = @user.item_request.all.order(to_date: :asc)
+        @requests = @user.item_request.all.order(to_date: :asc).paginate(page: params[:page], per_page: 5)
         @activate = "requests"
+        @title = "YB - #{@user.name}'s Item Requests"
     end
 
     def borrowed
         @borrowed = get_borrowed
         @activate = "borrowed"
+        @title = "YB - #{@user.name}'s Lending"
     end
 
     def borrowing
         @borrows = get_borrowing
         @activate = "borrowing"
+        @title = "YB - #{@user.name}'s Borring"
     end
 
     def follow_user
@@ -184,6 +195,7 @@ class UserController < ApplicationController
     end
 
     def reset_password
+        @title = "YB - Reset Password"
     end
 
     def send_reset_password_mail
@@ -218,7 +230,8 @@ class UserController < ApplicationController
     end
 
     def reset_password_form
-        rsp = ResetPassword.find_by(token: params[:token]).first
+        @title = "YB - Reset Password Form"
+        rsp = ResetPassword.find_by(token: params[:token])
         if rsp != nil then
             if rsp.is_active? then
                 @token = params[:token]

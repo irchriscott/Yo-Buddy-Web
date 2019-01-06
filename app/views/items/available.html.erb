@@ -1,6 +1,6 @@
-<div class="yb-modal-container">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>AVAILABE DATES</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>AVAILABE DATES</h2>
 		<table style="margin-top: 15px;">
 			<thead>
 				<tr>
@@ -20,7 +20,9 @@
 			</thead>
 		</table>
 		<div style="display: block; position: relative;">
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-available-dates" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		</div>
 		<script type="text/javascript">
 			$("#yb-close-available-dates").closePopup();

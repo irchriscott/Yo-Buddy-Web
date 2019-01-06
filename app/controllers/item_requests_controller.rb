@@ -12,11 +12,21 @@ class ItemRequestsController < ApplicationController
 
     def index
         @requests = ItemRequest.where(status: @status[0]).order(to_date: :asc).paginate(page: params[:page], per_page: 10)
+        @title = "YB - Item Requests"
     end
 
     def show
         @request = ItemRequest.find(params[:id])
         @suggestions = @request.item_request_suggestion.where(status: @sug_status[1]).count
+        @others = ItemRequest.where("id != :id", {id: @request.id}).where(category_id: @request.category.id).limit(5).shuffle
+        @title = "YB - Request for #{@request.title}"
+    end
+
+    def show_ajax
+        @request = ItemRequest.find(params[:id])
+        @suggestions = @request.item_request_suggestion.where(status: @sug_status[1]).count
+        @others = ItemRequest.where("id != :id", {id: @request.id}).where(category_id: @request.category.id).limit(10).shuffle
+        render layout: false
     end
 
     def like
@@ -48,6 +58,7 @@ class ItemRequestsController < ApplicationController
     def new
         @request = ItemRequest.new
         @type = params[:type]
+        @title = "YB - New Item Request"
         if @type == "ajax" then render layout: false end
     end
 
@@ -112,9 +123,9 @@ class ItemRequestsController < ApplicationController
     def edit
         if is_logged_in?
             @request = ItemRequest.find(params[:id])
-            if @request.user.id == session[:user_id] then
-                render layout: false
-            end
+            @type = params[:type]
+            @title = "YB - Edit Request for #{@request.title}"
+            if @request.user.id == session[:user_id] and @type == "ajax" then render layout: false end
         end
     end
 
@@ -255,11 +266,13 @@ class ItemRequestsController < ApplicationController
     def suggestion_new
         @request = ItemRequest.find(params[:id])
         @suggestion = Item.new
+        @title = "YB - New Suggestion for #{@request.title}"
         if !is_logged_in?
             flash[:danger] = "Loggin Required !!!"
             redirect_to new_user_path + "?layout=false&url=#{item_request_path(@request)}"
         else
-            render layout: false
+            @type = params[:type]
+            if @type == "ajax" then render layout: false end
         end
     end
 
@@ -317,12 +330,14 @@ class ItemRequestsController < ApplicationController
 
     def suggestion_exist
         @request = ItemRequest.find(params[:id])
+        @title = "YB - Suggestion for #{@request.title}"
         if !is_logged_in?
             flash[:danger] = "Loggin Required !!!"
             redirect_to new_user_path + "?layout=false&url=#{item_request_path(@request)}"
         else
             @items = session_user.item.where(category_id: @request.category.id).order(name: :asc)
-            render layout: false
+            @type = params[:type]
+            if @type == "ajax" then render layout: false end
         end
     end
 
@@ -371,8 +386,10 @@ class ItemRequestsController < ApplicationController
     def suggestion_edit
         @request = ItemRequest.find(params[:item_request_id])
         @suggestion = @request.item_request_suggestion.find(params[:id])
+        @title = "YB - Edit Suggestion #{@suggestion.item.name}"
         if session_user.id == @suggestion.item.user.id then
-            render layout: false
+            @type = params[:type]
+            if @type == "ajax" then render layout: false end
         else
             flash[:danger] = "You are not the owner !!!"
             redirect_to new_user_path + "?layout=false"

@@ -117,7 +117,7 @@
 					<ul>
 						<% if is_logged_in? %>
 						<% if session_user.id == @request.user.id %>
-						<li><a href="<%= edit_item_request_path(@request.user.username, @request.uuid, @request) %>" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
+						<li><a href="<%= edit_item_request_path(@request.user.username, @request.uuid, @request) %>?type=ajax" id="yb-edit-item-path"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Edit</span></a></li>
 						<li><a><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
 						<% if @suggestions > 0 and @request.status != @status[1] %>
 						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=1" data-status="Succeeded"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Succeed</span></a></li>
@@ -126,9 +126,9 @@
 						<% end -%>
 						<li><a id="yb-update-request-status" href="<%= update_item_request_status_path(@request) %>?status=3" data-status="Reset"><span class="item-icon"><i class="icon ion-arrow-return-left"></i></span><span class="item-text">Reset</span></a></li>
 						<% end -%>
-						<% if @request.status == @status[0] %>
-						<li><a href="<%= item_request_new_suggestion_path(@request.user.username, @request.uuid, @request) %>" id="yb-add-suggestion-new"><span class="item-icon"><i class="icon ion-plus-round"></i></span><span class="item-text">Suggest - N</span></a></li>
-						<li><a href="<%= item_request_exist_suggestion_path(@request.user.username, @request.uuid, @request) %>" id="yb-add-suggestion-exist"><span class="item-icon"><i class="icon ion-plus-circled"></i></span><span class="item-text">Suggest - E</span></a></li>
+						<% if @request.status == @status[0] and session_user.id != @request.user.id %>
+						<li><a href="<%= item_request_new_suggestion_path(@request.user.username, @request.uuid, @request) %>?type=ajax" id="yb-add-suggestion-new"><span class="item-icon"><i class="icon ion-plus-round"></i></span><span class="item-text">Suggest - N</span></a></li>
+						<li><a href="<%= item_request_exist_suggestion_path(@request.user.username, @request.uuid, @request) %>?type=ajax" id="yb-add-suggestion-exist"><span class="item-icon"><i class="icon ion-plus-circled"></i></span><span class="item-text">Suggest - E</span></a></li>
 						<% end %>
 						<% end %>
 						<li><a href="<%= report_new_path(@request.id) %>?ressource=request" id="yb-get-report"><span class="item-icon"><i class="icon ion-ios-information-outline"></i></span><span class="item-text">Report</span></a></li>
@@ -144,6 +144,34 @@
 		<script type="text/javascript">$(document).ready(function(){setLoadData("yb-item-request-sugestions", "<%= item_request_suggestions_path(@request) %>")})</script>
 	</div>
 	<div class="yb-items-similar">
-		
+		<h2>Similar Item Requests</h2>
+		<div class="yb-similars-list">
+			<% if @others.count > 0 %>
+				<% @others.each do |request| %>
+					<div class="yb-sm-item">
+						<div class="yb-image">
+							<a href="<%= item_request_path(request.user.username, request.uuid, request) %>">
+								<%= image_tag request.item_request_image[0].image.url, alt: request.title %>
+							</a>
+						</div>
+						<div class="yb-details">
+							<div class="yb-user-image">
+								<% if request.user.image? %>
+						            <%= image_tag request.user.image.url, alt: request.user.username %>
+						        <% else %>
+						            <%= image_tag "/assets/default.jpg", alt: request.user.username %>
+						        <% end %>
+							</div>
+							<div class="yb-item-description">
+								<h4><a href="<%= item_request_path(request.user.username, request.uuid, request) %>"><%= request.title %></a></h4>
+								<p class="yb-category"><%= request.category.name %> - <%= request.subcategory.name %></p>
+								<p class="yb-user"><span>by <%= request.user.name %></span> - <span id="yb-itm-date-<%= request.id %>" data-date="<%= request.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span></p>
+							</div>
+							<script type="text/javascript">$("#yb-itm-date-<%= request.id %>").setDate();</script>
+						</div>
+					</div>
+				<% end %>
+			<% end %>
+		</div>
 	</div>
 </section>

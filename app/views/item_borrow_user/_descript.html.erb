@@ -3,10 +3,10 @@
 <p><strong>Borrower : </strong><%= link_to @borrow.user.name, user_items_path(@borrow.user.username, @borrow.user), target: "_blank" %></p>
 <p><strong>Item : </strong><%= link_to @borrow.item.name, item_show_path(@borrow.item.user.username, @borrow.item.uuid, @borrow.item.id), target: "_blank" %></p>
 <p><strong>Category : </strong><%= link_to @borrow.item.category.name, category_path(@borrow.item.category.uuid, @borrow.item.category), target: "_blank" %> - <%= link_to @borrow.item.subcategory.name, subcategory_path(@borrow.item.category.uuid, @borrow.item.category, @borrow.item.subcategory), target: "_blank" %></p>
-<p><strong>Single Price : </strong><span id="yb-borrow-single-price" data-number="<%= @borrow.price %>"><%= @borrow.price %></span> <%= @borrow.currency %> / <%= @borrow.per %></p>
+<p><strong>Single Price : </strong><span id="yb-borrow-single-price" data-number="<%= @borrow.price %>"><%= @borrow.price_to_s %></span> <%= @borrow.currency %> / <%= @borrow.per %></p>
 <p><strong>Number : </strong><%= @borrow.updated_numbers %> <% if @borrow.updated_numbers == 1 %><%= @borrow.per %>  <% else %> <%= "#{@borrow.per}s" %><% end %></p>
 <p><strong>Quantity : </strong><%= @borrow.count %> Items</p>
-<p><strong>Total : </strong><span id="yb-borrow-total-price" data-number="<%= @borrow.borrow_total %>"><%= @borrow.borrow_total %></span> <%= @borrow.currency %></p>
+<p><strong>Total : </strong><span id="yb-borrow-total-price" data-number="<%= @borrow.borrow_total %>"><%= @borrow.borrow_total_to_s %></span> <%= @borrow.currency %></p>
 <p><strong>From : </strong> <%= @borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
 <p><strong>To : </strong> <%= @borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
 <p><strong>Status : </strong> <span style="text-transform: capitalize;"><%= @borrow.status %></span></p>

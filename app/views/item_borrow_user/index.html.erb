@@ -48,23 +48,29 @@
 											<% if session_user.id == borrower.user.id %>
 												<li><a id="yb-edit-borrow-item-<%= borrower.id %>" href="<%= edit_item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
 											<% elsif session_user.id == borrower.item.user.id %>
-												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=2" class="yb-update-borrow-status-link" data-status="rejected" data-borrow="<%= @borrow.id %>" data-item="<%= borrower.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(borrower.item, borrower) %>" data-receiver="<% if session_user.id == borrower.user.id %><%= borrower.item.user.id %><% else %><%= borrower.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=2" class="yb-update-borrow-status-link" data-status="rejected" data-borrow="<%= borrower.id %>" data-item="<%= borrower.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(borrower.item, borrower) %>" data-receiver="<% if session_user.id == borrower.user.id %><%= borrower.item.user.id %><% else %><%= borrower.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_borrow_path(borrower.uuid, borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
 											<% end %>
 										<% elsif borrower.check_expiration == "lightgreen" %>
 											<% if session_user.id == borrower.last_update_user_id %>
 												<li><a id="yb-edit-borrow-item-<%= borrower.id %>" href="<%= edit_item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
 											<% else %>
-												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=1" class="yb-update-borrow-status-link" data-status="accepted" data-borrow="<%= @borrow.id %>" data-item="<%= borrower.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(borrower.item, borrower) %>" data-receiver="<% if session_user.id == borrower.user.id %><%= borrower.item.user.id %><% else %><%= borrower.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Accept</span></a></li>
-												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=2" class="yb-update-borrow-status-link" data-status="rejected" data-borrow="<%= @borrow.id %>" data-item="<%= borrower.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(borrower.item, borrower) %>" data-receiver="<% if session_user.id == borrower.user.id %><%= borrower.item.user.id %><% else %><%= borrower.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=1" class="yb-update-borrow-status-link" data-status="accepted" data-borrow="<%= borrower.id %>" data-item="<%= borrower.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(borrower.item, borrower) %>" data-receiver="<% if session_user.id == borrower.user.id %><%= borrower.item.user.id %><% else %><%= borrower.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_borrow_path(borrower.uuid, borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-checkmark-round"></i></span><span class="item-text">Accept</span></a></li>
+												<li><a href="<%= update_status_path(borrower.item, borrower) %>?status=2" class="yb-update-borrow-status-link" data-status="rejected" data-borrow="<%= borrower.id %>" data-item="<%= borrower.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(borrower.item, borrower) %>" data-receiver="<% if session_user.id == borrower.user.id %><%= borrower.item.user.id %><% else %><%= borrower.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_borrow_path(borrower.uuid, borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
 												<li><a id="yb-edit-borrow-item-<%= borrower.id %>" href="<%= edit_item_item_borrow_user_path(borrower.item, borrower) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
 											<% end %>
 										<% elsif borrower.check_expiration == "green" %>
 											<% if session_user.id == borrower.user.id %>
+												<% if borrower.was_rendered %>
 												<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+												<% end %>
+												<% if Array["returned", "succeeded"].include?(borrower.status) %>
 												<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+												<% end %>
 												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 											<% elsif session_user.id == borrower.item.user.id %>
+												<% if borrower.was_received and !borrower.item.user.is_private? %>
 												<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+												<% end %>
 												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 											<% end %>
 										<% elsif borrower.check_expiration == "red" %>

@@ -14,5 +14,5 @@ packages = YbPackage.create([
 	{package: YobuddyData::PACKAGE_GOLD, items: YobuddyData::MAX_ITEMS_GOLD, users: YobuddyData::MAX_USERS_GOLD, price: YobuddyData::PRICE_GOLD},
 	{package: YobuddyData::PACKAGE_DIAMOND, items: YobuddyData::MAX_ITEMS_DIAMOND, users: YobuddyData::MAX_USERS_DIAMOND, price: YobuddyData::PRICE_DIAMOND},
 	{package: YobuddyData::PACKAGE_PLATINUM, items: YobuddyData::MAX_ITEMS_PLATINUM, users: YobuddyData::MAX_USERS_PLATINUM, price: YobuddyData::PRICE_PLATINUM},
-	{package: YobuddyData::PACKAGE_ALTIMATE, items: YobuddyData::ALTIMATE, users: YobuddyData::ALTIMATE, price: YobuddyData::PRICE_ALTIMATE}
+	{package: YobuddyData::PACKAGE_ULTIMATE, items: YobuddyData::ULTIMATE, users: YobuddyData::ULTIMATE, price: YobuddyData::PRICE_ULTIMATE}
 ])

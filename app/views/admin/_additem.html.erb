@@ -3,7 +3,7 @@
 		<h2>Add Item</h2>
 		<%= form_for @borrow_item, url: admin_add_item_path(@item, @borrow) do |form| %>
 			<label>Name : </label>
-			<%= form.text_field :name, required: true, placeholder: "Enter Item Name" %>
+			<%= form.text_field :name, required: true, placeholder: "Enter Item Name", autocomplete: "off" %>
 			<label>Item State : </label>
 			<%= form.select(:state) do %>
 				<% @item_states.each do |state| %>
@@ -12,6 +12,8 @@
 			<% end %>
 			<label>Description : </label>
 			<%= form.text_area :description, required:true, placeholder: "Enter Description" %>
+			<%= form.file_field :file, multiple: true, accept: ".jpeg, .png, .jpg, .pdf, .doc, .docx" %>
+			<span class="yb-upload-img">Add Additional Files</span>
 			<div style="display: block; position: relative;">
 				<button type="submit">Submit</button>
 				<button type="button" id="yb-close-add-item" class="yb-btn-cancel">Cancel</button>

@@ -5,6 +5,8 @@ class CreateBorrowItemAdmins < ActiveRecord::Migration[5.1]
       t.references :admin, foreign_key: true
       t.string :status
       t.string :state
+      t.float :cost
+      t.string :currency
       t.string :comment
 
       t.timestamps

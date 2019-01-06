@@ -87,13 +87,13 @@ class AdminUserController < ApplicationController
 		@admin_messages = @borrow.borrow_item_admin.all
 		@borrow_items = @borrow.list_borrow_item.all
 
-		status = params[:status]
+		@active_status = params[:status]
 		state = params[:state]
 		@page_status = 0
 
-		if status == @borrow_admin_status[0] and state == 1 then
+		if @active_status == @borrow_admin_status[0] and state == 1 then
 			@act = borrow_received_act @borrow
-		elsif status == @borrow_admin_status[1] and state == 1 then
+		elsif @active_status == @borrow_admin_status[1] and state == 1 then
 			@act = borrow_rendered_act @borrow
 		end
 
@@ -107,6 +107,7 @@ class AdminUserController < ApplicationController
 		@borrow = BorrowItemUser.find(params[:id])
 		@item = @borrow.list_borrow_item.create(params[:list_borrow_item].permit(:name, :state, :description))
 		if @item.save then
+			upload_list_borrow_item_files(params[:list_borrow_item][:file], @item)
 			flash[:success] = "Item Added !!!"
 		else
 			flash[:danger] = @item.errors.full_messages
@@ -158,7 +159,7 @@ class AdminUserController < ApplicationController
 		@last =  @borrow.borrow_item_admin.last
 		item = AdminItem.where(item_id: @borrow.item.id).first
 		if Array[@status[1], @status[3], @status[4], @status[5]].include?(@borrow.status) then
-			@message = @borrow.borrow_item_admin.create(params[:borrow_item_admin].permit(:status, :state, :comment))
+			@message = @borrow.borrow_item_admin.create(params[:borrow_item_admin].permit(:status, :state, :comment, :cost, :currency))
 			@message.admin_id = session[:admin]
 			state = 0
 			if item != nil then
@@ -170,6 +171,7 @@ class AdminUserController < ApplicationController
 							if @message.save then
 								item.is_available = false
 								item.save
+								upload_borrow_item_admin_files(params[:borrow_item_admin][:file], @message)
 								state = 1
 								flash[:success] = "Message Saved Successfully !!!"
 							else 
@@ -200,6 +202,7 @@ class AdminUserController < ApplicationController
 							item.save
 							save_message(@status[6], @borrow)
 						end
+						upload_borrow_item_admin_files(params[:borrow_item_admin][:file], @message)
 						flash[:success] = "Message Saved Successfully !!!"
 					else
 						flash[:danger] =  @message.errors.full_messages
@@ -229,6 +232,7 @@ class AdminUserController < ApplicationController
 						admin_item.save
 						save_message(@status[6], @borrow)
 					end
+					upload_borrow_item_admin_files(params[:borrow_item_admin][:file], @message)
 					state = 1
 					flash[:success] = "Message Saved Successfully !!!"
 				else 
@@ -253,6 +257,22 @@ class AdminUserController < ApplicationController
 		@borrow = BorrowItemUser.find(params[:id])
 		@act = borrow_rendered_act(@borrow, session_admin_user.user.name)
 		render layout: false
+	end
+
+	def download_borrow_act_received
+		@borrow = BorrowItemUser.find(params[:id])
+		@act = borrow_received_act(@borrow, session_admin_user.user.name)
+		
+		@pdf = render_to_string pdf: "borrow_act_received_no_#{@borrow.code}.pdf", template: "admin/borrow_act_received", encoding: "UTF-8"
+        send_data @pdf, :filename => "borrow_act_received_no_#{@borrow.code}.pdf", :type => "application/pdf", :disposition => "attachment"
+	end
+
+	def download_borrow_act_rendered
+		@borrow = BorrowItemUser.find(params[:id])
+		@act = borrow_rendered_act(@borrow, session_admin_user.user.name)
+		
+		@pdf = render_to_string pdf: "borrow_act_renderred_no_#{@borrow.code}.pdf", template: "admin/borrow_act_rendered", encoding: "UTF-8"
+        send_data @pdf, :filename => "borrow_act_renderred_no_#{@borrow.code}.pdf", :type => "application/pdf", :disposition => "attachment"
 	end
 
 	def new_borrow

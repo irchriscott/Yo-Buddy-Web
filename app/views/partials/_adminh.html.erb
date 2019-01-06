@@ -7,6 +7,10 @@
 		}
 	<% end -%>
 </script>
+<% if is_admin_logged_in? %>
+<input type="hidden" id="session_admin_id" value="admin_<%= session_admin.id %>">
+<input type="hidden" id="session_admin_name" value="<%= session_admin.username %>">
+<% end -%>
 <section class="yb-header">
 	<div class="yb-header-container">
 		<h2><a href="<%= admin_home_path %>">Admin - Yo Buddy !</a></h2>

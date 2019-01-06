@@ -5,8 +5,9 @@ class SessionController < ApplicationController
 	before_action :set_data_items_counts
 	
 	def index
+		@title = "YB - Session Items"
 		if is_logged_in? then
-			@items = Item.where(user_id: session[:user_id]).order('created_at DESC')
+			@items = Item.where(user_id: session[:user_id]).order('created_at DESC').paginate(page: params[:page], per_page: 5)
 		else
 			redirect_to controller: 'user', action: 'new'
 		end
@@ -15,6 +16,7 @@ class SessionController < ApplicationController
 	def borrowed
 		items = @user.item.all
 		@items = Array.new
+		@title = "YB - Session Lending"
 		items.each do |item|
 			if item.borrow_item_user.count > 0 then
 				@items.append(get_borrow_item_data(item))
@@ -26,31 +28,38 @@ class SessionController < ApplicationController
 	def borrowing
 		@borrows = BorrowItemUser.where(user_id: session[:user_id]).order(created_at: :desc)
 		@activate = "borrowing"
+		@title = "YB - Session Borrowing"
 	end
 	
 	def favourites
 		@favourites = @user.item_favourite.all.order(created_at: :desc)
 		@activate = "favourites"
+		@title = "YB - Session Favourites"
 	end
 
 	def requests
-		@requests = @user.item_request.all.order(to_date: :asc)
+		@requests = @user.item_request.all.order(to_date: :asc).paginate(page: params[:page], per_page: 5)
 		@activate = "requests"
+		@title = "YB - Session Item Requests"
 	end
 
 	def likes
 		@likes = @user.item_like.all.order(created_at: :desc)
+		@title = "YB - Session Likes"
 	end
 	
 	def followers
 		@followers = UserFollow.where(following_id: @user.id)
+		@title = "YB - Session Followers"
 	end
 
 	def following
 		@following = UserFollow.where(user_id: @user.id)
+		@title = "YB - Session Following"
 	end
 
 	def edit
+		@title = "YB - Session Edit"
 	end
 
 	def update_image
@@ -199,6 +208,7 @@ class SessionController < ApplicationController
 
 	def notifications_all
 		@notifications = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
+		@title = "YB - All Notification"
 		@notifications.each do |notif|
 			if !notif.is_read? then
 				notif.is_read = true
@@ -209,6 +219,7 @@ class SessionController < ApplicationController
 
 	def notifications_item
 		@notifications = Array.new
+		@title = "YB - Item Notification"
 		notifs = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
 		notifs.each do |notif|
 			if notif.notification["category"] == "item" then @notifications.push(notif) end
@@ -223,6 +234,7 @@ class SessionController < ApplicationController
 
 	def notifications_borrow
 		@notifications = Array.new
+		@title = "YB - Borrow Notification"
 		notifs = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
 		notifs.each do |notif|
 			if notif.notification["category"] == "borrow" then @notifications.push(notif) end
@@ -237,6 +249,7 @@ class SessionController < ApplicationController
 
 	def notifications_reminder
 		@notifications = Array.new
+		@title = "YB - Reminder Notification"
 		notifs = Notification.where(user_to_id: session[:user_id]).order(created_at: :desc)
 		notifs.each do |notif|
 			if notif.notification["category"] == "reminder" then @notifications.push(notif) end

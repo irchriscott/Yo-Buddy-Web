@@ -38,6 +38,9 @@
 					<%= form.text_area :reasons, required: true, style: "height:80px", placeholder: "Enter Reasons" %>
 					<label>Conditions :</label>
 					<%= form.text_area :conditions, required: true %>
+					<div class="yb-progress-bar-container" style="display: none;">
+						<div class="yb-progress-bar" id="yb-borrow-progress-bar" data-value="20" data-max="100"></div>
+					</div>
 					<div style="display: block; position: relative;">
 						<button type="submit" id="yb-submit-borrow">Submit</button>
 						<% if @type == "ajax" %>

@@ -57,7 +57,9 @@
 			<script type="text/javascript">CKEDITOR.replace( 'yb-item-request-description' );</script>
 		<% else %>
 			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-add-request" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		<% end %>
 	</div>
 	<script type="text/javascript">

@@ -1,6 +1,6 @@
-<div class="yb-modal-container" style="width: 50%;">
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
 	<div class="yb-add-item">
-		<h2>Add Request Suggestion Item</h2>
+		<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %>>Add Request Suggestion Item</h2>
 		<% if @active == true %>
 			<div class="yb-item-suggestions">
 				<% if @items.count > 0 %>
@@ -57,11 +57,15 @@
 			</div>
 			<div style="display: block; position: relative; float: left;">
 				<button type="button" id="yb-open-add-suggestion-about" style="background: var(--primaryColor)">Suggest</button>
+				<% if @type == "ajax" %>
 				<button type="button" id="yb-close-add-suggestion" class="yb-btn-cancel">Cancel</button>
+				<% end %>
 			</div>
 		<% else %>
 			<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+			<% if @type == "ajax" %>
 			<button type="button" id="yb-close-add-suggestion" class="yb-btn-cancel">Cancel</button>
+			<% end %>
 		<% end %>
 	</div>
 	<style type="text/css">input{width: calc(100% - 22px);} select{width: 100%;}</style>

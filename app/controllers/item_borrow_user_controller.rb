@@ -5,18 +5,20 @@ class ItemBorrowUserController < ApplicationController
     include ItemBorrowUserHelper
     include ApplicationHelper
 
-    before_action :check_token
-    before_action :check_session
+    before_action :check_token, except: [:follow_ups, :send_follow_up, :load_follow_ups_sent, :load_follow_ups_received]
+    before_action :check_session, except: [:follow_ups, :send_follow_up, :load_follow_ups_sent, :load_follow_ups_received]
     before_action :set_item_data
     before_action :set_data_items_counts, only: [:index, :show]
-    before_action :check_owner_borrow, only: [:show, :edit, :update, :update_status, :destroy]
-    before_action :check_active
+    before_action :check_owner_borrow, only: [:show, :edit, :update, :update_status, :destroy, :borrow_review]
+    before_action :check_active, except: [:follow_ups, :send_follow_up, :load_follow_ups_sent, :load_follow_ups_received]
+    before_action :check_privacy, only: [:follow_ups, :send_follow_up, :load_follow_ups_sent, :load_follow_ups_received]
     skip_before_action :verify_authenticity_token, only: [:create, :update]
 
     def index
         @borrowers = @item.borrow_item_user.all.order(created_at: :desc)
         @favourites_count = @item.user.item_favourite.all.count
         @activate = "borrowed"
+        @title = "YB - Borrows for #{@item.name}"
     end
 
     def show
@@ -28,11 +30,19 @@ class ItemBorrowUserController < ApplicationController
             @borrow_receiver = @borrow.user.id
         end
         @time = Time.new
+        @title = "YB - Borrow No #{@borrow.code}"
     end
 
     def description
         @borrow = @item.borrow_item_user.find(params[:id])
         render layout: false
+    end
+
+    def borrow_review
+        @borrow = @item.borrow_item_user.find(params[:id])
+        @reviews = @borrow.borrow_message.where("sender_id = 0 AND receiver_id = 0").order(created_at: :asc)
+        @type = params[:type]
+        if @type == "ajax" then render layout: false end
     end
 
     def download_borrow_data
@@ -53,6 +63,7 @@ class ItemBorrowUserController < ApplicationController
         @type = params[:type]
         @borrow = BorrowItemUser.new
         @last_borrow = @item.borrow_item_user.last
+        @title = "YB - New Borrow for #{@item.name}"
         if @type == "ajax" then render layout: false end
     end
 
@@ -63,6 +74,7 @@ class ItemBorrowUserController < ApplicationController
         @borrow.status = @status[0]
         @borrow.last_update_user_id = session[:user_id]
         @borrow.uuid = generate_uuid("", 24)
+        @borrow.admin_id = !@item.user.is_private? ? 1 : nil
 
         from_date = check_from_date(params[:item_borrow])
 
@@ -115,6 +127,7 @@ class ItemBorrowUserController < ApplicationController
         else 
             @borrow_receiver = @item_borrow.user.id
         end
+        @title = "YB - Edit Borrow No #{@item_borrow.code}"
         render layout: false
     end
 
@@ -286,6 +299,18 @@ class ItemBorrowUserController < ApplicationController
                 format.json{ render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"} }
             end
         end
+    end
+
+    def follow_ups
+    end
+
+    def send_follow_up
+    end
+
+    def load_follow_ups_sent
+    end
+
+    def load_follow_ups_received
     end
 
     private def borrow_params
