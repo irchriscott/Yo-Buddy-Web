@@ -63,22 +63,22 @@
 											<% elsif borrow.check_expiration == "green" %>
 												<% if session_user.id == borrow.user.id %>
 													<% if borrow.was_rendered %>
-													<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+													<li><a href="<%= item_borrow_expand_path(borrow.uuid, borrow.item, borrow) %>" id="yb-open-borrow-expand-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
 													<% end %>
 													<% if Array["returned", "succeeded"].include?(borrow.status) %>
-													<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+													<li><a href="<%= item_borrow_renew_path(borrow.uuid, borrow.item, borrow) %>" id="yb-open-borrow-renew-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 													<% end %>
 													<li><a href="<%= report_new_path(borrow.id) %>?ressource=borrow" id="yb-get-report-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 												<% elsif session_user.id == borrow.item.user.id %>
 													<% if borrow.was_received and !borrow.item.user.is_private? %>
-													<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+													<li><a href="<%= follow_ups_path(borrow.uuid, borrow.item, borrow) %>" id="yb-open-follow-ups-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
 													<% end %>
 													<li><a href="<%= report_new_path(borrow.id) %>?ressource=borrow" id="yb-get-report-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 												<% end %>
 											<% elsif borrow.check_expiration == "red" %>
 												<% if session_user.id == borrow.user.id %>
 													<li><a href="<%= destroy_item_borrow_item_user_path(borrow.item, borrow) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
-													<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+													<li><a href="<%= item_borrow_renew_path(borrow.uuid, borrow.item, borrow) %>" id="yb-open-borrow-renew-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 													<li><a href="<%= report_new_path(borrow.id) %>?ressource=borrow" id="yb-get-report-<%= borrow.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 												<% elsif session_user.id == borrow.item.user.id %>
 													<li><a href="<%= destroy_item_borrow_item_user_path(borrow.item, borrow) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
@@ -99,7 +99,7 @@
 										<span class="yb-data">To - <%= borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
 									</p>
 								</div>
-								<script type="text/javascript">$("#yb-show-menu-<%= borrow.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow.id %>, #yb-get-report-<%= borrow.id %>").magnificPopup({type: 'ajax'});</script>
+								<script type="text/javascript">$("#yb-show-menu-<%= borrow.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow.id %>, #yb-get-report-<%= borrow.id %>, #yb-open-follow-ups-<%= borrow.id %>, #yb-open-borrow-extend-<%= borrow.id %>, #yb-open-borrow-extend-<%= borrow.id %>").magnificPopup({type: 'ajax'});</script>
 							</div>
 						<% end %>
 					</div>

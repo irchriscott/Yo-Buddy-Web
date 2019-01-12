@@ -235,6 +235,8 @@ class AdminController < ApplicationController
 							item.is_available = false
 							item.save
 							save_message(@status[6], @borrow)
+						elsif params[:borrow_item_admin][:status] == @borrow_admin_status[6] then
+							Notification.create([{user_from_id: @borrow.item.user.id, user_to_id: @borrow.item.user.id , ressource: "update_borrow_report", ressource_id: @borrow.id, is_read: false}])
 						end
 						upload_borrow_item_admin_files(params[:borrow_item_admin][:file], @message)
 						flash[:success] = "Message Saved Successfully !!!"
@@ -257,6 +259,7 @@ class AdminController < ApplicationController
 						@message_else = @borrow.borrow_item_admin.create(params[:borrow_item_admin].permit(:state, :comment, :cost, :currency))
 						@message_else.status = @borrow_admin_status[6]
 						@message_else.save
+						Notification.create([{user_from_id: @borrow.item.user.id, user_to_id: @borrow.item.user.id , ressource: "update_borrow_report", ressource_id: @borrow.id, is_read: false}])
 					elsif params[:borrow_item_admin][:status] == @borrow_admin_status[2] then
 						admin_item.is_available = true
 						admin_item.save
@@ -269,6 +272,8 @@ class AdminController < ApplicationController
 						admin_item.is_available = false
 						admin_item.save
 						save_message(@status[6], @borrow)
+					elsif params[:borrow_item_admin][:status] == @borrow_admin_status[6] then
+						Notification.create([{user_from_id: @borrow.item.user.id, user_to_id: @borrow.item.user.id , ressource: "update_borrow_report", ressource_id: @borrow.id, is_read: false}])
 					end
 					upload_borrow_item_admin_files(params[:borrow_item_admin][:file], @message)
 					state = 1

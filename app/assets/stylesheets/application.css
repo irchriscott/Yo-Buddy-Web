@@ -2819,14 +2819,71 @@ table tbody tr td img{
     background: var(--lightGray);
 }
 
+.yb-extension-message-menu{
+    display: block;
+}
+
+.yb-extension-message-menu a{
+    font-size: 11px;
+    padding: 1px 12px;
+}
+
+.yb-extension-message-menu #yb-accept-extension-request{
+    color: green;
+    border:2px solid green;
+}
+
+.yb-extension-message-menu #yb-reject-extension-request{
+    color: red;
+    border:2px solid red;
+}
+
 .yb-borrow-admin-messages{
     display: block;
     position: relative;
     height: calc(100vh - 200px);
 }
 
+.yb-borrow-admin-messages .yb-follow-ups-header{
+    display: block;
+    position: relative;
+    box-shadow: 0px 2px 1px var(--veryLightGray);
+    width: calc(100% + 30px);
+    margin-left: -15px;
+}
+
+.yb-borrow-admin-messages .yb-follow-ups-header ul{
+    display: block;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    margin-left: -25px;
+}
+
+.yb-borrow-admin-messages .yb-follow-ups-header ul li{
+    display: inline-block;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+
+.yb-borrow-admin-messages .yb-follow-ups-header ul li:first-child{
+    margin-right: 25px;
+}
+
+.yb-borrow-admin-messages .yb-follow-ups-header ul .active{
+    border-bottom: 2px solid var(--primaryColor);
+}
+
+.yb-borrow-admin-messages .yb-follow-ups-header ul li a{
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.yb-borrow-admin-messages .yb-follow-ups-header ul .active a{
+    color: var(--primaryColor);
+}
+
 .yb-borrow-admin-messages .yb-admin-messages-list{
-    height: calc(100% - 100px + 62px);
+    height: calc(100% - 100px + 52px);
     margin-top: 10px;
     width: 100%;
     display: block;
@@ -2834,10 +2891,12 @@ table tbody tr td img{
     overflow-x: hidden;
     overflow-y: auto;
     border-top: 1px solid rgba(0,0,0,.1);
+    border-bottom: 1px solid rgba(0,0,0,.1);
 }
 
 .yb-admin-message-form{
-    border-top: 1px solid rgba(0,0,0,.1);
+    display: block;
+    position: relative;
 }
 
 .yb-admin-msg{
@@ -2847,6 +2906,12 @@ table tbody tr td img{
     white-space: normal;
     padding: 8px;
     margin-bottom: 8px;
+    border-radius: 6px;
+}
+
+.yb-admin-msg:first-child{
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 .yb-admin-msg p{
@@ -4293,7 +4358,7 @@ table tbody tr td img{
     .yb-modal-container .yb-add-item .yb-add-price #borrow_item_admin_cost,
     .yb-modal-container .yb-add-item .yb-add-price #borrow_item_admin_currency{
         display: block;
-        width: 100%;
+        width: 100% !important;
     }
 
 

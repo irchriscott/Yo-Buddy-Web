@@ -188,7 +188,7 @@ $(function() {
         previewImage(this, "profile_image");
     });
 
-    $("#yb-open-borrow-item-description, #yb-open-admin-messages, #yb-open-borrow-item-review, #yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else, #yb-admin-key-new").magnificPopup({type:'ajax'});
+    $("#yb-open-borrow-item-description, #yb-open-borrow-extend, #yb-open-borrow-renew, #yb-open-follow-ups, #yb-open-admin-messages, #yb-open-borrow-item-review, #yb-add-item-new, #admin-add-new-item, #admin-user-edit-item, #yb-add-item-request-new, #yb-edit-item-path, #yb-item-check-available, #yb-new-item-borrow-user-path, #yb-edit-borrow-item, #admin-add-category, #admin-add-subcategory, #admin-edit-category, #yb-admin-act-received, #yb-admin-act-rendered, #admin-open-scan-borrow, #yb-add-suggestion-new, #yb-add-suggestion-exist, #yb-get-report, #yb-get-report-else, #yb-admin-key-new").magnificPopup({type:'ajax'});
 
     $("#admin-add-admin-user, #yb-admin-open-add-message, #admin-add-admin, #yb-borrow-get-qr-code, #yb-add-item-admin, #yb-view-item-admin, #yb-admin-open-scan-qr-code, #yb-open-send-message-images").magnificPopup({
         type: 'inline',
@@ -515,7 +515,13 @@ $(function() {
                 });
             }
         } else if (message.sender == form.attr("data-sender")){
-            setLoadData("yb-borrow-messages-container", message.url);
+            var form = $("body").find("#yb-borrow-message-form");
+            if(form.length > 0){
+                setLoadData("yb-borrow-messages-container", message.url);
+                updateMessageScroll();
+            } else {
+                window.location = message.path;
+            }
         }
     });
 
@@ -557,8 +563,6 @@ $(function() {
 
         if(session == message.receiver || admin == message.receiver){
             setLoadData("yb-admin-messages-list", checkJsonURL(message.url)); 
-            let message_list = $("#yb-admin-messages-list");
-            message_list.scrollTop = message_list.scrollHeight;
             $("#yb-admin-messages-list").animate({ scrollTop: 100000000}, 1000);
 
             iziToast.info({
@@ -886,6 +890,22 @@ function addScript(url) {
     document.head.appendChild(script);
 }
 
+function toDateExtension(per, date, number){
+    if(per == "Day"){
+        var time = Date.parse(date) + (number * 24 * 60 * 60 * 1000);
+        return moment(time).format('MMMM Do, YYYY [at] h:mm a');
+    } else if(per == "Week"){
+        var time = Date.parse(date) + (number * 7 * 24 * 60 * 60 * 1000);
+        return moment(time).format('MMMM Do, YYYY [at] h:mm a');
+    } else if(per == "Month"){
+        var time = Date.parse(date) + (number * 30 * 24 * 60 * 60 * 1000);
+        return moment(time).format('MMMM Do, YYYY [at] h:mm a');
+    } else if(per == "Year"){
+        var time = Date.parse(date) + (number * 12 * 30 * 24 * 60 * 60 * 1000);
+        return moment(time).format('MMMM Do, YYYY [at] h:mm a');
+    }
+}
+
 jQuery.fn.setDate = function(){
     setInterval(() => {
         var time = $(this).attr("data-date");
@@ -897,6 +917,15 @@ jQuery.fn.setDate = function(){
 jQuery.fn.setNumber = function(){
     var number = parseInt($(this).attr("data-number"));
     $(this).text(makeNumber(number).toString().toUpperCase());
+}
+
+jQuery.fn.setExtendToDate = function(per){
+    var container  =  $("#yb-extended-to-date");
+    var date = $(this).attr("data-date");
+    container.text(toDateExtension(per, date, 1));
+    $(this).keyup(function(){
+        container.text(toDateExtension(per, date, parseInt($(this).val())));
+    });
 }
 
 jQuery.fn.followUser = function(){
@@ -1517,7 +1546,7 @@ jQuery.fn.updateBorrowItemUserStatus = function(){
             close: false,
             overlay: true,
             toastOnce: true,
-            id: 'accept',
+            id: status,
             zindex: 999,
             title: 'Update Borrow Item User Status',
             message: 'Do you really want to update the status to <b>' + status.toUpperCase() + ' ?</b>',
@@ -1525,19 +1554,169 @@ jQuery.fn.updateBorrowItemUserStatus = function(){
             buttons: [
                 ['<button><b>YES</b></button>', function (instance, toast) {
                     instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
-                    socket.emit("setNotification", receiver);
+                    jQuery.ajax({
+                        type: "GET",
+                        url: action,
+                        data: {},
+                        success: function(response){
+                            if(response.type == "success"){
+                                socket.emit("setNotification", receiver);
+                                var message = {
+                                    "item": item,
+                                    "borrow": borrow,
+                                    "receiver": receiver,
+                                    "sender": sender,
+                                    "message": "has updated borrow item status to " + status.toUpperCase() + " !!!",
+                                    "url": url,
+                                    "path": path,
+                                    "type": "status"
+                                }
+                                socket.emit("messageSent", message);
+                                showSuccessMessage(response.type, response.text);
+                            } else {
+                                showErrorMessage(response.type, response.text);
+                            }
+                        },
+                        error: function(xhr, t, e){
+                            showErrorMessage("error", e);
+                        }
+                    })                     
+                }, true],
+                ['<button>NO</button>', function (instance, toast) {
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                    showInfoMessage("info", "Operation Cancelled !!!");
+                }],
+            ],
+            onClosing: function(instance, toast, closedBy){},
+            onClosed: function(instance, toast, closedBy){
+                showInfoMessage("info", "Operation Cancelled !!!");
+            }
+        });
+    });
+}
+
+jQuery.fn.extendBorrowItem = function(){
+
+    $(this).submit(function(e){
+        e.preventDefault();
+        var _this = $(this);
+        var form = new FormData($(this)[0]);
+        var url = $(this).attr("action");
+        var user = $(this).attr("data-user");
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+
+        var borrow = _this.attr("data-borrow");
+        var item = _this.attr("data-item");
+        var url = _this.attr("data-url");
+        var receiver = _this.attr("data-receiver");
+        var sender = _this.attr("data-sender");
+        var path = _this.attr("data-path");
+
+        jQuery.ajax({
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                _this.find("#yb-submit-borrow").attr("disabled", "disabled").css('background', '#CCC');
+                xhr.addEventListener("progress", function (e) {
+                    if (e.lengthComputable) {
+                        var percent = Math.round((e.loaded / e.total) * 100);
+                    }
+                });
+                return xhr;
+            },
+            type: "POST",
+            url: url,
+            data: form,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                _this.find("#yb-submit-borrow").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                if (response.type == "success") {
+                    showSuccessMessage("success", response.text);
                     var message = {
                         "item": item,
                         "borrow": borrow,
                         "receiver": receiver,
                         "sender": sender,
-                        "message": "has updated borrow item status to " + status.toUpperCase() + " !!!",
+                        "message": "has sent a borrow extension request.",
                         "url": url,
                         "path": path,
-                        "type": "status"
+                        "type": "message"
                     }
-                    window.location = action;
-                    socket.emit("messageSent", message);                     
+                    socket.emit("messageSent", message);
+                    socket.emit("setNotification", user);
+                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has sent a borrow extension request.", "icon": notIcon, "url": response.url});
+                    $(".mfp-close").click();
+                } else {
+                    showErrorMessage(response.type, response.text);
+                }
+            },
+            error: function(xhr, t, e){
+                _this.find("#yb-submit-borrow").removeAttr("disabled").text("Submit").css('background', '#cc8400');
+                showErrorMessage("error", e);
+            }
+        });
+    });
+}
+
+jQuery.fn.updateBorrowExtensionStatus = function(){
+    $(this).click(function(e){
+        e.preventDefault();
+
+        var _this = $(this);
+        var status = $(this).attr("data-status");
+        var user = $(this).attr("data-user");
+        var notIcon = $(this).attr("data-not-icon");
+        var notUser = $(this).attr("data-not-user");
+
+        var borrow = _this.attr("data-borrow");
+        var item = _this.attr("data-item");
+        var url = _this.attr("data-url");
+        var receiver = _this.attr("data-receiver");
+        var sender = _this.attr("data-sender");
+        var path = _this.attr("data-path");
+        var action = _this.attr("href");
+
+        iziToast.question({
+            timeout: 10000,
+            close: false,
+            overlay: true,
+            toastOnce: true,
+            id: status,
+            zindex: 999,
+            title: 'Update Borrow Extension Status',
+            message: 'Do you really want to update the extension status to <b>' + status.toUpperCase() + ' ?</b>',
+            position: 'center',
+            buttons: [
+                ['<button><b>YES</b></button>', function (instance, toast) {
+                    instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+                    jQuery.ajax({
+                        type: "GET",
+                        url: action,
+                        data: {},
+                        success: function(response){
+                            if(response.type == "success"){
+                                socket.emit("setNotification", receiver);
+                                var message = {
+                                    "item": item,
+                                    "borrow": borrow,
+                                    "receiver": receiver,
+                                    "sender": sender,
+                                    "message": "has updated borrow extension request status to " + status.toUpperCase() + " !!!",
+                                    "url": url,
+                                    "path": path,
+                                    "type": "status"
+                                }
+                                socket.emit("messageSent", message);
+                                showSuccessMessage(response.type, response.text);
+                            } else {
+                                showErrorMessage(response.type, response.text);
+                            }
+                        },
+                        error: function(xhr, t, e){
+                            showErrorMessage("error", e);
+                        }
+                    })                     
                 }, true],
                 ['<button>NO</button>', function (instance, toast) {
                     instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
@@ -1682,8 +1861,6 @@ jQuery.fn.adminTextMessage =  function(){
                     socket.emit("adminMessageSent", message);
                     _this.children("textarea").val("");
                     setLoadData("yb-admin-messages-list", url);
-                    let message_list = $("#yb-admin-messages-list");
-                    message_list.scrollTop = message_list.scrollHeight;
                     $("#yb-admin-messages-list").animate({ scrollTop: 100000000}, 1000);
                 }
             },
@@ -2240,8 +2417,6 @@ function adminUserTemplate(user){
 }
 
 function updateMessageScroll(){
-    let message_list = $("#yb-borrow-messages-container");
-    message_list.scrollTop = message_list.scrollHeight;
     $("#yb-borrow-messages-container").animate({ scrollTop: 100000000}, 1000);
 }
 

@@ -86,12 +86,12 @@ class BorrowMessagesController < ApplicationController
 
     def send_admin_message
     	@message = @borrow.borrow_message.create({
-    		"sender_id" => params[:admin_message][:sender_id],
-    		"receiver_id" => params[:admin_message][:receiver_id],
-    		"message" => params[:admin_message][:message],
-    		"has_images" => false,
-    		"status" => "yb",
-    		"is_deleted" => false
+    		sender_id: params[:admin_message][:sender_id],
+    		receiver_id: params[:admin_message][:receiver_id],
+    		message: params[:admin_message][:message],
+    		has_images: false,
+    		status: "yb",
+    		is_deleted: false
     	})
     	render json:{"type" => "success", "text" => params[:admin_message][:message]}
     end
@@ -118,5 +118,22 @@ class BorrowMessagesController < ApplicationController
 		if @item.user.id != session[:user_id] and @borrow.user.id != session[:user_id] then
             render json: {"type" => "error", "text" => "You are not the Owner !!!"}
         end
+	end
+
+	private def check_privacy
+		@item = Item.find(params[:item_id]) if params[:item_id] != nil
+		@borrow = @item.borrow_item_user.find(params[:item_borrow_user_id])
+		if session[:admin] == nil then
+			if @borrow.item.user.is_private? or @borrow.user.id != session[:user_id] then
+				render json: {"type" => "error", "text" => "unauthorized"}
+			end
+		else
+			admin =  Admin.find(session[:admin])
+			if @borrow.admin.id != admin.id then
+				if admin.privileges != "all" then
+					render json: {"type" => "error", "text" => "unauthorized"}
+				end
+			end
+		end
 	end
 end

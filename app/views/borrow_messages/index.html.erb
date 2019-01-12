@@ -15,6 +15,28 @@
 										<% else %>
 											Borrow Request Received
 										<% end %>
+									<% elsif message.message.include?("extension_request") %>
+										<% if message.message.include?("sent") %>
+											<% if message.borrow_item_user.user.id == session_user.id %>
+												Borrow Extension Request Sent
+											<% else %>
+												Borrow Extension Request Sent
+												<div class="yb-extension-message-menu" id="yb-extension-message-menu">
+													<%= link_to "Accept", update_borrow_extension_status_path(@borrow.uuid, @item, @borrow) + "?status=accept", id: "yb-accept-extension-request", "data-user": @item.user.id, 'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow.user.id, 'data-sender': session_user.username, 'data-path': item_borrow_path(@borrow.uuid, @item, @borrow), "data-status": "accept", "data-not-icon": session_user.profile_image, "data-not-user": session_user.name %>
+													<%= link_to "Reject", update_borrow_extension_status_path(@borrow.uuid, @item, @borrow) + "?status=reject", id: "yb-reject-extension-request", "data-user": @item.user.id, 'data-borrow': @borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @borrow), 'data-receiver': @borrow.user.id, 'data-sender': session_user.username, 'data-path': item_borrow_path(@borrow.uuid, @item, @borrow), "data-status": "reject", "data-not-icon": session_user.profile_image, "data-not-user": session_user.name %>
+												</div>
+												<script type="text/javascript">
+													$("#yb-accept-extension-request").updateBorrowExtensionStatus();
+													$("#yb-reject-extension-request").updateBorrowExtensionStatus();
+												</script>
+											<% end %>
+										<% elsif message.message.include?("rejected") %>
+											Borrow Extension Request Rejected
+										<% elsif message.message.include?("canceled") %>
+											Borrow Extension Request Canceled
+										<% elsif message.message.include?("accepted") %>
+											Borrow Item Extended For <%= message.message.split(/_/).last %> <%= @borrow.per %>s
+										<% end -%>
 									<% else %>
 										<%= message.admin_message %>
 									<% end %>

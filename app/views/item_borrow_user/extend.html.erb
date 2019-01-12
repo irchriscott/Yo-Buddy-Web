@@ -1,0 +1,58 @@
+<div class="yb-modal-container" <% if @type != "ajax" %> style="border: none; margin-top: 75px;" <% end %>>
+	<div class="yb-add-item">
+		<% if @item.is_available? %>
+			<h2 <% if @type != "ajax" %> style="text-align: left;" <% end %> >Extend Borrow Item</h2>
+			<% if @active == true %>
+				<% if session_user.id == @item_borrow.user.id && @item_borrow.per != "Hour" && @item_borrow.extension == 0 %>
+					<%= form_for :item_borrow, url: extend_borrow_post_path(@item_borrow.uuid, @item_borrow.item, @item_borrow), html: {id: "yb-borrow-item-extend", "data-user": @item.user.id, 'data-borrow': @item_borrow.id, 'data-item': @item.id, 'data-url': item_item_borrow_user_borrow_messages_path(@item, @item_borrow), 'data-receiver': @borrow_receiver, 'data-sender': session_user.username, 'data-path': item_borrow_path(@item_borrow.uuid, @item, @item_borrow), "data-not-icon": session_user.profile_image, "data-not-user": session_user.name } do |form| %>
+						<%= form.hidden_field :item_id, value: @item.id %>
+						<div class="yb-add-price">
+							<label>Propose Price :</label>
+							<%= form.number_field :price, min: '0', placeholder: 'Enter Price', required: true, value: @item_borrow.price, autocomplete: 'off' %>
+							<%= form.select(:currency, required: true) do -%>
+								<% @currencies.each do |currency| %>
+									<% if @item_borrow.currency == currency["currency"] %>
+									<%= content_tag(:option, currency["name"], value: currency["currency"], selected: "selected") %>
+									<% end %>
+								<% end %>
+							<% end %>
+							<%= form.select(:per, required: true) do %>
+								<% @per.each do |t| %>
+									<% if @item_borrow.per == t %>
+									<%= content_tag(:option, "Per #{t}", value: t, selected: "selected") %>
+									<% end %>
+								<% end %>
+							<% end %>
+						</div>
+						<label>Enter Number Of Time You Want To Extend : </label>
+						<%= form.number_field :numbers, required:true, min:"1", style:"width:calc(100% - 22px)",  placeholder: "Enter Number Of Time", autocomplete: 'off', value: "1", 'data-date': @item_borrow.to_date.localtime.strftime("%Y-%m-%d %H:%M:%S") %>
+						<p><strong>Date From : </strong> <%= @item_borrow.from_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
+						<p><strong>Date To Before Extension : </strong> <%= @item_borrow.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></p>
+						<p><strong>Date To After Extension : </strong> <span id="yb-extended-to-date"></span></p>
+						<div style="display: block; position: relative;">
+							<button type="submit" id="yb-submit-borrow">Submit</button>
+							<% if @type == "ajax" %>
+							<button type="button" id="yb-close-borrow-item-extend" class="yb-btn-cancel">Cancel</button>
+							<% end %>
+						</div>
+					<% end %>
+				<% else -%>
+					<p class="yb-error">ACCESS UNAUTHORISED</p>
+					<button type="button" id="yb-close-borrow-item-extend" class="yb-btn-cancel">Cancel</button>
+				<% end -%> 
+			<% else %>
+				<p class="yb-error">YOUR PRIVATE ACCOUNT IS NOT ACTIVE</p>
+				<button type="button" id="yb-close-borrow-item-extend" class="yb-btn-cancel">Cancel</button>
+			<% end %>
+		<% else %>
+			<p class="yb-error">YOU CANT BORROW THIS ITEM. IT IS NOT AVAILABLE</p>
+			<button type="button" id="yb-close-borrow-item-extend" class="yb-btn-cancel">Cancel</button>
+		<% end %>
+	</div>
+	<script type="text/javascript">
+		$("#yb-close-borrow-item-extend").closePopup();
+		$("#item_borrow_numbers").setExtendToDate("<%= @item_borrow.per %>");
+		$("#yb-borrow-item-extend").extendBorrowItem();
+	</script>
+</div>
+

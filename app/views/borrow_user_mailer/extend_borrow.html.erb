@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+        <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css?family=Nunito:300,400" rel="stylesheet">
+        <style type="text/css">
+            *{
+                margin: 0;
+                padding: 0;
+                font-family: Poppins, Nunito, sans-serif !important;
+            }
+            a{
+                text-decoration: none;
+                outline: none;
+            }
+
+            body{
+                background: #DDDD !important;
+                padding: 50px !important;
+                display: block;
+                position: relative;
+                width: 100%;
+            }
+
+            section{
+                width: 70%;
+                margin: 50px auto;
+                background: red;
+                border:2px solid #cc8400;
+                background: white;
+                padding: 40px !important;
+            }
+
+            .yb-header{
+                border-bottom: 1px solid rgba(0,0,0,.1);
+                padding-bottom: 20px;
+                margin-bottom: 20px;
+            }
+
+            .yb-header h1{
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 32px;
+                color: #cc8400;
+            }
+
+            .yb-message{
+                padding-bottom: 20px;
+                font-size: 16px;
+                border-bottom: 1px solid rgba(0,0,0,.1);
+            }
+
+            .yb-link{
+                margin: 30px 0;
+            }
+
+            .yb-link a{
+                display: block;
+                background: rgba(0,0,255, .7);
+                color: #FFF;
+                text-align: center;
+                padding: 5px;
+                border-radius: 4px;
+                text-transform: uppercase;
+                font-size: 16px;
+            }
+
+            .yb-footer{
+                color: #cc8400;
+                font-size: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <section>
+            <div class="yb-header"><h1>Yo Buddy !</h1></div>
+            <div class="yb-content">
+                <p class="yb-message"><strong><%= @borrow.user.name %></strong> want to extend the borrow period No<strong><%= @borrow.code %></strong> for more <strong><%= @borrow.extension %> <%= @borrow.per.downcase! %>. You are required to accept or decline this request.</strong></p>
+                <div class="yb-link">
+                    <a href="<%= item_borrow_url(@borrow.item.uuid, @borrow.item, @borrow) %>">View Borrow</a>
+                </div>
+            </div>
+            <p class="yb-footer">Sent By Team Split Orange - Yo Buddy !</p>
+        </section>
+    </body>
+</html>

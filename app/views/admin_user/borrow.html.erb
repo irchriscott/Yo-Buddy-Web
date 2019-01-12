@@ -80,7 +80,6 @@
 			<div class="yb-admin-borrow-menu">
 				<button style="background: var(--primaryColor);" id="yb-admin-open-add-message" href="#yb-admin-add-message">ADD REPORT</button>
 				<button style="background: green;">REPORTS</button>
-				<button style="background: var(--gray);">FOLLOW UPS</button>
 				<a href="<%= item_borrow_path(@borrow.item.uuid, @borrow.item, @borrow) %>" target="_blank">SEE BORROW MESSAGES</a>
 			</div>
 		</div>
@@ -103,7 +102,9 @@
 		const socket = io("127.0.0.1:5000");
 		$(document).ready(function(){
 			if("<%= @active_status %>" != null && "<%= @active_status %>" != ""){
-				emitStatusMessage("<%= @borrow.user.id %>", "<%= @borrow.user.profile_image %>");
+				<% if @active_status != "report" %> 
+					emitStatusMessage("<%= @borrow.user.id %>", "<%= @borrow.user.profile_image %>");
+				<% end -%>
 			}
 		});
 

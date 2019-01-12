@@ -17,6 +17,7 @@ class CreateBorrowItemUsers < ActiveRecord::Migration[5.1]
       t.datetime :to_date
       t.integer :last_update_user_id
       t.string :uuid
+      t.integer :extension, default: 0
 
       t.timestamps
     end

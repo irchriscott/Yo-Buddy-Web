@@ -1,5 +1,5 @@
 
-json.extract! @borrow, :id, :price, :currency, :per, :conditions, :status, :is_deleted, :count, :numbers, :uuid
+json.extract! @borrow, :id, :price, :currency, :per, :conditions, :status, :is_deleted, :count, :numbers, :uuid, :admin_id, :extension, :reasons
 json.from_date @borrow.from_date.localtime
 json.to_date @borrow.to_date.localtime
 json.created_at @borrow.created_at.localtime
@@ -30,3 +30,6 @@ json.user @borrow.user.json
 json.last_updated_by User.find(@borrow.last_update_user_id).json
 json.url item_borrow_path(@borrow.uuid, @borrow.item, @borrow, format: :json)
 json.messages_url item_item_borrow_user_borrow_messages_path(@borrow.item, @borrow, format: :json)
+json.was_rendered @borrow.was_rendered
+json.was_received @borrow.was_received
+json.was_returned @borrow.was_returned

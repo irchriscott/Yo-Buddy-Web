@@ -6,7 +6,7 @@
 				<% if session_user.id == @borrow.user.id %>
 					<li><a id="yb-edit-borrow-item" href="<%= edit_item_item_borrow_user_path(@borrow.item, @borrow) %>"><span class="item-icon"><i class="icon ion-edit"></i></span><span class="item-text">Update</span></a></li>
 				<% elsif session_user.id == @borrow.item.user.id %>
-					<li><a id="yb-edit-borrow-item" href="<%= update_status_path(@borrow.item, @borrow) %>?status=2" class="yb-update-borrow-status-link" data-status="rejected" data-borrow="<%= @borrow.id %>" data-item="<%= @borrow.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(@borrow.item, @borrow) %>" data-receiver="<% if session_user.id == @borrow.user.id %><%= @borrow.item.user.id %><% else %><%= @borrow.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_borrow_path(@borrow.uuid, @borrow.item, @borrow) %>"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
+					<li><a href="<%= update_status_path(@borrow.item, @borrow) %>?status=2" class="yb-update-borrow-status-link" data-status="rejected" data-borrow="<%= @borrow.id %>" data-item="<%= @borrow.item.id %>" data-url="<%= item_item_borrow_user_borrow_messages_path(@borrow.item, @borrow) %>" data-receiver="<% if session_user.id == @borrow.user.id %><%= @borrow.item.user.id %><% else %><%= @borrow.user.id %><% end %>" data-sender="<%= session_user.username %>" data-path="<%= item_borrow_path(@borrow.uuid, @borrow.item, @borrow) %>"><span class="item-icon"><i class="icon ion-close-round"></i></span><span class="item-text">Reject</span></a></li>
 				<% end %>
 			<% elsif @borrow.check_expiration == "lightgreen" %>
 				<% if session_user.id == @borrow.last_update_user_id %>
@@ -20,23 +20,23 @@
 				<% if session_user.id == @borrow.user.id %>
 					<li><a href="#yb-borrow-qr-code" id="yb-borrow-get-qr-code"><span class="item-icon"><i class="icon ion-qr-scanner"></i></span><span class="item-text">Get Code</span></a></li>
 					<% if @borrow.was_rendered %>
-						<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+						<li><a href="<%= item_borrow_extend_path(@borrow.uuid, @borrow.item, @borrow) %>" id="yb-open-borrow-extend"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
 					<% end %>
 					<% if Array["returned", "succeeded"].include?(@borrow.status) %>
-						<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+						<li><a href="<%= item_borrow_renew_path(@borrow.uuid, @borrow.item, @borrow) %>" id="yb-open-borrow-renew"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 					<% end %>
 					<li><a href="<%= report_new_path(@borrow.id) %>?ressource=borrow" id="yb-get-report"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 				<% elsif session_user.id == @borrow.item.user.id %>
 					<li><a href="#yb-borrow-qr-code" id="yb-borrow-get-qr-code"><span class="item-icon"><i class="icon ion-qr-scanner"></i></span><span class="item-text">Get Code</span></a></li>
 					<% if @borrow.was_received and !@borrow.item.user.is_private? %>
-						<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+						<li><a href="<%= follow_ups_path(@borrow.uuid, @item, @borrow) %>" id="yb-open-follow-ups"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
 					<% end %>
 					<li><a href="<%= report_new_path(@borrow.id) %>?ressource=borrow" id="yb-get-report"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 				<% end %>
 			<% elsif @borrow.check_expiration == "red" %>
 				<% if session_user.id == @borrow.user.id %>
 					<li><a href="<%= destroy_item_borrow_item_user_path(@borrow.item, @borrow) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
-					<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+					<li><a href="<%= item_borrow_renew_path(@borrow.uuid, @borrow.item, @borrow) %>" id="yb-open-borrow-renew"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 					<li><a href="<%= report_new_path(@borrow.id) %>?ressource=borrow" id="yb-get-report"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 				<% elsif session_user.id == @borrow.item.user.id %>
 					<li><a href="<%= destroy_item_borrow_item_user_path(@borrow.item, @borrow) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>

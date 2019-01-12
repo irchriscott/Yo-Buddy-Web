@@ -29,7 +29,7 @@ class BorrowItemUser < ApplicationRecord
 		now = Time.now
 
 		if self.status == "pending" or self.status == "rejected" then
-			return (now > from and now < to) ? "orange" : "lightgreen"
+			return (now > from or now > to) ? "orange" : "lightgreen"
 		elsif self.status == "failed" then
 			return "red"
 		else

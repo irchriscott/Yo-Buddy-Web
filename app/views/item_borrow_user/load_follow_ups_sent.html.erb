@@ -1,0 +1,11 @@
+<% if @messages.count > 0 %>
+	<% @messages.each do |message| %>
+		<div class="yb-admin-msg">
+			<p><strong><%= message.borrow_item_user.item.user.username.capitalize! %> : </strong> <%= message.message %></p>
+			<span id="yb-msg-date-else-<%= message.id %>" data-date="<%= message.created_at.strftime('%Y-%m-%d %H:%M:%S') %>"></span>
+			</div>
+		<script type="text/javascript">$("#yb-msg-date-else-<%= message.id %>").setDate();</script>
+	<% end -%>
+<% else %>
+	<p class="yb-error">NO MESSAGES HERE</p>
+<% end -%>

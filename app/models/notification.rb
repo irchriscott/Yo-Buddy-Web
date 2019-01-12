@@ -20,6 +20,29 @@ class Notification < ApplicationRecord
 				"url" => "/items/request/#{item.user.username}/enc-dt-#{item.uuid}-#{item.id}",
 				"category" => "item"
 			}
+		elsif self.ressource.include?("extend_borrow_request") then
+			ext = self.ressource.split(/_/).last
+			borrow = BorrowItemUser.find(self.ressource_id)
+			if ["Integer", "Fixnum", "Float", "Bignum"].include?(ext.class.to_s) then
+				return {
+					"from" => self.user_from.name,
+					"image" => self.user_from.profile_image,
+					"message" => "want to extend the borrow period for #{ext} more #{borrow.per.downcase!}s",
+					"icon" => "ion-arrow-expand",
+					"url" => "/item/enc-dt-#{borrow.uuid}-#{borrow.item.id}-#{borrow.id}/borrow",
+					"category" => "borrow"
+				}
+			else
+				return {
+					"from" => self.user_from.name,
+					"image" => self.user_from.profile_image,
+					"message" => "has updated your borrow extension request status to #{ext.capitalize!}",
+					"icon" => "ion-arrow-expand",
+					"url" => "/item/enc-dt-#{borrow.uuid}-#{borrow.item.id}-#{borrow.id}/borrow",
+					"category" => "borrow"
+				}
+			end
+			
 		elsif self.ressource.include?("update_borrow") then
 		 	status = self.ressource.split(/_/).last
 			borrow = BorrowItemUser.find(self.ressource_id)
@@ -28,6 +51,15 @@ class Notification < ApplicationRecord
 					"from" => self.user_from.name,
 					"image" => self.user_from.profile_image,
 					"message" => "has updated your borrow aggreement content",
+					"icon" => "ion-ios-cart",
+					"url" => "/item/enc-dt-#{borrow.uuid}-#{borrow.item.id}-#{borrow.id}/borrow",
+					"category" => "borrow"
+				}
+			elsif status == "report" then
+				return {
+					"from" => self.user_from.name,
+					"image" => self.user_from.profile_image,
+					"message" => "has sent a follow up report to your borrow",
 					"icon" => "ion-ios-cart",
 					"url" => "/item/enc-dt-#{borrow.uuid}-#{borrow.item.id}-#{borrow.id}/borrow",
 					"category" => "borrow"

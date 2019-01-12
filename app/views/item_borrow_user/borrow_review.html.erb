@@ -17,6 +17,20 @@
 									<% else %>
 										Borrow Request Received
 									<% end %>
+								<% elsif message.message.include?("extension_request") %>
+									<% if message.message.include?("sent") %>
+										<% if message.borrow_item_user.user.id == session_user.id %>
+											Borrow Extension Request Sent
+										<% else %>
+											Borrow Extension Request Sent
+										<% end %>
+									<% elsif message.message.include?("rejected") %>
+										Borrow Extension Request Rejected
+									<% elsif message.message.include?("canceled") %>
+										Borrow Extension Request Canceled
+									<% elsif message.message.include?("accepted") %>
+										Borrow Item Extended For <%= message.message.split(/_/).last %> <%= @borrow.per %>s
+									<% end -%>
 								<% else %>
 									<%= message.admin_message %>
 								<% end %>

@@ -71,6 +71,16 @@ Rails.application.routes.draw do
     get '/item/enc-dt-:uuid-:item_id-:id/borrow/description', to: 'item_borrow_user#description', as: 'item_borrow_description'
     get '/item/enc-dt-:uuid-:item_id-:id/borrow/description/download.pdf', to: 'item_borrow_user#download_borrow_data', as: 'item_borrow_description_download'
 
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow/extend', to: 'item_borrow_user#extend', as: 'item_borrow_extend'
+    post '/item/enc-dt-:uuid-:item_id-:id/borrow/extend/post', to: 'item_borrow_user#extend_borrow', as: 'extend_borrow_post'
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow/extend/status/update', to: 'item_borrow_user#update_borrow_extension_status', as: 'update_borrow_extension_status'
+    get '/item/enc-dt-:uuid-:item_id-:id/borrow/renew', to: 'item_borrow_user#extend', as: 'item_borrow_renew'
+    post '/item/enc-dt-:uuid-:item_id-:id/borrow/renew/post', to: 'item_borrow_user#renew_borrow', as: 'renew_borrow_post'
+
+    get '/items/enc-dt-:uuid-:item_id-:item_borrow_user_id/follow-ups', to: 'item_borrow_user#follow_ups', as: 'follow_ups'
+    get '/items/:item_id/borrow/:item_borrow_user_id/follow-ups/sent', to: 'item_borrow_user#load_follow_ups_sent', as: 'load_follow_ups_sent'
+    get '/items/:item_id/borrow/:item_borrow_user_id/follow-ups/received', to: 'item_borrow_user#load_follow_ups_received', as: 'load_follow_ups_received'
+    post '/items/:item_id/borrow/:item_borrow_user_id/follow-ups/send', to: 'item_borrow_user#send_follow_up', as: 'send_follow_up'
 
     get '/items/enc-dt-:uuid-:item_id-:item_borrow_user_id/messages/admin', to: 'borrow_messages#admin_messages', as: 'admin_messages'
     get '/items/enc-dt-:uuid-:item_id-:item_borrow_user_id/messages/admin/load', to: 'borrow_messages#load_admin_messages', as: 'load_admin_messages'

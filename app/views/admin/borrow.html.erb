@@ -39,8 +39,8 @@
 				<%= raw @item.description %>
 			</div>
 			<br/>
-			<% if @admin_messages.count > 0 %>
-				<% if @admin_messages.last.status == "rendered" %>
+			<% if @borrow.was_received %>
+				<% if @borrow.was_rendered or @borrow.was_returned %>
 					<button style="background: green;" id="yb-admin-open-scan-qr-code" class="yb-add-borrow-item" href="#yb-admin-view-items-borrow">SCAN ITEMS</button>
 				<% else %>
 					<button style="background: var(--darkGray);" id="yb-view-item-admin" class="yb-add-borrow-item" href="#yb-admin-view-items-borrow">VIEW ITEMS</button>
@@ -80,7 +80,7 @@
 			<div class="yb-admin-borrow-menu">
 				<button style="background: var(--primaryColor);" id="yb-admin-open-add-message" href="#yb-admin-add-message">ADD REPORT</button>
 				<button style="background: green;">REPORTS</button>
-				<button style="background: var(--gray);">FOLLOW UPS</button>
+				<button style="background: var(--gray);" href="<%= follow_ups_path(@borrow.uuid, @item, @borrow) %>" id="yb-open-follow-ups">FOLLOW UPS</button>
 				<button style="background: lightgreen;" href="<%= admin_messages_path(@borrow.uuid, @item, @borrow) %>" id="yb-open-admin-messages">MESSAGES</button>
 			</div>
 		</div>
@@ -100,11 +100,15 @@
 <%= render "admin/borrowmodals" %>
 <% if @active_status != nil and  @active_status != "" %>
 	<script type="text/javascript">
-		const socket = io("127.0.0.1:5000");
+		const s = io("127.0.0.1:5000");
 		$(document).ready(function(){
 			if("<%= @active_status %>" != null && "<%= @active_status %>" != ""){
-				emitStatusMessage("<%= @borrow.item.user.id %>", "<%= @borrow.item.user.profile_image %>");
-				emitStatusMessage("<%= @borrow.user.id %>", "<%= @borrow.user.profile_image %>");
+				<% if @active_status == "report" %>
+					emitStatusMessage("<%= @borrow.item.user.id %>", "<%= @borrow.item.user.profile_image %>");
+				<% else -%>
+					emitStatusMessage("<%= @borrow.item.user.id %>", "<%= @borrow.item.user.profile_image %>");
+					emitStatusMessage("<%= @borrow.user.id %>", "<%= @borrow.user.profile_image %>");
+				<% end -%>
 			}
 		});
 
@@ -114,15 +118,15 @@
 	            "borrow": "<%= @borrow.id %>",
 	            "receiver": receiver,
 	            "sender": "Yo Buddy",
-	            "message": "Item of the borrow or the borrow was <b><%= @active_status.capitalize! %></b> !!!",
+	            "message": <% if @active_status == "report" %> "Yo Buddy has sent a follow up report of the borrow !!!" <% else %> "Item of the borrow or the borrow was <b><%= @active_status.capitalize! %></b> !!!" <% end -%>,
 	            "url": "<%= item_item_borrow_user_borrow_messages_path(@item, @borrow) %>",
 	            "path": "<%= item_item_borrow_user_path(@item, @borrow) %>",
 	            "type": "message",
 	            "about": "borrow_message"
 	        }
-	        socket.emit("messageSent", message);
-	        socket.emit("setNotification", receiver);
-	        socket.emit("notify", {"user": receiver, "title": "From Yo Buddy", "body": "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!", "icon": icon, "url": "<%= item_borrow_url(@borrow.uuid, @item, @borrow) %>"});
+	        s.emit("messageSent", message);
+	        s.emit("setNotification", receiver);
+	        s.emit("notify", {"user": receiver, "title": "From Yo Buddy", "body": "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!", "icon": icon, "url": "<%= item_borrow_url(@borrow.uuid, @item, @borrow) %>"});
 		}
 	</script>
 <% end %>

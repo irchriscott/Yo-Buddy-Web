@@ -74,7 +74,7 @@ class ItemBorrowUserController < ApplicationController
         @borrow.status = @status[0]
         @borrow.last_update_user_id = session[:user_id]
         @borrow.uuid = generate_uuid("", 24)
-        @borrow.admin_id = !@item.user.is_private? ? 1 : nil
+        @borrow.admin_id = !@item.user.is_private? ? 1 : 1 #changes required
 
         from_date = check_from_date(params[:item_borrow])
 
@@ -197,78 +197,51 @@ class ItemBorrowUserController < ApplicationController
     def update_status
         status = params[:status]
         borrow = @item.borrow_item_user.find(params[:id])
-        respond_to do |format|
-            if @active == true and borrow.last_update_user_id != session[:user_id] then
-                if status != nil and Array[0,1,2].include?(status.to_i) then
-                    if status.to_i == 1 then
-                        if  Array[@status[0], @status[2]].include?(borrow.status) then
-                            rests = @item.count - check_counts(borrow.from_date, borrow.to_date)
+        if @active == true and borrow.last_update_user_id != session[:user_id] then
+            if status != nil and Array[0,1,2].include?(status.to_i) then
+                if status.to_i == 1 then
+                    if  Array[@status[0], @status[2]].include?(borrow.status) then
+                        rests = @item.count - check_counts(borrow.from_date, borrow.to_date)
 
-                            if rests < 0 then
-                                rests = 0
-                            end
-
-                            if rests >= borrow.count.to_i then
-                                borrow.status = @status[status.to_i]
-                                borrow.save
-                                save_message(@status[status.to_i], borrow)
-                                Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
-                                BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
-                                flash[:success] = "Borrow Request #{@status[status.to_i].capitalize} !!!"
-                                format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                                format.json {render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}}
-                            else
-                                flash[:info] = "Cant Accept This Borrow, Available On That Date is #{rests}"
-                                format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                                format.json {render json: {"type" => "info", "text" => "Cant Accept This Borrow, Available On That Date is #{rests}"}}
-                            end
-                        else
-                            flash[:danger] = "Wrong Status !!!"
-                            format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                            format.json{ render json: {"type" => "error", "text" => "Wrong Status !!!"}}
+                        if rests < 0 then
+                            rests = 0
                         end
-                    elsif status.to_i == 2 then
-                        if borrow.status  == @status[0] then
-                            borrow.status = @status[status.to_i]
-                            borrow.save
+
+                        if rests >= borrow.count.to_i then
                             save_message(@status[status.to_i], borrow)
                             Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
                             BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
-                            flash[:success] = "Borrow Request #{@status[status.to_i].capitalize} !!!"
-                            format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                            format.json {render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}}
+                            render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
                         else
-                            flash[:danger] = "Wrong Status !!!"
-                            format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                            format.json{ render json: {"type" => "error", "text" => "Wrong Status !!!"}}
+                            render json: {"type" => "info", "text" => "Cant Accept This Borrow, Available On That Date is #{rests}"}
                         end
                     else
-                        if @status.slice(3, @status.length).push("accepted").include?(borrow.status) then
-                            borrow.status = @status[status.to_i]
-                            borrow.save
-                            save_message(@status[status.to_i], borrow)
-                            Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
-                            BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
-                            flash[:success] = "Borrow Request #{@status[status.to_i].capitalize} !!!"
-                            format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                            format.json {render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}}
-                        else
-                            flash[:danger] = "Wrong Status !!!"
-                            format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                            format.json{ render json: {"type" => "error", "text" => "Wrong Status !!!"}}
-                        end
+                        render json: {"type" => "error", "text" => "Wrong Status !!!"}
                     end
-                    
+                elsif status.to_i == 2 then
+                    if borrow.status  == @status[0] then
+                        save_message(@status[status.to_i], borrow)
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
+                        BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
+                        render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
+                    else
+                        render json: {"type" => "error", "text" => "Wrong Status !!!"}
+                    end
                 else
-                    flash[:danger] = "Unknown Status !!!"
-                    format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                    format.json{ render json: {"type" => "error", "text" => "Unknown Status !!!"}}
-                end
+                    if @status.slice(3, @status.length).push("accepted").include?(borrow.status) then
+                        save_message(@status[status.to_i], borrow)
+                        Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
+                        BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
+                        render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
+                    else
+                        render json: {"type" => "error", "text" => "Wrong Status !!!"}
+                    end
+                end   
             else
-                flash[:danger] = "Your Private Account Is Not Active !!!"
-                format.html{ redirect_to item_borrow_path(borrow.item.uuid, borrow.item, borrow) }
-                format.json{ render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}}
+                render json: {"type" => "error", "text" => "Unknown Status !!!"}
             end
+        else
+            render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
         end
     end
 
@@ -301,16 +274,104 @@ class ItemBorrowUserController < ApplicationController
         end
     end
 
+    def extend
+        @item_borrow = @item.borrow_item_user.find(params[:id])
+        @type = "ajax"
+        render layout: false
+    end
+
+    def extend_borrow
+        @borrow = @item.borrow_item_user.find(params[:id])
+        from_date = check_from_date({from_date: @borrow.to_date.to_s})
+        if session[:user_id] == @borrow.user.id and @borrow.was_rendered then
+            if @borrow.per != ApplicationHelper::PERS[0] and (@borrow.to_date.localtime.to_i - 36 * 60 * 60) > Time.now.localtime.to_i then
+                to_date = set_time_end(params[:item_borrow], from_date)
+                rests = @item.count - check_counts(from_date, to_date)
+
+                if rests >= @borrow.numbers then
+                    @borrow.extension = params[:item_borrow][:numbers]
+                    @borrow.save
+                    message = @borrow.borrow_message.where(message: "extension_request_sent").last
+                    if message != nil then
+                        message.destroy
+                    end
+                    BorrowMessage.create([{borrow_item_user_id: @borrow.id, sender_id: 0, receiver_id: 0, message: "extension_request_sent", status: "unread", has_images: false, is_deleted: false}])
+                    Notification.create([{user_from_id: @borrow.user.id, user_to_id: @borrow.item.user.id, ressource: "extend_borrow_request_#{@borrow.extension}", ressource_id: @borrow.id, is_read: false}])
+                    BorrowUserMailer.with(borrow: @borrow).extend_borrow(@borrow.item.user.email).deliver_now
+                    render json: {"type" => "success", "text" => "Borrow Extension Request Sent !!!"}
+                else
+                    render json: {"type" => "error", "text" => "Not Enough Items to borrow to the end date !!!"}
+                end
+            else
+                render json: {"type" => "error", "text" => "The Extend Request must be sent 36 hours before the end of the borrow !!!"}
+            end
+        else
+            render json: {"type" => "error", "text" => "You're not the Borrower !!!"}
+        end
+    end
+
+    def update_borrow_extension_status
+        @borrow = @item.borrow_item_user.find(params[:id])
+        from_date = check_from_date({from_date: @borrow.to_date.to_s})
+        if session[:user_id] == @borrow.item.user.id and @borrow.was_rendered then
+            if @borrow.per != ApplicationHelper::PERS[0] and (@borrow.to_date.localtime.to_i - 24 * 60 * 60) > Time.now.localtime.to_i then
+                if params[:status] == "accept" then
+                    to_date = set_time_end(params[:item_borrow], from_date)
+                    rests = @item.count - check_counts(from_date, to_date)
+
+                    if rests >= @borrow.numbers then
+                        @borrow.numbers += @borrow.extension
+                        @borrow.to_date = to_date
+                        @borrow.save
+                        save_message_extension_status_update "accepted"
+                        render json: {"type" => "success", "text" => "Borrow Extension Request Accepted !!!"}
+                    else
+                        save_message_extension_status_update "canceled"
+                        render json: {"type" => "error", "text" => "Not Enough Items to borrow to the end date !!!"}
+                    end
+                else
+                    save_message_extension_status_update "rejected"
+                    render json: {"type" => "success", "text" => "Borrow Extension Request Rejected !!!"}
+                end
+            else
+                save_message_extension_status_update "canceled"
+                render json: {"type" => "error", "text" => "The Extend Request must be sent 24 hours before the end of the borrow !!!"}
+            end
+        else
+            render json: {"type" => "error", "text" => "You're not the Lender !!!"}
+        end
+
+    end
+
+    def renew
+        @item_borrow = @item.borrow_item_user.find(params[:id])
+        @type = "ajax"
+        render layout: false
+    end
+
+    def renew_borrow
+    end
+
     def follow_ups
+        @sender = session[:admin] != nil ? 0 : @borrow.user.id
+        @receiver = session[:admin] != nil ? @borrow.user.id : 0 
+        @with = session[:admin] != nil ? @borrow.user.username.capitalize! : "Yo Buddy" 
+        render layout: false
     end
 
     def send_follow_up
+        @borrow.borrow_item_follow_up.create({admin_id: @borrow.admin.id, about: "follow_up", message: params[:follow_up][:message]});
+        render json:{"type" => "success", "text" => params[:follow_up][:message]}
     end
 
     def load_follow_ups_sent
+        @messages =  @borrow.borrow_item_follow_up.all.order(created_at: :asc)
+        render layout: false
     end
 
     def load_follow_ups_received
+        @messages =  @borrow.follow_ups_admin
+        render layout: false
     end
 
     private def borrow_params
@@ -319,5 +380,33 @@ class ItemBorrowUserController < ApplicationController
 
     private def update_params
         params.require(:item_borrow).permit(:item_id, :price, :currency, :per, :numbers, :conditions, :status, :last_update_user_id)
+    end
+
+    private def check_privacy
+        @item = Item.find(params[:item_id]) if params[:item_id] != nil
+        @borrow = @item.borrow_item_user.find(params[:item_borrow_user_id])
+        if session[:admin] == nil then
+            if @borrow.item.user.is_private? or @borrow.item.user.id != session[:user_id] then
+                render json: {"type" => "error", "text" => "unauthorized"}
+            end
+        else
+            admin =  Admin.find(session[:admin])
+            if @borrow.admin.id != admin.id then
+                if admin.privileges != "all" then
+                    render json: {"type" => "error", "text" => "unauthorized"}
+                end
+            end
+        end
+    end
+
+    private def save_message_extension_status_update(status)
+        message = @borrow.borrow_message.where(message: "extension_request_sent").last
+        if message != nil then
+            message.destroy
+        end
+        BorrowMessage.create([{borrow_item_user_id: @borrow.id, sender_id: 0, receiver_id: 0, message: "extension_request_#{status}_#{@borrow.extension}", status: "unread", has_images: false, is_deleted: false}])
+        @borrow.extension = 0
+        @borrow.save
+        Notification.create([{user_from_id: @borrow.item.user.id, user_to_id: @borrow.user.id, ressource: "extend_borrow_request_status_#{status}", ressource_id: @borrow.id, is_read: false}])
     end
 end

@@ -23,16 +23,23 @@
 									<% end %>
 								<% elsif borrow["borrow"].check_expiration == "green" %>
 									<% if session_user.id == borrow["borrow"].user.id %>
-										<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+										<% if borrow["borrow"].was_rendered %>
+										<li><a href="<%= item_borrow_extend_path(borrow["borrow"].uuid, borrow["borrow"].item, borrow["borrow"]) %>" id="yb-open-borrow-extend-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+										<% end %>
+										<% if Array["returned", "succeeded"].include?(borrow["borrow"].status) %>
+										<li><a href="<%= item_borrow_renew_path(borrow["borrow"].uuid, borrow["borrow"].item, borrow["borrow"]) %>" id="yb-open-borrow-renew-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+										<% end %>
 										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 									<% elsif session_user.id == borrow["borrow"].item.user.id %>
-										<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+										<% if borrow["borrow"].was_received and !borrow["borrow"].item.user.is_private? %>
+										<li><a href="<%= follow_ups_path(borrow["borrow"].uuid, borrow["borrow"].item, borrow["borrow"]) %>" id="yb-open-follow-ups-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+										<% end %>
 										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 									<% end %>
 								<% elsif borrow["borrow"].check_expiration == "red" %>
 									<% if session_user.id == borrow["borrow"].user.id %>
 										<li><a href="<%= destroy_item_borrow_item_user_path(borrow["borrow"].item, borrow["borrow"]) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
-										<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+										<li><a href="<%= item_borrow_renew_path(borrow["borrow"].uuid, borrow["borrow"].item, borrow["borrow"]) %>" id="yb-open-borrow-renew-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 										<li><a href="<%= report_new_path(borrow["borrow"].id) %>?ressource=borrow" id="yb-get-report-<%= borrow["borrow"].id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 									<% elsif session_user.id == borrow["borrow"].item.user.id %>
 										<li><a href="<%= destroy_item_borrow_item_user_path(borrow["borrow"].item, borrow["borrow"]) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
@@ -69,7 +76,7 @@
 							<span>To - <%= borrow["borrow"].to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
 						</p>
 					</div>
-					<script type="text/javascript">$("#yb-show-menu-<%= borrow["borrow"].id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow["borrow"].id %>, #yb-get-report-<%= borrow["borrow"].id %>").magnificPopup({type: 'ajax'});</script>
+					<script type="text/javascript">$("#yb-show-menu-<%= borrow["borrow"].id %>").showMenu();$("#yb-edit-borrow-item-<%= borrow["borrow"].id %>, #yb-get-report-<%= borrow["borrow"].id %>, #yb-open-follow-ups-<%= borrow["borrow"].id %>, #yb-open-borrow-extend-<%= borrow["borrow"].id %>, #yb-open-borrow-extend-<%= borrow["borrow"].id %>").magnificPopup({type: 'ajax'});</script>
 				</li>
 			<% end -%>
 		</ul>

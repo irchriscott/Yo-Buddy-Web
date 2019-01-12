@@ -61,22 +61,22 @@
 										<% elsif borrower.check_expiration == "green" %>
 											<% if session_user.id == borrower.user.id %>
 												<% if borrower.was_rendered %>
-												<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
+												<li><a href="<%= item_borrow_extend_path(borrower.uuid, borrower.item, borrower) %>" id="yb-open-borrow-extend-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-arrow-expand"></i></span><span class="item-text">Extend</span></a></li>
 												<% end %>
 												<% if Array["returned", "succeeded"].include?(borrower.status) %>
-												<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+												<li><a href="<%= item_borrow_renew_path(borrower.uuid, borrower.item, borrower) %>" id="yb-open-borrow-renew-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 												<% end %>
 												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 											<% elsif session_user.id == borrower.item.user.id %>
 												<% if borrower.was_received and !borrower.item.user.is_private? %>
-												<li><a href="#"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
+												<li><a href="<%= follow_ups_path(borrower.uuid, borrower.item, borrower) %>" id="yb-open-follow-ups-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-arrow-return-right"></i></span><span class="item-text">Follow Up</span></a></li>
 												<% end %>
 												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 											<% end %>
 										<% elsif borrower.check_expiration == "red" %>
 											<% if session_user.id == borrower.user.id %>
 												<li><a href="<%= destroy_item_borrow_item_user_path(borrower.item, borrower) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
-												<li><a href="#"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
+												<li><a href="<%= item_borrow_renew_path(borrower.uuid, borrower.item, borrower) %>" id="yb-open-borrow-renew-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-refresh"></i></span><span class="item-text">Renew</span></a></li>
 												<li><a href="<%= report_new_path(borrower.id) %>?ressource=borrow" id="yb-get-report-<%= borrower.id %>"><span class="item-icon"><i class="icon ion-information-circled"></i></span><span class="item-text">Report</span></a></li>
 											<% elsif session_user.id == borrower.item.user.id %>
 												<li><a href="<%= destroy_item_borrow_item_user_path(borrower.item, borrower) %>?method=delete"><span class="item-icon"><i class="icon ion-trash-b"></i></span><span class="item-text">Delete</span></a></li>
@@ -101,7 +101,7 @@
 									<span class="yb-data">To - <%= borrower.to_date.localtime.strftime("%a %d %b, %Y at %H:%M") %></span>
 								</p>
 							</div>
-							<script type="text/javascript">$("#yb-show-menu-<%= borrower.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrower.id %>, #yb-get-report-<%= borrower.id %>").magnificPopup({type: 'ajax'});</script>
+							<script type="text/javascript">$("#yb-show-menu-<%= borrower.id %>").showMenu();$("#yb-edit-borrow-item-<%= borrower.id %>, #yb-get-report-<%= borrower.id %>, #yb-open-follow-ups-<%= borrower.id %>, #yb-open-borrow-extend-<%= borrower.id %>, #yb-open-borrow-extend-<%= borrower.id %>").magnificPopup({type: 'ajax'});</script>
 						</div>
 					<% end %>
 				<% else %>

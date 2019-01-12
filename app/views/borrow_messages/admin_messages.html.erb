@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<div class="yb-admin-message-form">
-			<%= form_for :admin_message, url: message_send_admin_path(@item, @borrow), html:{id: 'yb-admin-message-form', 'data-url': load_admin_messages_path(@borrow.uuid, @item, @borrow), 'data-sender': is_admin_logged_in? ? 'Yo Buddy' : session_user.username, 'data-receiver': is_admin_logged_in? ? @borrow.user.id : "admin_#{@borrow.admin.id}", 'data-id': @borrow.id, 'data-path': admin_borrow_path(@item, @borrow)} do |form| -%>
+			<%= form_for :admin_message, url: message_send_admin_path(@item, @borrow), html:{id: 'yb-admin-message-form', 'data-url': load_admin_messages_path(@borrow.uuid, @item, @borrow), 'data-sender': is_admin_logged_in? ? 'Yo Buddy' : session_user.username, 'data-receiver': is_admin_logged_in? ? @borrow.user.id : "admin_#{@borrow.admin.id}", 'data-id': @borrow.id, 'data-path': is_admin_logged_in? ? item_borrow_path(@borrow.uuid, @item, @borrow) : admin_borrow_path(@item, @borrow) } do |form| -%>
 				<%= form.hidden_field :sender_id, value: @sender %>
 				<%= form.hidden_field :receiver_id, value: @receiver %>
 				<%= form.text_area :message, placeholder: 'Enter Message', autocomplete: 'off', style: "height: 46px;", required: true %>

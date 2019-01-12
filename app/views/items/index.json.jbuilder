@@ -1,5 +1,5 @@
 json.array! (@items) do |item|
-	json.extract! item, :id, :name, :price, :currency, :per, :description, :status, :is_available, :count
+	json.extract! item, :id, :name, :price, :currency, :per, :description, :status, :is_available, :count, :sale_value
 	json.created_at item.created_at.localtime
 	json.user item.user.json
 	json.category item.category, :id, :name, :icon

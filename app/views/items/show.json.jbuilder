@@ -1,4 +1,4 @@
-json.extract! @item, :id, :name, :price, :currency, :per, :description, :status, :is_available, :count
+json.extract! @item, :id, :name, :price, :currency, :per, :description, :status, :is_available, :count, :sale_value
 
 json.created_at @item.created_at.localtime
 json.uuid @item.uuid

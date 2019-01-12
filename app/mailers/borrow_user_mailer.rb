@@ -25,4 +25,9 @@ class BorrowUserMailer < ApplicationMailer
         mail(to: email, subject: '[Yo Buddy] - Request To Update Borrow Item')
     end
 
+    def extend_borrow(email)
+        @borrow = params[:borrow]
+        mail(to: email, subject: '[Yo Buddy] - Borrow Extension Request')
+    end
+
 end
