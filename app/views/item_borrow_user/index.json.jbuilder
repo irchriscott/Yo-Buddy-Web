@@ -1,4 +1,4 @@
-json.array! (@borrows) do |borrow|
+json.array! (@borrowers) do |borrow|
 	json.extract! borrow, :id, :price, :currency, :per, :conditions, :status, :is_deleted, :count, :numbers, :uuid
 	json.from_date borrow.from_date.localtime
 	json.to_date borrow.to_date.localtime

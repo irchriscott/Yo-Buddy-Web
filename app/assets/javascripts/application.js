@@ -345,7 +345,7 @@ $(function() {
     $("#new_comment").postItemComment();
 
     socket.on("getNotify", function(data){
-        if(sessionID == data.user) pushNotification(data.title, data.body, data.icon, data.url)
+        //if(sessionID == data.user) pushNotification(data.title, data.body, data.icon, data.url)
     });
 
     socket.on("getNotification", function(owner){
@@ -486,7 +486,7 @@ $(function() {
                         id: message.borrow,
                         timeout: 80000,
                         title: message.sender,
-                        message: "<a href='" + message.path + "'>" + message.message + "</a>",
+                        message: "<a href='" + checkJsonURL(message.path) + "'>" + message.message + "</a>",
                         position: 'bottomLeft',
                         transitionIn: 'bounceInLeft',
                         close: false,
@@ -497,7 +497,7 @@ $(function() {
                         id: message.borrow,
                         timeout: 80000,
                         title: message.sender,
-                        message: "<a href='" + message.path + "'>" + message.message + "</a>",
+                        message: "<a href='" + checkJsonURL(message.path) + "'>" + message.message + "</a>",
                         position: 'bottomLeft',
                         transitionIn: 'bounceInLeft',
                         close: false,
@@ -508,7 +508,7 @@ $(function() {
                     id: message.borrow,
                     timeout: 80000,
                     title: message.sender,
-                    message: "<a href='" + message.path + "'>" + message.message + "</a>",
+                    message: "<a href='" + checkJsonURL(message.path) + "'>" + message.message + "</a>",
                     position: 'bottomLeft',
                     transitionIn: 'bounceInLeft',
                     close: false,
@@ -546,7 +546,7 @@ $(function() {
                         id: data.about,
                         timeout: 80000,
                         title: data.user,
-                        message: "<a href='" + data.path + "'>Has updated your suggestion status to " + data.status + " !!!</a>",
+                        message: "<a href='" + checkJsonURL(data.path) + "'>Has updated your suggestion status to " + data.status + " !!!</a>",
                         position: 'bottomLeft',
                         transitionIn: 'bounceInLeft',
                         close: false,
@@ -569,7 +569,7 @@ $(function() {
                 id: message.id,
                 timeout: 80000,
                 title: message.sender,
-                message: "<a href='" + message.path + "'>" + message.message + "</a>",
+                message: "<a href='" + checkJsonURL(message.path) + "'>" + message.message + "</a>",
                 position: 'bottomLeft',
                 transitionIn: 'bounceInLeft',
                 close: false,
@@ -999,7 +999,7 @@ jQuery.fn.followUserEvent = function(){
                     $("body").find("#yb-user-follow-container-" + id).html('<span><i class="icon ion-person followed"></i></span>');
                     socket.emit("followUser", {"id": id, "user": user, "type": response.type, "path": notURL});
                     socket.emit("setNotification", user);
-                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has started following you.", "icon": notIcon, "url": notURL});
+                    //socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has started following you.", "icon": notIcon, "url": notURL});
                     $("#yb-user-follow-container-user").html('<a class="yb-edit-user-link" style="background: lightgreen;"><span><i class="icon ion-checkmark" style="color: #FFF;"></i></span> Follow</a>');
                     showSuccessMessage("success", response.text);
                 } else if(response.type == "unfollow"){
@@ -1064,7 +1064,7 @@ jQuery.fn.likeItemEvent = function(){
                     socket.emit("like", {"item": item, "type": "like", "liker": liker, "user": user, "about": "like_item", "url": itemURL, "path": notURL});
                     socket.emit("setNotification", user);
                     form.find(".like-" + item).html("<i class='icon ion-ios-heart liked'></i>");
-                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item.", "icon": notIcon, "url": notURL});
+                    //socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
                     socket.emit("like", {"item": item, "type": "dislike", "liker": liker, "user": user, "about": "like_item", "url": itemURL})
@@ -1104,7 +1104,7 @@ jQuery.fn.likeItemRequestEvent = function(){
                 if(response.type == "like"){
                     socket.emit("rlike", {"item": item, "type": "like", "liker": liker, "user": user, "path": notURL})
                     socket.emit("setNotification", user);
-                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item request.", "icon": notIcon, "url": notURL});
+                    //socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has liked your item request.", "icon": notIcon, "url": notURL});
                     form.find(".request-like-" + item).html("<i class='icon ion-ios-heart liked'></i>")
                     showSuccessMessage(randomString(8), response.text)
                 } else if (response.type == "dislike"){
@@ -1278,7 +1278,7 @@ jQuery.fn.postItemComment = function(){
                 if(response.type == "success"){
                     socket.emit("comment", {"url": comments, "item": item, "from": from, "user": user, "commenter": commenter, "itemurl": itemURL, "about": "comment_item", "path": notURL});
                     socket.emit("setNotification", user);
-                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a comment on your item.", "icon": notIcon, "url": notURL});
+                    //socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a comment on your item.", "icon": notIcon, "url": notURL});
                     showSuccessMessage("success", response.text);
                     $(".mfp-close").click();
                 } else {
@@ -1436,7 +1436,7 @@ jQuery.fn.borrowItemUser = function(){
                 if(response.type == "success"){
                     showSuccessMessage("success", response.text);
                     socket.emit("setNotification", user);
-                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a borrow request for your item.", "icon": notIcon, "url": response.url});
+                    //socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has posted a borrow request for your item.", "icon": notIcon, "url": response.url});
                     $(".mfp-close").click();
                 } else if(response.type == "info") {
                     showInfoMessage("info", response.text);
@@ -1566,7 +1566,7 @@ jQuery.fn.updateBorrowItemUserStatus = function(){
                                     "borrow": borrow,
                                     "receiver": receiver,
                                     "sender": sender,
-                                    "message": "has updated borrow item status to " + status.toUpperCase() + " !!!",
+                                    "message": "Borrow Item Status To " + status.toUpperCase() + " !!!",
                                     "url": url,
                                     "path": path,
                                     "type": "status"
@@ -1601,7 +1601,7 @@ jQuery.fn.extendBorrowItem = function(){
         e.preventDefault();
         var _this = $(this);
         var form = new FormData($(this)[0]);
-        var url = $(this).attr("action");
+        var action = $(this).attr("action");
         var user = $(this).attr("data-user");
         var notIcon = $(this).attr("data-not-icon");
         var notUser = $(this).attr("data-not-user");
@@ -1625,7 +1625,7 @@ jQuery.fn.extendBorrowItem = function(){
                 return xhr;
             },
             type: "POST",
-            url: url,
+            url: action,
             data: form,
             contentType: false,
             processData: false,
@@ -1645,7 +1645,7 @@ jQuery.fn.extendBorrowItem = function(){
                     }
                     socket.emit("messageSent", message);
                     socket.emit("setNotification", user);
-                    socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has sent a borrow extension request.", "icon": notIcon, "url": response.url});
+                    //socket.emit("notify", {"user": user, "title": "From " + notUser, "body": notUser + " has sent a borrow extension request.", "icon": notIcon, "url": response.url});
                     $(".mfp-close").click();
                 } else {
                     showErrorMessage(response.type, response.text);
@@ -1742,12 +1742,12 @@ jQuery.fn.messageText = function(){
 
     _this.find("textarea").keyup(function(e){
         var value = $(this).val( $(this).val().replace( /\r?\n/gi, '' ) );
-        if (value != ""){
+        if (value.val() != ""){
             _this.find("button").removeAttr("disabled").children("i").addClass("yb-btn-color");
         } else {
             _this.find("button").attr("disabled", "disabled").children("i").removeClass("yb-btn-color");
         }
-        emitTypeTextSocket(value, _this);
+        emitTypeTextSocket(value.val(), _this);
         if (e.keyCode === 13){
             e.preventDefault();
             _this.find("button[type=submit]").click();
@@ -1904,7 +1904,7 @@ jQuery.fn.suggestItemRequest = function(){
                     }
                     socket.emit("suggestion", suggestion);
                     socket.emit("setNotification", owner);
-                    socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has posted a suggestion on your item request.", "icon": notIcon, "url": notURL});
+                    //socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has posted a suggestion on your item request.", "icon": notIcon, "url": notURL});
                     $(".mfp-close").click();
                 } else {
                     showErrorMessage("error", response.text);
@@ -1962,7 +1962,7 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                         "path": notURL
                                     });
                                     socket.emit("setNotification", owner);
-                                    socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
+                                    //socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
                                     showSuccessMessage("success", response.text);
                                 } else if (response.type == "check" && parseInt(_status) == 1){
                                     iziToast.question({
@@ -1993,7 +1993,7 @@ jQuery.fn.updateRequestSuggestionStatus = function(){
                                                                 "path": notURL
                                                             });
                                                             socket.emit("setNotification", owner);
-                                                            socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
+                                                            //socket.emit("notify", {"user": owner, "title": "From " + notUser, "body": notUser + " has updated your suggestion on his request to " + status[parseInt(_status)].toUpperCase() + ".", "icon": notIcon, "url": notURL});
                                                             showSuccessMessage("success", response.text);
                                                             showSuccessMessage("borrow", response.borrow);
                                                         } else{

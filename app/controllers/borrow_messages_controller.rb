@@ -56,10 +56,7 @@ class BorrowMessagesController < ApplicationController
 						@image_message = BorrowMessageImage.new
 						@image_message.borrow_message_id = @message.id
 						@image_message.image = image
-						if @image_message.save then
-						else
-							render json: {"type" => "error", "text" => @image_message.errors.full_messages}
-						end
+						@image_message.save!
 					end
 				else
 					@message.destroy
@@ -67,7 +64,7 @@ class BorrowMessagesController < ApplicationController
 				end
 				render json: {"type" => "success", "text" => "Has sent Images !!!"}
 			else
-				render json: {"type" => "error", "text" => @message.errors.full_messages}
+				render json: {"type" => "error", "text" => @message.errors.full_messages.to_s}
 			end
 		else
 			render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}

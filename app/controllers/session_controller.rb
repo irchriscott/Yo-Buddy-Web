@@ -14,10 +14,10 @@ class SessionController < ApplicationController
 	end
 
 	def borrowed
-		items = @user.item.all
-		@items = Array.new
+		@items_else = @user.item.all
+		@items = Array[]
 		@title = "YB - Session Lending"
-		items.each do |item|
+		@items_else.each do |item|
 			if item.borrow_item_user.count > 0 then
 				@items.append(get_borrow_item_data(item))
 			end

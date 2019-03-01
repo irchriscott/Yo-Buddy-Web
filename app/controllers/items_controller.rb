@@ -200,7 +200,7 @@ class ItemsController < ApplicationController
                     date["count"] = @item.count - (@borrows[i].count.to_i + @borrows[i - 1].count.to_i)
                     @dates.append(date)
                     _date = Hash.new 
-                    _date["from"] = @borrows[i - 1].to_date.localtime - (1 * 60 * 60)
+                    _date["from"] = @borrows[i - 1].to_date.localtime + (1 * 60 * 60)
                     _date["to"] = @borrows[i].to_date.localtime + (1 * 60 * 60)
                     _date["count"] = @item.count - @borrows[i].count.to_i 
                     @dates.append(_date)
@@ -208,8 +208,8 @@ class ItemsController < ApplicationController
 
                 if @borrows[i].from_date.localtime >= @borrows[i - 1].to_date.localtime and @borrows[i].to_date.localtime >= @borrows[i - 1].to_date.localtime then
                     date = Hash.new 
-                    date["from"] = @borrows[i - 1].to_date.localtime - (1 * 60 * 60)
-                    date["to"] = @borrows[i].from_date.localtime + (1 * 60 * 60)
+                    date["from"] = @borrows[i - 1].to_date.localtime + (1 * 60 * 60)
+                    date["to"] = @borrows[i].from_date.localtime - (1 * 60 * 60)
                     date["count"] = @item.count
                     @dates.append(date)
                 end
@@ -218,7 +218,7 @@ class ItemsController < ApplicationController
                     if @borrows[i].from_date.localtime > @borrows[i - 1].from_date.localtime then
                         date = Hash.new 
                         date["from"] = @borrows[i - 1].from_date.localtime - (1 * 60 * 60)
-                        date["to"] = @borrows[i].from_date.localtime + (1 * 60 * 60)
+                        date["to"] = @borrows[i].from_date.localtime - (1 * 60 * 60)
                         date["count"] = @item.count - @borrows[i - 1].count.to_i
                         @dates.append(date)
                     end
@@ -233,23 +233,31 @@ class ItemsController < ApplicationController
 
                     if @borrows[i - 1].to_date.localtime > @borrows[i].to_date.localtime then
                         date = Hash.new 
-                        date["from"] = @borrows[i].to_date.localtime - (1 * 60 * 60)
+                        date["from"] = @borrows[i].to_date.localtime + (1 * 60 * 60)
                         date["to"] = @borrows[i - 1].to_date.localtime + (1 * 60 * 60)
                         date["count"] = @item.count - @borrows[i - 1].count.to_i
                         @dates.append(date)
                     end
                 end
             end
+
             if i == @borrows.count - 1 then
+
+                date = Hash.new 
+                date["from"] = @borrows[i].from_date.localtime - (1 * 60 * 60)
+                date["to"] = @borrows[i].to_date.localtime + (1 * 60 * 60)
+                date["count"] = @item.count - @borrows[i].count.to_i
+                @dates.append(date)
+
                 if @borrows[i].from_date.localtime >= @borrows[i - 1].from_date.localtime and @borrows[i - 1].to_date.localtime >= @borrows[i].to_date.localtime then
                     date = Hash.new 
-                    date["from"] = @borrows[i - 1].to_date.localtime - (1 * 60 * 60)
+                    date["from"] = @borrows[i - 1].to_date.localtime + (1 * 60 * 60)
                     date["to"] = "-"
                     date["count"] = @item.count
                     @dates.append(date)
                 else
                     date = Hash.new 
-                    date["from"] = @borrows[i].to_date.localtime - (1 * 60 * 60)
+                    date["from"] = @borrows[i].to_date.localtime + (1 * 60 * 60)
                     date["to"] = "-"
                     date["count"] = @item.count
                     @dates.append(date)

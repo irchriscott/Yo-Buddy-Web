@@ -114,7 +114,7 @@
 	            "borrow": "<%= @borrow.id %>",
 	            "receiver": receiver,
 	            "sender": "Yo Buddy",
-	            "message": "Item of the borrow or the borrow was <b><%= @active_status.capitalize! %></b> !!!",
+	            "message": "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!",
 	            "url": "<%= item_item_borrow_user_borrow_messages_path(@item, @borrow) %>",
 	            "path": "<%= item_item_borrow_user_path(@item, @borrow) %>",
 	            "type": "message",

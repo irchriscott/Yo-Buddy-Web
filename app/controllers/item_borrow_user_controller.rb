@@ -23,10 +23,10 @@ class ItemBorrowUserController < ApplicationController
 
     def show
         @borrow = @item.borrow_item_user.find(params[:id])
-        @borrow_receiver = 0 
+        @borrow_receiver = 0
         if session[:user_id] == @borrow.user.id then
             @borrow_receiver = @borrow.item.user.id
-        else 
+        else
             @borrow_receiver = @borrow.user.id
         end
         @time = Time.new
@@ -48,10 +48,10 @@ class ItemBorrowUserController < ApplicationController
     def download_borrow_data
         @time = Time.new
         @borrow = @item.borrow_item_user.find params[:id]
-        
+
         borrower = "#{@borrow.code }-borrower-#{@borrow.user.username}-#{SecureRandom.hex(4)}"
         owner = "#{@borrow.code}-owner-#{@borrow.item.user.username}-#{SecureRandom.hex(4)}"
-        
+
         @qr_borrower = RQRCode::QRCode.new(borrower)
         @qr_owner = RQRCode::QRCode.new(owner)
 
@@ -88,7 +88,7 @@ class ItemBorrowUserController < ApplicationController
                 to_date = set_time_end(params[:item_borrow], from_date)
                 quant = params[:item_borrow][:count].to_i
                 rests = @item.count - check_counts(from_date, to_date)
-                
+
                 if rests < 0 then
                     rests = 0
                 end
@@ -121,10 +121,10 @@ class ItemBorrowUserController < ApplicationController
 
     def edit
         @item_borrow = @item.borrow_item_user.find(params[:id])
-        @borrow_receiver = 0 
+        @borrow_receiver = 0
         if session[:user_id] == @item_borrow.user.id then
             @borrow_receiver = @item_borrow.item.user.id
-        else 
+        else
             @borrow_receiver = @item_borrow.user.id
         end
         @title = "YB - Edit Borrow No #{@item_borrow.code}"
@@ -139,7 +139,7 @@ class ItemBorrowUserController < ApplicationController
 
             from_date = check_from_date(params[:item_borrow])
 
-            if @active == true then 
+            if @active == true then
 
                 if from_date == 2 then
                     flash[:danger] = "Time Already Passed !!!"
@@ -197,48 +197,52 @@ class ItemBorrowUserController < ApplicationController
     def update_status
         status = params[:status]
         borrow = @item.borrow_item_user.find(params[:id])
-        if @active == true and borrow.last_update_user_id != session[:user_id] then
-            if status != nil and Array[0,1,2].include?(status.to_i) then
-                if status.to_i == 1 then
-                    if  Array[@status[0], @status[2]].include?(borrow.status) then
-                        rests = @item.count - check_counts(borrow.from_date, borrow.to_date)
+        if @active == true then
+            if borrow.last_update_user_id != session[:user_id] then
+                if status != nil and Array[0,1,2].include?(status.to_i) then
+                    if status.to_i == 1 then
+                        if  Array[@status[0], @status[2]].include?(borrow.status) then
+                            rests = @item.count - check_counts(borrow.from_date, borrow.to_date)
 
-                        if rests < 0 then
-                            rests = 0
+                            if rests < 0 then
+                                rests = 0
+                            end
+
+                            if rests >= borrow.count.to_i then
+                                save_message(@status[status.to_i], borrow)
+                                Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
+                                BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
+                                render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
+                            else
+                                render json: {"type" => "info", "text" => "Cant Accept This Borrow, Available On That Date is #{rests}"}
+                            end
+                        else
+                            render json: {"type" => "error", "text" => "Wrong Status !!!"}
                         end
-
-                        if rests >= borrow.count.to_i then
+                    elsif status.to_i == 2 then
+                        if borrow.status  == @status[0] then
                             save_message(@status[status.to_i], borrow)
                             Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
                             BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
                             render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
                         else
-                            render json: {"type" => "info", "text" => "Cant Accept This Borrow, Available On That Date is #{rests}"}
+                            render json: {"type" => "error", "text" => "Wrong Status !!!"}
                         end
                     else
-                        render json: {"type" => "error", "text" => "Wrong Status !!!"}
-                    end
-                elsif status.to_i == 2 then
-                    if borrow.status  == @status[0] then
-                        save_message(@status[status.to_i], borrow)
-                        Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
-                        BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
-                        render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
-                    else
-                        render json: {"type" => "error", "text" => "Wrong Status !!!"}
+                        if @status.slice(3, @status.length).push("accepted").include?(borrow.status) then
+                            save_message(@status[status.to_i], borrow)
+                            Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
+                            BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
+                            render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
+                        else
+                            render json: {"type" => "error", "text" => "Wrong Status !!!"}
+                        end
                     end
                 else
-                    if @status.slice(3, @status.length).push("accepted").include?(borrow.status) then
-                        save_message(@status[status.to_i], borrow)
-                        Notification.create([{user_from_id: session[:user_id], user_to_id: (borrow.user.id == session[:user_id]) ? borrow.item.user.id : borrow.user.id , ressource: "update_borrow_#{@status[status.to_i]}", ressource_id: borrow.id, is_read: false}])
-                        BorrowUserMailer.with(borrow: borrow).status((borrow.user.id == session[:user_id]) ? borrow.item.user.email : borrow.user.email).deliver_now
-                        render json: {"type" => "success", "text" => "Borrow Request #{@status[status.to_i].capitalize} !!!"}
-                    else
-                        render json: {"type" => "error", "text" => "Wrong Status !!!"}
-                    end
-                end   
+                    render json: {"type" => "error", "text" => "Unknown Status !!!"}
+                end
             else
-                render json: {"type" => "error", "text" => "Unknown Status !!!"}
+                render json: {"type" => "error", "text" => "You Cant Perform This Action !!!"}
             end
         else
             render json: {"type" => "error", "text" => "Your Private Account Is Not Active !!!"}
@@ -354,8 +358,8 @@ class ItemBorrowUserController < ApplicationController
 
     def follow_ups
         @sender = session[:admin] != nil ? 0 : @borrow.user.id
-        @receiver = session[:admin] != nil ? @borrow.user.id : 0 
-        @with = session[:admin] != nil ? @borrow.user.username.capitalize! : "Yo Buddy" 
+        @receiver = session[:admin] != nil ? @borrow.user.id : 0
+        @with = session[:admin] != nil ? @borrow.user.username.capitalize! : "Yo Buddy"
         render layout: false
     end
 

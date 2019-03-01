@@ -106,19 +106,19 @@
 				<% if @active_status == "report" %>
 					emitStatusMessage("<%= @borrow.item.user.id %>", "<%= @borrow.item.user.profile_image %>");
 				<% else -%>
-					emitStatusMessage("<%= @borrow.item.user.id %>", "<%= @borrow.item.user.profile_image %>");
-					emitStatusMessage("<%= @borrow.user.id %>", "<%= @borrow.user.profile_image %>");
+					emitStatusMessage(parseInt("<%= @borrow.item.user.id %>"), "<%= @borrow.item.user.profile_image %>");
+					emitStatusMessage(parseInt("<%= @borrow.user.id %>"), "<%= @borrow.user.profile_image %>");
 				<% end -%>
 			}
 		});
 
 		function emitStatusMessage(receiver, icon){
 			var message = {
-	           	"item": "<%= @borrow.item.id %>",
-	            "borrow": "<%= @borrow.id %>",
+	           	"item": parseInt("<%= @borrow.item.id %>"),
+	            "borrow": parseInt("<%= @borrow.id %>"),
 	            "receiver": receiver,
 	            "sender": "Yo Buddy",
-	            "message": <% if @active_status == "report" %> "Yo Buddy has sent a follow up report of the borrow !!!" <% else %> "Item of the borrow or the borrow was <b><%= @active_status.capitalize! %></b> !!!" <% end -%>,
+	            "message": <% if @active_status == "report" %> "Yo Buddy has sent a follow up report of the borrow !!!" <% else %> "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!" <% end -%>,
 	            "url": "<%= item_item_borrow_user_borrow_messages_path(@item, @borrow) %>",
 	            "path": "<%= item_item_borrow_user_path(@item, @borrow) %>",
 	            "type": "message",
@@ -126,7 +126,7 @@
 	        }
 	        s.emit("messageSent", message);
 	        s.emit("setNotification", receiver);
-	        s.emit("notify", {"user": receiver, "title": "From Yo Buddy", "body": "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!", "icon": icon, "url": "<%= item_borrow_url(@borrow.uuid, @item, @borrow) %>"});
+	        //s.emit("notify", {"user": receiver, "title": "From Yo Buddy", "body": "Item of the borrow or the borrow was <%= @active_status.capitalize! %> !!!", "icon": icon, "url": "<%= item_borrow_url(@borrow.uuid, @item, @borrow) %>"});
 		}
 	</script>
 <% end %>

@@ -18,3 +18,4 @@ json.url user_path(@user, format: :json)
 json.items @user.item.count
 json.requests @user.item_request.count
 json.borrow @user.borrow_item_user.count
+json.is_private @user.is_private

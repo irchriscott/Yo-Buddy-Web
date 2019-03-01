@@ -168,15 +168,10 @@ module AdminHelper
 				user = User.find(user_id)
 				if user then
 					if user.username == data[3].to_s then
-						message = item.borrow_item_user.borrow_item_admin.all.last
-						if message != nil then
-							if message.status == "rendered" then
-								return item
-							else
-								return 1
-							end
+						if item.borrow_item_user.was_rendered then
+							return item
 						else
-							return 0
+							return 1
 						end
 					else
 						return 0

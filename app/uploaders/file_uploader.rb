@@ -42,6 +42,6 @@ class FileUploader < CarrierWave::Uploader::Base
   # Override the filename of the uploaded files:
   # Avoid using model.id or version_name here, see uploader/store.rb for details.
   def filename
-    "yobuddy_#{model.class.to_s.underscore}_#{SecureRandom.hex(4)}.#{file.extension}" if original_filename
+    "yobuddy_#{model.class.to_s.underscore}.#{file.extension}" if original_filename
   end
 end

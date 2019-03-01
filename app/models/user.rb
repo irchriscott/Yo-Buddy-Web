@@ -97,6 +97,7 @@ class User < ApplicationRecord
             "gender" => self.gender,
             "followers" => self.followers_count,
             "following" => self.following_count,
+            "is_private" => self.is_private,
             "url" => "/user/#{self.id}.json",
             "url_html" => "/user/#{self.username}-#{self.id}/items",
             "items" => self.item.count,

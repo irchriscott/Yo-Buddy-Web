@@ -87,7 +87,7 @@ class BorrowItemUser < ApplicationRecord
 
 	def updated_numbers
 		received = self.borrow_item_admin.where(status: "received").last
-		if $statuses.include?(self.status) and received != nil then
+		if $statuses.include?(self.status) and self.was_received then
 			if self.from_date < received.created_at then
 				date = to_datetime(self.to_date) - to_datetime(received.created_at)
 				if self.per == $pers[0] and self.numbers > 4 then
@@ -116,8 +116,8 @@ class BorrowItemUser < ApplicationRecord
 		received = self.borrow_item_admin.where(status: "received").last
 		rendered = self.borrow_item_admin.where(status: "rendered").last
 
-		if received != nil then
-			if rendered == nil then
+		if self.was_received then
+			if !self.was_rendered then
 				if self.per == $pers[0] then
 					return (self.numbers < 3) ? check_date(received.created_at.localtime, 0, 0, 30) : check_date(received.created_at.localtime, 0, 1, 0)
 				elsif self.per == $pers[1] then
@@ -127,6 +127,8 @@ class BorrowItemUser < ApplicationRecord
 				else
 					return check_date(received.created_at.localtime, 3, 0, 0)
 				end
+			else
+				return self.to_date
 			end
 		else
 			return self.to_date
@@ -142,9 +144,9 @@ class BorrowItemUser < ApplicationRecord
 		dead = now.to_time.to_i - self.to_date.localtime.to_time.to_i
 		hours = (dead / (60 * 60)) - 4
 
-		if rendered != nil && returned == nil then
+		if self.was_rendered && !self.was_returned then
 			return (hours > 0) ? hours * self.price_per_hour * self.count : 0
-		elsif rendered != nil && returned != nil then
+		elsif self.was_rendered && self.was_returned then
 			return ((returned.created_at.to_time.to_i - self.to_date.localtime.to_time.to_i) / (60 * 60)) * self.price_per_hour * self.count
 		else
 			return 0
